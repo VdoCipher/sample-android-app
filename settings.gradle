@@ -1,1 +1,1 @@
-include ':app', ':vdocipher-arm-release'
+include ':app'

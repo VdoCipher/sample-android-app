@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/VdocipherSampleApp.iml" filepath="$PROJECT_DIR$/VdocipherSampleApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/vdocipher-arm-release/vdocipher-arm-release.iml" filepath="$PROJECT_DIR$/vdocipher-arm-release/vdocipher-arm-release.iml" />
     </modules>
   </component>
 </project>
