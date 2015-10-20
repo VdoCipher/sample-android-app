@@ -12,11 +12,11 @@
         android:text="Vdocipher Sample App"
         android:textColor="@android:color/black"
         android:textSize="30sp"/>
-    <Button
-        android:id="@+id/play_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="Please wait..." />
+
+    <com.vdocipher.aegis.player.VdoPlayerView
+        android:id="@+id/vdo_player_view"
+        android:layout_width="320dp"
+        android:layout_height="240dp"
+        android:layout_gravity="center"/>
 
 </LinearLayout>

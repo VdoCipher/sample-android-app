@@ -1,6 +1,5 @@
 package com.vdocipher.sampleapp;
 
-import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +11,8 @@ import android.widget.Button;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.vdocipher.aegis.PlayerActivity;
+import com.vdocipher.aegis.player.VdoPlayer;
+import com.vdocipher.aegis.player.VdoPlayerView;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -21,12 +21,15 @@ import org.json.JSONObject;
 
 public class MainActivity extends ActionBarActivity {
 
-    public final static String TAG = "vdociphersampleapp";
-    private final String OTP_URL = "https://api.vdocipher.com/v2/otp/?video=********";
-    private final String OTP_EXTRA_INTENT = "com.vdocipher.aegis.otp";
+    private VdoPlayer player;
+    private VdoPlayerView playerView;
+
+	private AsyncHttpClient client = new AsyncHttpClient();
+    private String otp = "";
+    static final String TAG = "vdociphersampleapp";
 
     private Button playButton;
-    private String otp;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +40,25 @@ public class MainActivity extends ActionBarActivity {
             getSupportActionBar().hide();
         }
 
-        playButton = (Button)findViewById(R.id.play_button);
+        playerView = (VdoPlayerView)findViewById(R.id.vdo_player_view);
 
-        AsyncHttpClient client = new AsyncHttpClient();
+        getSampleOtpAndStartPlayer();
+    }
+
+    @Override
+    protected void onStop() {
+        if (player != null) {
+            player.stop();
+        }
+        super.onStop();
+    }
+
+    private void getSampleOtpAndStartPlayer() {
+    	final String OTP_EXTRA_INTENT = "com.vdocipher.aegis.otp";
+    	final String OTP_URL = "https://api.vdocipher.com/v2/otp/?video=*****";
         RequestParams params = new RequestParams();
         // add client secret key to request params
-        params.put("clientSecretKey", "********");
+        params.put("clientSecretKey", "******");
         // receive otp
         client.post(OTP_URL, params, new TextHttpResponseHandler() {
             @Override
@@ -50,37 +66,30 @@ public class MainActivity extends ActionBarActivity {
                 try {
                     JSONObject jObject = new JSONObject(responseString);
                     otp = jObject.getString("otp");
+                    Log.v(TAG, "otp: " + otp);
+                    String localFolder = getExternalFilesDir(null).getPath();
+                    VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(otp, false, null, null);
 
-                    playButton.setText("Play video");
-                    playButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // start the video player
-                            startPlayerActivity(otp);
-                        }
-                    });
-                } catch (JSONException e) {
-                    Log.e(TAG, Log.getStackTraceString(e));
+					// Other constructors available :-
+                    // Online playback	: VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(otp, false, null, null);
+                    // Offline play		: VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(null, true, localFolder, "**********");
+                    // Download setup	: VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(otp, localFolder);
+
+                    player = new VdoPlayer(getApplicationContext(), vdoParams, playerView);
+					// Other uses :-
+                    // Downloading player = new VdoPlayer(getApplicationContext(), vdoParams2, null);
+
+                } catch (Exception e) {
+                    Log.v(TAG, Log.getStackTraceString(e));
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.e(TAG, responseString);
+                Log.v(TAG, "status code: " + responseString);
                 playButton.setText("Network error. Please try again.");
             }
         });
-    }
-
-    private void startPlayerActivity(String otp) {
-        if (otp == null) {
-            return;
-        }
-        Intent intent = new Intent(this, PlayerActivity.class);
-        Bundle extras = new Bundle();
-        extras.putString(OTP_EXTRA_INTENT, otp);
-        intent.putExtras(extras);
-        startActivity(intent);
     }
 
     @Override
