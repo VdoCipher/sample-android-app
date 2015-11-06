@@ -68,12 +68,13 @@ public class MainActivity extends ActionBarActivity implements VdoPlayer.OnIniti
 
                     // Offline playback		: VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(null, true, localFolder, videoId);
 
-                    //player = new VdoPlayer(getApplicationContext(), vdoParams, playerView);
+                    player = new VdoPlayer(getApplicationContext(), vdoParams, playerView);
 
                     //initialize the VdoPlayer with a listener
-                    //player.initialize(MainActivity.this);
+                    player.initialize(MainActivity.this);
 
                     // For Offline Download :
+                    /*
                     VdoDownloader.InitParams initParams = new VdoDownloader.InitParams(otp, localFolder);
                     VdoDownloader downloader = new VdoDownloader(MainActivity.this, initParams);
                     downloader.initialize(new VdoDownloader.OnInitializationListener() {
@@ -87,6 +88,7 @@ public class MainActivity extends ActionBarActivity implements VdoPlayer.OnIniti
                             Log.v(TAG, "download initialize failure, reason: " + reason);
                         }
                     });
+                    */
 
                 } catch (Exception e) {
                     Log.v(TAG, Log.getStackTraceString(e));
