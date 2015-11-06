@@ -3,23 +3,20 @@ package com.vdocipher.sampleapp;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
+import com.vdocipher.aegis.player.VdoDownloader;
 import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.player.VdoPlayerView;
 
-import org.apache.http.Header;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import cz.msebera.android.httpclient.Header;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements VdoPlayer.OnInitializationListener {
 
     private VdoPlayer player;
     private VdoPlayerView playerView;
@@ -27,9 +24,6 @@ public class MainActivity extends ActionBarActivity {
 	private AsyncHttpClient client = new AsyncHttpClient();
     private String otp = "";
     static final String TAG = "vdociphersampleapp";
-
-    private Button playButton;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +52,7 @@ public class MainActivity extends ActionBarActivity {
     	final String OTP_URL = "https://api.vdocipher.com/v2/otp/?video=*****";
         RequestParams params = new RequestParams();
         // add client secret key to request params
-        params.put("clientSecretKey", "******");
+        params.put("clientSecretKey", "********");
         // receive otp
         client.post(OTP_URL, params, new TextHttpResponseHandler() {
             @Override
@@ -68,16 +62,31 @@ public class MainActivity extends ActionBarActivity {
                     otp = jObject.getString("otp");
                     Log.v(TAG, "otp: " + otp);
                     String localFolder = getExternalFilesDir(null).getPath();
+
+                    // Online playback
                     VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(otp, false, null, null);
 
-					// Other constructors available :-
-                    // Online playback	: VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(otp, false, null, null);
-                    // Offline play		: VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(null, true, localFolder, "**********");
-                    // Download setup	: VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(otp, localFolder);
+                    // Offline playback		: VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(null, true, localFolder, videoId);
 
-                    player = new VdoPlayer(getApplicationContext(), vdoParams, playerView);
-					// Other uses :-
-                    // Downloading player = new VdoPlayer(getApplicationContext(), vdoParams2, null);
+                    //player = new VdoPlayer(getApplicationContext(), vdoParams, playerView);
+
+                    //initialize the VdoPlayer with a listener
+                    //player.initialize(MainActivity.this);
+
+                    // For Offline Download :
+                    VdoDownloader.InitParams initParams = new VdoDownloader.InitParams(otp, localFolder);
+                    VdoDownloader downloader = new VdoDownloader(MainActivity.this, initParams);
+                    downloader.initialize(new VdoDownloader.OnInitializationListener() {
+                        @Override
+                        public void onInitializationSuccess() {
+                            Log.v(TAG, "download initialize success");
+                        }
+
+                        @Override
+                        public void onInitializationFailure(String reason) {
+                            Log.v(TAG, "download initialize failure, reason: " + reason);
+                        }
+                    });
 
                 } catch (Exception e) {
                     Log.v(TAG, Log.getStackTraceString(e));
@@ -87,30 +96,50 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.v(TAG, "status code: " + responseString);
-                playButton.setText("Network error. Please try again.");
             }
         });
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void onInitializationSuccess() {
+        Log.v(TAG, "success");
+        player.setOnPlaybackEventListener(playbackListener);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void onInitializationFailure(String reason) {
+        Log.v(TAG, "initialization failure, reason: " + reason);
+    }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    private VdoPlayer.OnPlaybackEventListener playbackListener = new VdoPlayer.OnPlaybackEventListener() {
+        @Override
+        public void onPlaying() {
+            Log.v(TAG, "playing");
         }
 
-        return super.onOptionsItemSelected(item);
-    }
+        @Override
+        public void onPaused() {
+            Log.v(TAG, "paused");
+        }
+
+        @Override
+        public void onStopped() {
+            Log.v(TAG, "stopped");
+        }
+
+        @Override
+        public void onBuffering(boolean isBuffering) {
+            Log.v(TAG, isBuffering ? "buffering started" : "buffering stopped");
+        }
+
+        @Override
+        public void onSeekTo(int millis) {
+            Log.v(TAG, "seeked to " + String.valueOf(millis));
+        }
+
+        @Override
+        public void onProgress(int millis) {
+            Log.v(TAG, "current time: " + String.valueOf(millis));
+        }
+    };
 }
