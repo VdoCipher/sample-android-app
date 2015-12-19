@@ -17,8 +17,6 @@ import com.vdocipher.aegis.player.VdoDownloader;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 import cz.msebera.android.httpclient.Header;
 
 public class DownloadActivity extends AppCompatActivity {

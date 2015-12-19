@@ -17,7 +17,7 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
 
     private VdoPlayer player;
     private VdoPlayerFragment playerFragment;
-    private Button playButton, pauseButton, currTime, isPlaying, onBuffering;
+    private Button playButton, pauseButton, onBuffering;
     private TextView seekStart, seekEnd;
     private SeekBar seekBar;
 
@@ -34,10 +34,6 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         seekBar.setEnabled(false);
         seekStart = (TextView)findViewById(R.id.offline_activity_seek_indicator);
         seekEnd = (TextView)findViewById(R.id.offline_activity_seek_end);
-        currTime = (Button)findViewById(R.id.offline_activity_curr_time);
-        currTime.setEnabled(false);
-        isPlaying = (Button)findViewById(R.id.offline_is_playing);
-        isPlaying.setEnabled(false);
         onBuffering = (Button)findViewById(R.id.offline_on_buffering);
         playerFragment = (VdoPlayerFragment)getFragmentManager().findFragmentById(R.id.offline_vdo_player_fragment);
         playButton = (Button)findViewById(R.id.offline_play_button);
@@ -93,8 +89,6 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         pauseButton.setOnClickListener(pauseListener);
         playButton.setEnabled(true);
         pauseButton.setEnabled(true);
-        currTime.setEnabled(true);
-        isPlaying.setEnabled(true);
     }
 
     @Override

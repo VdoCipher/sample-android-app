@@ -26,7 +26,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
 
     private VdoPlayer player;
     private VdoPlayerFragment playerFragment;
-    private Button playButton,pauseButton, currTime, isPlaying, onBuffering;
+    private Button playButton,pauseButton, onBuffering;
     private TextView seekStart, seekEnd;
     private SeekBar seekBar;
 
@@ -48,10 +48,6 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         seekBar.setEnabled(false);
         seekStart = (TextView)findViewById(R.id.online_activity_seek_indicator);
         seekEnd = (TextView)findViewById(R.id.online_activity_seek_end);
-        currTime = (Button)findViewById(R.id.online_activity_curr_time);
-        currTime.setEnabled(false);
-        isPlaying = (Button)findViewById(R.id.online_is_playing);
-        isPlaying.setEnabled(false);
         onBuffering = (Button)findViewById(R.id.online_on_buffering);
         playerFragment = (VdoPlayerFragment)getFragmentManager().findFragmentById(R.id.online_vdo_player_fragment);
         playButton = (Button)findViewById(R.id.online_play_button);
@@ -146,8 +142,6 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         pauseButton.setOnClickListener(pauseListener);
         playButton.setEnabled(true);
         pauseButton.setEnabled(true);
-        currTime.setEnabled(true);
-        isPlaying.setEnabled(true);
     }
 
     @Override
