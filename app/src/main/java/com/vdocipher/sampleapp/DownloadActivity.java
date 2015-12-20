@@ -81,16 +81,16 @@ public class DownloadActivity extends AppCompatActivity {
                     //TODO set resource id for drawable to be used for showing download progress notification
                     initParams.setNotificationResId(R.drawable.abc_btn_rating_star_on_mtrl_alpha);
                     downloader = new VdoDownloader(DownloadActivity.this, initParams);
-                    downloader.initialize(new VdoDownloader.OnInitializationListener() {
+                    downloader.download(new VdoDownloader.OnDownloadInitializationListener() {
                         @Override
-                        public void onInitializationSuccess() {
+                        public void onDownloadInitializationSuccess() {
                             Log.v(TAG, "download initialize success");
                             downloader.setOnDownloadEventListener(mDownloadListener);
                             startDownload.setEnabled(false);
                         }
 
                         @Override
-                        public void onInitializationFailure(String reason) {
+                        public void onDownloadInitializationFailure(String reason) {
                             Log.v(TAG, "download initialize failure, reason: " + reason);
                         }
                     });
