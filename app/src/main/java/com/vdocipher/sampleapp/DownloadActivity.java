@@ -80,6 +80,10 @@ public class DownloadActivity extends AppCompatActivity {
                     VdoDownloader.InitParams initParams = new VdoDownloader.InitParams(otp, localFolder);
                     //TODO set resource id for drawable to be used for showing download progress notification
                     initParams.setNotificationResId(R.drawable.abc_btn_rating_star_on_mtrl_alpha);
+                    // TODO set content title for notification
+                    initParams.setNotificationContentTitle("Downloading...");
+                    // TODO set content text for notification
+                    initParams.setNotificationContentText("My video");
                     downloader = new VdoDownloader(DownloadActivity.this, initParams);
                     downloader.download(new VdoDownloader.OnDownloadInitializationListener() {
                         @Override
