@@ -113,26 +113,26 @@ public class DownloadActivity extends AppCompatActivity {
 
     private VdoDownloader.OnDownloadEventListener mDownloadListener = new VdoDownloader.OnDownloadEventListener() {
         @Override
-        public void onDownloadStart() {
+        public void onDownloadStart(String videoId) {
             Log.v(TAG, "download start");
             Toast.makeText(DownloadActivity.this, "Download started", Toast.LENGTH_SHORT).show();
         }
 
         @Override
-        public void onDownloadProgress(final int percentage) {
+        public void onDownloadProgress(String videoId, final int percentage) {
             Log.v(TAG, "download progress: " + percentage);
             progress.setText(String.valueOf(percentage) + "%");
             progressBar.setProgress(percentage);
         }
 
         @Override
-        public void onDownloadComplete() {
+        public void onDownloadComplete(String videoId) {
             Log.v(TAG, "download complete");
             Toast.makeText(DownloadActivity.this, "Download completed", Toast.LENGTH_SHORT).show();
         }
 
         @Override
-        public void onDownloadError(String reason) {
+        public void onDownloadError(String videoId, String reason) {
             Log.v(TAG, "download error: " + reason);
         }
     };
