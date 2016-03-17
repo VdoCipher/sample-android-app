@@ -163,6 +163,20 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         @Override
         public void onStopped() {
             Log.v(TAG, "onStopped");
+            pauseButton.setEnabled(false);
+            playButton.setText("REPLAY");
+            playButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (player.isStopped()) {
+                        player.restart();
+                    }
+                    player.play();
+                    ((Button)v).setText("PLAY");
+                    v.setOnClickListener(playListener);
+                    pauseButton.setEnabled(true);
+                }
+            });
         }
 
         @Override
