@@ -1,2 +1,2 @@
-include ':app', ':vdocipher-release'
+include ':app', ':vdocipher'
 
