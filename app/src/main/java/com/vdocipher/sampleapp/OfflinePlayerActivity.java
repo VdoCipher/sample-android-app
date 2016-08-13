@@ -119,6 +119,10 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         }
 
         @Override
+        public void onBufferUpdate(int bufferTime) {
+        }
+
+        @Override
         public void onSeekTo(int millis) {
             Log.v(TAG, "onSeekTo " + String.valueOf(millis));
         }

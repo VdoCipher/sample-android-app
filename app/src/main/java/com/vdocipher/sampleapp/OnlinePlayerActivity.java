@@ -186,6 +186,11 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         }
 
         @Override
+        public void onBufferUpdate(int bufferTime) {
+            seekBar.setSecondaryProgress(bufferTime);
+        }
+
+        @Override
         public void onSeekTo(int millis) {
             Log.v(TAG, "onSeekTo: " + String.valueOf(millis));
         }
@@ -193,7 +198,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         @Override
         public void onProgress(int millis) {
             String currTimeStr = String.valueOf(millis);
-            Log.v(TAG, "onProgress: " + currTimeStr);
+            //Log.v(TAG, "onProgress: " + currTimeStr);
             seekBar.setProgress(millis);
             seekStart.setText(currTimeStr);
         }

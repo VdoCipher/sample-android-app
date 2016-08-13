@@ -13,17 +13,21 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".OnlinePlayerActivity"
+        <activity
+            android:name=".OnlinePlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"></activity>
+        <activity
+            android:name=".OfflinePlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"></activity>
+        <activity
+            android:name=".DownloadActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".FullScreenDemo"
             android:configChanges="keyboardHidden|orientation|screenSize">
-        </activity>
-        <activity android:name=".OfflinePlayerActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize">
-        </activity>
-        <activity android:name=".DownloadActivity"
-            android:screenOrientation="portrait">
         </activity>
     </application>
 
