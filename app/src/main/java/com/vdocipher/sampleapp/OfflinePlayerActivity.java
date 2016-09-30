@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -17,9 +18,10 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
 
     private VdoPlayer player;
     private VdoPlayerFragment playerFragment;
-    private Button playButton, pauseButton, onBuffering;
+    private Button playButton, pauseButton;
     private TextView seekStart, seekEnd;
     private SeekBar seekBar;
+    private ProgressBar bufferingIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +36,12 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         seekBar.setEnabled(false);
         seekStart = (TextView)findViewById(R.id.offline_activity_seek_indicator);
         seekEnd = (TextView)findViewById(R.id.offline_activity_seek_end);
-        onBuffering = (Button)findViewById(R.id.offline_on_buffering);
         playerFragment = (VdoPlayerFragment)getFragmentManager().findFragmentById(R.id.offline_vdo_player_fragment);
         playButton = (Button)findViewById(R.id.offline_play_button);
         playButton.setEnabled(false);
         pauseButton = (Button)findViewById(R.id.offline_pause_button);
         pauseButton.setEnabled(false);
+        bufferingIcon = (ProgressBar) findViewById(R.id.loading_icon);
 
         startPlayer();
     }
@@ -115,7 +117,7 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         @Override
         public void onBuffering(boolean isBuffering) {
             Log.v(TAG, isBuffering ? "buffering started" : "buffering stopped");
-            onBuffering.setText("on_buffering: " + (isBuffering ? "YES" : "NO"));
+            showLoadingIcon(isBuffering);
         }
 
         @Override
@@ -134,6 +136,16 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
             seekStart.setText(String.valueOf(millis));
         }
     };
+
+    private void showLoadingIcon(final boolean showIcon) {
+        if (showIcon) {
+            bufferingIcon.setVisibility(View.VISIBLE);
+            bufferingIcon.bringToFront();
+        } else {
+            bufferingIcon.setVisibility(View.INVISIBLE);
+            bufferingIcon.requestLayout();
+        }
+    }
 
     private SeekBar.OnSeekBarChangeListener seekbarChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override

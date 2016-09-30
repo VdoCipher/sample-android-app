@@ -18,13 +18,22 @@
             android:textSize="24sp"
             android:text="Sample offline playback"/>
 
-        <fragment
-            android:name="com.vdocipher.aegis.player.VdoPlayerFragment"
-            android:id="@+id/offline_vdo_player_fragment"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_gravity="center"
-            android:keepScreenOn="true"/>
+            android:layout_height="wrap_content">
+            <ProgressBar
+                android:id="@+id/loading_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
+            <fragment
+                android:name="com.vdocipher.aegis.player.VdoPlayerFragment"
+                android:id="@+id/offline_vdo_player_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:keepScreenOn="true"/>
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,21 +90,6 @@
                     android:text="000000"/>
             </RelativeLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/offline_on_buffering"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="on_Buffering: NO "/>
-
-        </LinearLayout>
-
     </LinearLayout>
 
 </ScrollView>

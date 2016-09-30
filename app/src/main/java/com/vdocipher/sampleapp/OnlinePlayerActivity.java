@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -26,9 +27,10 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
 
     private VdoPlayer player;
     private VdoPlayerFragment playerFragment;
-    private Button playButton,pauseButton, onBuffering;
+    private Button playButton,pauseButton;
     private TextView seekStart, seekEnd;
     private SeekBar seekBar;
+    private ProgressBar bufferingIcon;
 
     private AsyncHttpClient client = new AsyncHttpClient();
     private String otp;
@@ -48,12 +50,12 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         seekBar.setEnabled(false);
         seekStart = (TextView)findViewById(R.id.online_activity_seek_indicator);
         seekEnd = (TextView)findViewById(R.id.online_activity_seek_end);
-        onBuffering = (Button)findViewById(R.id.online_on_buffering);
         playerFragment = (VdoPlayerFragment)getFragmentManager().findFragmentById(R.id.online_vdo_player_fragment);
         playButton = (Button)findViewById(R.id.online_play_button);
         playButton.setEnabled(false);
         pauseButton = (Button)findViewById(R.id.online_pause_button);
         pauseButton.setEnabled(false);
+        bufferingIcon = (ProgressBar) findViewById(R.id.loading_icon);
 
         if (savedInstanceState != null) {
             otp = savedInstanceState.getString("otp", null);
@@ -182,7 +184,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         @Override
         public void onBuffering(boolean isBuffering) {
             Log.v(TAG, isBuffering ? "buffering started" : "buffering stopped");
-            onBuffering.setText("on_buffering: " + (isBuffering ? "YES" : "NO"));
+            showLoadingIcon(isBuffering);
         }
 
         @Override
@@ -203,6 +205,16 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             seekStart.setText(currTimeStr);
         }
     };
+
+    private void showLoadingIcon(final boolean showIcon) {
+        if (showIcon) {
+            bufferingIcon.setVisibility(View.VISIBLE);
+            bufferingIcon.bringToFront();
+        } else {
+            bufferingIcon.setVisibility(View.INVISIBLE);
+            bufferingIcon.requestLayout();
+        }
+    }
 
     private SeekBar.OnSeekBarChangeListener seekbarChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
