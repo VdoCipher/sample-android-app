@@ -91,11 +91,9 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                         otp = jObject.getString("otp");
                         Log.v(TAG, "otp: " + otp);
                         // create vdoInitParams
-                        VdoPlayerFragment.VdoInitParams vdoParams1 = new VdoPlayerFragment.VdoInitParams(otp, false, null, null);
-                        // set vdoInitParams to vdoPlayerFragment
-                        playerFragment.setInitParams(vdoParams1);
+                        VdoPlayer.VdoInitParams vdoParams1 = new VdoPlayer.VdoInitParams(otp, false, null, null);
                         // initialize vdoPlayerFragment with otp and a VdoPlayer.OnInitializationListener
-                        playerFragment.initialize(otp, OnlinePlayerActivity.this);
+                        playerFragment.initialize(vdoParams1, OnlinePlayerActivity.this);
                     } catch (JSONException e) {
                         Log.v(TAG, Log.getStackTraceString(e));
                     }
@@ -108,11 +106,9 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             });
         } else {
             // create vdoInitParams
-            VdoPlayerFragment.VdoInitParams vdoParams1 = new VdoPlayerFragment.VdoInitParams(otp, false, null, null);
-            // set vdoInitParams to vdoPlayerFragment
-            playerFragment.setInitParams(vdoParams1);
+            VdoPlayer.VdoInitParams vdoParams1 = new VdoPlayer.VdoInitParams(otp, false, null, null);
             // initialize vdoPlayerFragment with otp and a VdoPlayer.OnInitializationListener
-            playerFragment.initialize(otp, OnlinePlayerActivity.this);
+            playerFragment.initialize(vdoParams1, OnlinePlayerActivity.this);
         }
     }
 
@@ -147,8 +143,8 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     }
 
     @Override
-    public void onInitializationFailure(String reason) {
-        Log.v(TAG, "onInitializationFailure: " + reason);
+    public void onInitializationFailure(VdoPlayer.InitializationResult result) {
+        Log.v(TAG, "onInitializationFailure: " + result.name());
     }
 
     private VdoPlayer.OnPlaybackEventListener playbackListener = new VdoPlayer.OnPlaybackEventListener() {
@@ -203,6 +199,11 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             //Log.v(TAG, "onProgress: " + currTimeStr);
             seekBar.setProgress(millis);
             seekStart.setText(currTimeStr);
+        }
+
+        @Override
+        public void onError(VdoPlayer.PlaybackErrorReason playbackErrorReason) {
+            Log.e(TAG, playbackErrorReason.name());
         }
     };
 

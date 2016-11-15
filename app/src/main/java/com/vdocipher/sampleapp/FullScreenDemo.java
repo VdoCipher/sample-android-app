@@ -96,10 +96,9 @@ public class FullScreenDemo extends AppCompatActivity implements VdoPlayer.OnIni
                         otp = jObject.getString("otp");
                         Log.v(TAG, "otp: " + otp);
 
-                        VdoPlayerFragment.VdoInitParams vdoParams1 = new VdoPlayerFragment.VdoInitParams(otp, false, null, null);
+                        VdoPlayer.VdoInitParams vdoParams1 = new VdoPlayer.VdoInitParams(otp, false, null, null);
 
-                        playerFragment.setInitParams(vdoParams1);
-                        playerFragment.initialize(otp, FullScreenDemo.this);
+                        playerFragment.initialize(vdoParams1, FullScreenDemo.this);
                     } catch (JSONException e) {
                         Log.v(TAG, Log.getStackTraceString(e));
                     }
@@ -111,10 +110,9 @@ public class FullScreenDemo extends AppCompatActivity implements VdoPlayer.OnIni
                 }
             });
         } else {
-            VdoPlayerFragment.VdoInitParams vdoParams1 = new VdoPlayerFragment.VdoInitParams(otp, false, null, null);
+            VdoPlayer.VdoInitParams vdoParams1 = new VdoPlayer.VdoInitParams(otp, false, null, null);
 
-            playerFragment.setInitParams(vdoParams1);
-            playerFragment.initialize(otp, FullScreenDemo.this);
+            playerFragment.initialize(vdoParams1, FullScreenDemo.this);
         }
     }
 
@@ -146,8 +144,8 @@ public class FullScreenDemo extends AppCompatActivity implements VdoPlayer.OnIni
     }
 
     @Override
-    public void onInitializationFailure(String reason) {
-        Log.v(TAG, "onInitializationFailure: " + reason);
+    public void onInitializationFailure(VdoPlayer.InitializationResult result) {
+        Log.v(TAG, "onInitializationFailure: " + result.name());
     }
 
     private VdoPlayer.OnPlaybackEventListener playbackListener = new VdoPlayer.OnPlaybackEventListener() {
@@ -174,6 +172,11 @@ public class FullScreenDemo extends AppCompatActivity implements VdoPlayer.OnIni
 
         @Override
         public void onBufferUpdate(int bufferTime) {}
+
+        @Override
+        public void onError(VdoPlayer.PlaybackErrorReason playbackErrorReason) {
+            Log.e(TAG, playbackErrorReason.name());
+        }
     };
 
     @Override

@@ -56,9 +56,7 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         final String videoId = "********";
         String localFolder = getExternalFilesDir(null).getPath();
         // create vdoInitParams
-        VdoPlayerFragment.VdoInitParams vdoParams = new VdoPlayerFragment.VdoInitParams(null, true, localFolder, videoId);
-        // set vdoInitParams to vdoPlayerFragment
-        playerFragment.setInitParams(vdoParams);
+        VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(null, true, localFolder, videoId);
         // initialize vdoPlayerFragment with otp(null) and a VdoPlayer.OnInitializationListener
         playerFragment.initialize(null, OfflinePlayerActivity.this);
     }
@@ -94,8 +92,8 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
     }
 
     @Override
-    public void onInitializationFailure(String reason) {
-        Log.v(TAG, "onInitializationFailure: " + reason);
+    public void onInitializationFailure(VdoPlayer.InitializationResult result) {
+        Log.v(TAG, "onInitializationFailure: " + result.name());
     }
 
     private VdoPlayer.OnPlaybackEventListener playbackListener = new VdoPlayer.OnPlaybackEventListener() {
@@ -134,6 +132,11 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
             Log.v(TAG, "onProgress: " + String.valueOf(millis));
             seekBar.setProgress(millis);
             seekStart.setText(String.valueOf(millis));
+        }
+
+        @Override
+        public void onError(VdoPlayer.PlaybackErrorReason playbackErrorReason) {
+            Log.e(TAG, playbackErrorReason.name());
         }
     };
 
