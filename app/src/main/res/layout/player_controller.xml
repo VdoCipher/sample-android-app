@@ -12,6 +12,7 @@
     <ImageButton
         android:id="@+id/play_pause_button"
         android:src="@drawable/ic_action_play_light"
+        android:background="@android:color/transparent"
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -21,7 +22,7 @@
         android:background="@color/black_transparent"
         android:layout_alignParentBottom="true"
         android:clickable="true"
-        android:padding="16dp"
+        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
@@ -46,6 +47,13 @@
             android:textColor="@android:color/white"
             android:paddingLeft="8dp"
             android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageButton
+            android:id="@+id/fullscreen_toggle_button"
+            android:src="@drawable/ic_action_full_screen"
+            android:background="@android:color/transparent"
+            android:layout_marginLeft="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
