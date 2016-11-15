@@ -5,10 +5,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.RequestParams;
@@ -27,13 +28,16 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
 
     private VdoPlayer player;
     private VdoPlayerFragment playerFragment;
-    private Button playButton,pauseButton;
-    private TextView seekStart, seekEnd;
+    private ImageButton playPauseButton;
+    private TextView currTime, duration;
     private SeekBar seekBar;
     private ProgressBar bufferingIcon;
 
     private AsyncHttpClient client = new AsyncHttpClient();
     private String otp;
+    private boolean isPlaying = false;
+    private boolean controlsShowing = false;
+    private boolean isFullscreen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,16 +50,15 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             getSupportActionBar().hide();
         }
 
-        seekBar = (SeekBar)findViewById(R.id.online_activity_seek);
+        seekBar = (SeekBar)findViewById(R.id.seekbar);
         seekBar.setEnabled(false);
-        seekStart = (TextView)findViewById(R.id.online_activity_seek_indicator);
-        seekEnd = (TextView)findViewById(R.id.online_activity_seek_end);
+        currTime = (TextView)findViewById(R.id.current_time);
+        duration = (TextView)findViewById(R.id.duration);
         playerFragment = (VdoPlayerFragment)getFragmentManager().findFragmentById(R.id.online_vdo_player_fragment);
-        playButton = (Button)findViewById(R.id.online_play_button);
-        playButton.setEnabled(false);
-        pauseButton = (Button)findViewById(R.id.online_pause_button);
-        pauseButton.setEnabled(false);
+        playPauseButton = (ImageButton)findViewById(R.id.play_pause_button);
         bufferingIcon = (ProgressBar) findViewById(R.id.loading_icon);
+        showLoadingIcon(false);
+        showControls(false);
 
         if (savedInstanceState != null) {
             otp = savedInstanceState.getString("otp", null);
@@ -94,6 +97,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                         VdoPlayer.VdoInitParams vdoParams1 = new VdoPlayer.VdoInitParams(otp, false, null, null);
                         // initialize vdoPlayerFragment with otp and a VdoPlayer.OnInitializationListener
                         playerFragment.initialize(vdoParams1, OnlinePlayerActivity.this);
+                        showLoadingIcon(true);
                     } catch (JSONException e) {
                         Log.v(TAG, Log.getStackTraceString(e));
                     }
@@ -109,22 +113,35 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             VdoPlayer.VdoInitParams vdoParams1 = new VdoPlayer.VdoInitParams(otp, false, null, null);
             // initialize vdoPlayerFragment with otp and a VdoPlayer.OnInitializationListener
             playerFragment.initialize(vdoParams1, OnlinePlayerActivity.this);
+            showLoadingIcon(true);
         }
     }
 
-    View.OnClickListener playListener = new View.OnClickListener() {
+    private View.OnClickListener playPauseListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            player.play();
+            if (player == null) return;
+            if (isPlaying) {
+                player.pause();
+            } else {
+                player.play();
+            }
         }
     };
 
-    View.OnClickListener pauseListener = new View.OnClickListener() {
+    private View.OnClickListener playerTapListener = new View.OnClickListener() {
         @Override
-        public void onClick(View view) {
-            player.pause();
+        public void onClick(View v) {
+            showControls(!controlsShowing);
         }
     };
+
+    private void showControls(boolean show) {
+        int visibility = show ? View.VISIBLE : View.INVISIBLE;
+        playPauseButton.setVisibility(visibility);
+        (findViewById(R.id.bottom_panel)).setVisibility(visibility);
+        controlsShowing = show;
+    }
 
     @Override
     public void onInitializationSuccess(VdoPlayer player, boolean wasRestored) {
@@ -132,55 +149,49 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         this.player = player;
         player.setOnPlaybackEventListener(playbackListener);
         Log.v(TAG, "player duration = " + player.getDuration());
-        seekEnd.setText(Utils.digitalClockTime(player.getDuration()));
+        duration.setText(Utils.digitalClockTime(player.getDuration()));
         seekBar.setMax(player.getDuration());
         seekBar.setEnabled(true);
         seekBar.setOnSeekBarChangeListener(seekbarChangeListener);
-        playButton.setOnClickListener(playListener);
-        pauseButton.setOnClickListener(pauseListener);
-        playButton.setEnabled(true);
-        pauseButton.setEnabled(true);
+        playPauseButton.setOnClickListener(playPauseListener);
+
+        (findViewById(R.id.player_region)).setOnClickListener(playerTapListener);
+        showControls(true);
     }
 
     @Override
     public void onInitializationFailure(VdoPlayer.InitializationResult result) {
         Log.v(TAG, "onInitializationFailure: " + result.name());
+        Toast.makeText(OnlinePlayerActivity.this, "initialization failure: " + result.name(), Toast.LENGTH_LONG).show();
+        showLoadingIcon(false);
     }
 
     private VdoPlayer.OnPlaybackEventListener playbackListener = new VdoPlayer.OnPlaybackEventListener() {
         @Override
         public void onPlaying() {
             Log.v(TAG, "onPlaying");
+            isPlaying = true;
+            playPauseButton.setImageResource(R.drawable.ic_action_pause_light);
         }
 
         @Override
         public void onPaused() {
             Log.v(TAG, "onPaused");
+            isPlaying = false;
+            playPauseButton.setImageResource(R.drawable.ic_action_play_light);
         }
 
         @Override
         public void onStopped() {
             Log.v(TAG, "onStopped");
-            pauseButton.setEnabled(false);
-            playButton.setText("REPLAY");
-            playButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (player.isStopped()) {
-                        player.restart();
-                    }
-                    player.play();
-                    ((Button)v).setText("PLAY");
-                    v.setOnClickListener(playListener);
-                    pauseButton.setEnabled(true);
-                }
-            });
+            playPauseButton.setEnabled(false);
         }
 
         @Override
         public void onBuffering(boolean isBuffering) {
             Log.v(TAG, isBuffering ? "buffering started" : "buffering stopped");
             showLoadingIcon(isBuffering);
+            playPauseButton.setVisibility(View.INVISIBLE);
         }
 
         @Override
@@ -196,7 +207,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         @Override
         public void onProgress(int millis) {
             seekBar.setProgress(millis);
-            seekStart.setText(Utils.digitalClockTime(millis));
+            currTime.setText(Utils.digitalClockTime(millis));
         }
 
         @Override
