@@ -5,7 +5,7 @@ package com.vdocipher.sampleapp;
  */
 
 class Utils {
-    static String digitalTime(int timeInMilliSeconds) {
+    static String digitalClockTime(int timeInMilliSeconds) {
         int totalSeconds = timeInMilliSeconds/1000;
         int hours = totalSeconds / (60 * 60);
         int minutes = (totalSeconds - hours * 60 * 60) / 60;

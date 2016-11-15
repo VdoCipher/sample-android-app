@@ -79,7 +79,7 @@
                     android:layout_alignParentLeft="true"
                     android:gravity="left"
                     android:textColor="@android:color/black"
-                    android:text="000000"/>
+                    android:text="00:00"/>
                 <TextView
                     android:id="@+id/offline_activity_seek_end"
                     android:layout_width="60dp"
@@ -87,7 +87,7 @@
                     android:layout_alignParentRight="true"
                     android:gravity="right"
                     android:textColor="@android:color/black"
-                    android:text="000000"/>
+                    android:text="00:00"/>
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>

@@ -132,7 +132,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         this.player = player;
         player.setOnPlaybackEventListener(playbackListener);
         Log.v(TAG, "player duration = " + player.getDuration());
-        seekEnd.setText(String.valueOf(player.getDuration()));
+        seekEnd.setText(Utils.digitalClockTime(player.getDuration()));
         seekBar.setMax(player.getDuration());
         seekBar.setEnabled(true);
         seekBar.setOnSeekBarChangeListener(seekbarChangeListener);
@@ -195,10 +195,8 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
 
         @Override
         public void onProgress(int millis) {
-            String currTimeStr = String.valueOf(millis);
-            //Log.v(TAG, "onProgress: " + currTimeStr);
             seekBar.setProgress(millis);
-            seekStart.setText(currTimeStr);
+            seekStart.setText(Utils.digitalClockTime(millis));
         }
 
         @Override

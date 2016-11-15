@@ -58,7 +58,7 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         // create vdoInitParams
         VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(null, true, localFolder, videoId);
         // initialize vdoPlayerFragment with otp(null) and a VdoPlayer.OnInitializationListener
-        playerFragment.initialize(null, OfflinePlayerActivity.this);
+        playerFragment.initialize(vdoParams, OfflinePlayerActivity.this);
     }
 
     View.OnClickListener playListener = new View.OnClickListener() {
@@ -81,7 +81,7 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         this.player = player;
         player.setOnPlaybackEventListener(playbackListener);
         Log.v(TAG, "player duration = " + player.getDuration());
-        seekEnd.setText(String.valueOf(player.getDuration()));
+        seekEnd.setText(Utils.digitalClockTime(player.getDuration()));
         seekBar.setMax(player.getDuration());
         seekBar.setEnabled(true);
         seekBar.setOnSeekBarChangeListener(seekbarChangeListener);
@@ -129,9 +129,8 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
 
         @Override
         public void onProgress(int millis) {
-            Log.v(TAG, "onProgress: " + String.valueOf(millis));
             seekBar.setProgress(millis);
-            seekStart.setText(String.valueOf(millis));
+            seekStart.setText(Utils.digitalClockTime(millis));
         }
 
         @Override
