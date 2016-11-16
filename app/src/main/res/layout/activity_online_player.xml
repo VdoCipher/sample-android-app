@@ -6,14 +6,6 @@
     android:orientation="vertical"
     tools:context="com.vdocipher.sampleapp.OnlinePlayerActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="10dp"
-        android:textSize="24sp"
-        android:text="Sample online playback"/>
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -29,9 +21,18 @@
             android:layout_alignBottom="@id/online_vdo_player_fragment"
             android:layout_alignLeft="@id/online_vdo_player_fragment"
             android:layout_alignRight="@id/online_vdo_player_fragment"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             layout="@layout/player_controller" />
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:textSize="24sp"
+        android:text="Sample online playback"/>
 
 </LinearLayout>
