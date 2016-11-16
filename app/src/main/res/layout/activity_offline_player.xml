@@ -1,95 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.vdocipher.sampleapp.OfflinePlayerActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:textSize="24sp"
+        android:text="Sample offline playback"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <fragment
+            android:name="com.vdocipher.aegis.player.VdoPlayerFragment"
+            android:id="@+id/offline_vdo_player_fragment"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:padding="10dp"
-            android:textSize="24sp"
-            android:text="Sample offline playback"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ProgressBar
-                android:id="@+id/loading_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"/>
-            <fragment
-                android:name="com.vdocipher.aegis.player.VdoPlayerFragment"
-                android:id="@+id/offline_vdo_player_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:keepScreenOn="true"/>
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+            android:keepScreenOn="true"/>
+        <include
+            android:layout_alignTop="@id/offline_vdo_player_fragment"
+            android:layout_alignBottom="@id/offline_vdo_player_fragment"
+            android:layout_alignLeft="@id/offline_vdo_player_fragment"
+            android:layout_alignRight="@id/offline_vdo_player_fragment"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                style="?android:attr/buttonBarStyle"
-                android:orientation="horizontal">
+            layout="@layout/player_controller" />
+    </RelativeLayout>
 
-                <Button
-                    android:id="@+id/offline_play_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:text="Play"/>
-                <Button
-                    android:id="@+id/offline_pause_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:text="Pause"/>
-
-            </LinearLayout>
-
-            <SeekBar
-                android:id="@+id/offline_activity_seek"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"/>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/offline_activity_seek_indicator"
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:gravity="left"
-                    android:textColor="@android:color/black"
-                    android:text="00:00"/>
-                <TextView
-                    android:id="@+id/offline_activity_seek_end"
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:gravity="right"
-                    android:textColor="@android:color/black"
-                    android:text="00:00"/>
-            </RelativeLayout>
-        </LinearLayout>
-    </LinearLayout>
-
-</ScrollView>
+</LinearLayout>
