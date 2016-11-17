@@ -1,12 +1,16 @@
 package com.vdocipher.sampleapp;
 
+import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,12 +31,15 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
 
     private boolean isPlaying = false;
     private boolean controlsShowing = false;
-    private boolean isFullscreen = false;
+    private boolean isLandscape = false;
+    private int mLastSystemUiVis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_offline_player);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(uiVisibilityListener);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
@@ -47,6 +54,7 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         bufferingIcon = (ProgressBar) findViewById(R.id.loading_icon);
         showLoadingIcon(false);
         showControls(false);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         startPlayer();
     }
@@ -82,7 +90,11 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
     private View.OnClickListener playerTapListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            showControls(!controlsShowing);
+            showControls(!controlsShowing); // controlsShowing changed in this method
+            if (isLandscape) {
+                // show/hide system ui as well
+                showSystemUi(controlsShowing);
+            }
         }
     };
 
@@ -104,8 +116,10 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         seekBar.setEnabled(true);
         seekBar.setOnSeekBarChangeListener(seekbarChangeListener);
         playPauseButton.setOnClickListener(playPauseListener);
+        showLoadingIcon(false);
 
         (findViewById(R.id.player_region)).setOnClickListener(playerTapListener);
+        (findViewById(R.id.fullscreen_toggle_button)).setOnClickListener(fullscreenToggleListener);
         showControls(true);
     }
 
@@ -120,22 +134,28 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         @Override
         public void onPlaying() {
             Log.v(TAG, "onPlaying");
+            isPlaying = true;
+            playPauseButton.setImageResource(R.drawable.ic_action_pause_light);
         }
 
         @Override
         public void onPaused() {
             Log.v(TAG, "onPaused");
+            isPlaying = false;
+            playPauseButton.setImageResource(R.drawable.ic_action_play_light);
         }
 
         @Override
         public void onStopped() {
             Log.v(TAG, "onStopped");
+            playPauseButton.setEnabled(false);
         }
 
         @Override
         public void onBuffering(boolean isBuffering) {
             Log.v(TAG, isBuffering ? "buffering started" : "buffering stopped");
             showLoadingIcon(isBuffering);
+            playPauseButton.setVisibility(View.INVISIBLE);
         }
 
         @Override
@@ -183,6 +203,75 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             player.seekTo(seekBar.getProgress());
+        }
+    };
+
+    private View.OnClickListener fullscreenToggleListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            showFullScreen(!isLandscape);
+            isLandscape = !isLandscape;
+            int fsButtonResId = isLandscape ? R.drawable.ic_action_return_from_full_screen : R.drawable.ic_action_full_screen;
+            ((ImageButton)(findViewById(R.id.fullscreen_toggle_button))).setImageResource(fsButtonResId);
+        }
+    };
+
+    private void showFullScreen(boolean show) {
+        Log.v(TAG, show ? "go fullscreen" : "return from fullscreen");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (show) {
+                // go to landscape orientation
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                // hide other views
+                (findViewById(R.id.title_text)).setVisibility(View.GONE);
+                (findViewById(R.id.offline_vdo_player_fragment)).setLayoutParams(new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+                findViewById(R.id.player_region).setFitsSystemWindows(true);
+                // hide system windows
+                showSystemUi(false);
+                showControls(false);
+            } else {
+                // go to portrait orientation
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+                // show other views
+                (findViewById(R.id.title_text)).setVisibility(View.VISIBLE);
+                (findViewById(R.id.offline_vdo_player_fragment)).setLayoutParams(new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                findViewById(R.id.player_region).setFitsSystemWindows(false);
+                findViewById(R.id.player_region).setPadding(0,0,0,0);
+                // show system windows
+                showSystemUi(true);
+            }
+        }
+    }
+
+    private void showSystemUi(boolean show) {
+        Log.v(TAG, (show ? "show " : "hide ") + "system ui");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (!show) {
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
+            } else {
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            }
+        }
+    }
+
+    private View.OnSystemUiVisibilityChangeListener uiVisibilityListener = new View.OnSystemUiVisibilityChangeListener() {
+        @Override
+        public void onSystemUiVisibilityChange(int visibility) {
+            Log.v(TAG, "onSystemUiVisibilityChange");
+            // show player controls when system ui is showing
+            int diff = mLastSystemUiVis ^ visibility;
+            mLastSystemUiVis = visibility;
+            if ((diff & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0
+                    && (visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0) {
+                Log.v(TAG, "system ui visible, making controls visible");
+                showControls(true);
+            }
         }
     };
 }
