@@ -119,7 +119,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         } else {
             // create vdoInitParams
             VdoPlayer.VdoInitParams vdoParams1 = new VdoPlayer.VdoInitParams(otp, false, null, null);
-            // initialize vdoPlayerFragment with otp and a VdoPlayer.OnInitializationListener
+            // initialize vdoPlayerFragment with initParams and a VdoPlayer.OnInitializationListener
             playerFragment.initialize(vdoParams1, OnlinePlayerActivity.this);
             showLoadingIcon(true);
         }

@@ -70,7 +70,7 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         String localFolder = getExternalFilesDir(null).getPath();
         // create vdoInitParams
         VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams(null, true, localFolder, videoId);
-        // initialize vdoPlayerFragment with otp(null) and a VdoPlayer.OnInitializationListener
+        // initialize vdoPlayerFragment with initParams and a VdoPlayer.OnInitializationListener
         playerFragment.initialize(vdoParams, OfflinePlayerActivity.this);
         showLoadingIcon(true);
     }
