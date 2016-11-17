@@ -31,11 +31,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void fullscreenDemo(View v) {
-        Intent intent = new Intent(this, FullScreenDemo.class);
-        startActivity(intent);
-    }
-
     public void offlinePlayback(View v) {
         Intent intent = new Intent(this, OfflinePlayerActivity.class);
         startActivity(intent);

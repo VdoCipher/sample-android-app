@@ -26,9 +26,6 @@
         <activity
             android:name=".DownloadActivity"
             android:screenOrientation="portrait"></activity>
-        <activity android:name=".FullScreenDemo"
-            android:configChanges="keyboardHidden|orientation|screenSize">
-        </activity>
     </application>
 
 </manifest>
