@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.vdocipher.sampleapp"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -23,5 +23,5 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.loopj.android:android-async-http:1.4.9'
-    compile project(':vdocipher')
+    compile 'com.vdocipher.aegis:vdocipher-android:0.8.6'
 }
