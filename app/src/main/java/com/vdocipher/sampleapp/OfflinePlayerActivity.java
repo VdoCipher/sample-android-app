@@ -24,7 +24,7 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
 
     private VdoPlayer player;
     private VdoPlayerFragment playerFragment;
-    private ImageButton playPauseButton;
+    private ImageButton playPauseButton, replayButton;
     private TextView currTime, duration;
     private SeekBar seekBar;
     private ProgressBar bufferingIcon;
@@ -51,6 +51,8 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         duration = (TextView)findViewById(R.id.duration);
         playerFragment = (VdoPlayerFragment)getFragmentManager().findFragmentById(R.id.offline_vdo_player_fragment);
         playPauseButton = (ImageButton)findViewById(R.id.play_pause_button);
+        replayButton = (ImageButton)findViewById(R.id.replay_button);
+        replayButton.setVisibility(View.INVISIBLE);
         bufferingIcon = (ProgressBar) findViewById(R.id.loading_icon);
         showLoadingIcon(false);
         showControls(false);
@@ -116,6 +118,16 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         seekBar.setEnabled(true);
         seekBar.setOnSeekBarChangeListener(seekbarChangeListener);
         playPauseButton.setOnClickListener(playPauseListener);
+        replayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                replayButton.setVisibility(View.INVISIBLE);
+                if (OfflinePlayerActivity.this.player != null) {
+                    OfflinePlayerActivity.this.player.restart();
+                    playPauseButton.setEnabled(true);
+                }
+            }
+        });
         showLoadingIcon(false);
 
         (findViewById(R.id.player_region)).setOnClickListener(playerTapListener);
@@ -135,20 +147,22 @@ public class OfflinePlayerActivity extends AppCompatActivity implements VdoPlaye
         public void onPlaying() {
             Log.v(TAG, "onPlaying");
             isPlaying = true;
-            playPauseButton.setImageResource(R.drawable.ic_action_pause_light);
+            playPauseButton.setImageResource(R.drawable.ic_pause_white_48dp);
         }
 
         @Override
         public void onPaused() {
             Log.v(TAG, "onPaused");
             isPlaying = false;
-            playPauseButton.setImageResource(R.drawable.ic_action_play_light);
+            playPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
         }
 
         @Override
         public void onStopped() {
             Log.v(TAG, "onStopped");
             playPauseButton.setEnabled(false);
+            playPauseButton.setVisibility(View.INVISIBLE);
+            replayButton.setVisibility(View.VISIBLE);
         }
 
         @Override

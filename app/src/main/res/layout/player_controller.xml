@@ -10,7 +10,14 @@
         android:layout_height="wrap_content" />
     <ImageButton
         android:id="@+id/play_pause_button"
-        android:src="@drawable/ic_action_play_light"
+        android:src="@drawable/ic_play_arrow_white_48dp"
+        android:background="@android:color/transparent"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ImageButton
+        android:id="@+id/replay_button"
+        android:src="@drawable/ic_replay_white_48dp"
         android:background="@android:color/transparent"
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
