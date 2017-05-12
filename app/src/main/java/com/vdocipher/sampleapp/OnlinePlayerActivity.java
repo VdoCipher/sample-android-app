@@ -33,7 +33,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
 
     private VdoPlayer player;
     private VdoPlayerFragment playerFragment;
-    private ImageButton playPauseButton, replayButton;
+    private ImageButton playPauseButton, replayButton, errorButton;
     private TextView currTime, duration;
     private SeekBar seekBar;
     private ProgressBar bufferingIcon;
@@ -65,6 +65,9 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         playPauseButton = (ImageButton)findViewById(R.id.play_pause_button);
         replayButton = (ImageButton)findViewById(R.id.replay_button);
         replayButton.setVisibility(View.INVISIBLE);
+        errorButton = (ImageButton)findViewById(R.id.error_icon);
+        errorButton.setEnabled(false);
+        errorButton.setVisibility(View.INVISIBLE);
         bufferingIcon = (ProgressBar) findViewById(R.id.loading_icon);
         showLoadingIcon(false);
         showControls(false);
@@ -191,6 +194,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         Log.v(TAG, "onInitializationFailure: " + result.name());
         Toast.makeText(OnlinePlayerActivity.this, "initialization failure: " + result.name(), Toast.LENGTH_LONG).show();
         showLoadingIcon(false);
+        errorButton.setVisibility(View.VISIBLE);
     }
 
     private VdoPlayer.OnPlaybackEventListener playbackListener = new VdoPlayer.OnPlaybackEventListener() {
