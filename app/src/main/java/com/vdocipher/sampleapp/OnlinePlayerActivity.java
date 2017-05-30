@@ -39,7 +39,6 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     private ProgressBar bufferingIcon;
 
     private AsyncHttpClient client = new AsyncHttpClient();
-    private String otp;
     private boolean isPlaying = false;
     private boolean controlsShowing = false;
     private boolean isLandscape = false;
@@ -72,17 +71,12 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         showLoadingIcon(false);
         showControls(false);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-
-        if (savedInstanceState != null) {
-            otp = savedInstanceState.getString("otp", null);
-            Log.v(TAG, "otp: " + otp);
-        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        getSampleOtpAndStartPlayer();
+        getSampleOtpAndStartPlayer(null);
     }
 
     @Override
@@ -96,10 +90,12 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (otp != null) outState.putString("otp", otp);
     }
 
-    private void getSampleOtpAndStartPlayer() {
+    /**
+     * Use provided otp or generate a new one if null, and initialize player.
+     */
+    private void getSampleOtpAndStartPlayer(String otp) {
         final String videoId = "********";
         final String OTP_URL = "https://api.vdocipher.com/v2/otp/?video=" + videoId;
         RequestParams params = new RequestParams();
@@ -111,10 +107,10 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     try {
                         JSONObject jObject = new JSONObject(responseString);
-                        otp = jObject.getString("otp");
-                        Log.v(TAG, "otp: " + otp);
+                        String newOtp = jObject.getString("otp");
+                        Log.v(TAG, "new otp: " + newOtp);
                         // create vdoInitParams
-                        VdoPlayer.VdoInitParams vdoParams1 = new VdoPlayer.VdoInitParams(otp, false, null, null);
+                        VdoPlayer.VdoInitParams vdoParams1 = new VdoPlayer.VdoInitParams(newOtp, false, null, null);
                         // initialize vdoPlayerFragment with otp and a VdoPlayer.OnInitializationListener
                         playerFragment.initialize(vdoParams1, OnlinePlayerActivity.this);
                         showLoadingIcon(true);
