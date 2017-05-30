@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+
+        Log.i(TAG, "version name = " + com.vdocipher.aegis.BuildConfig.VERSION_NAME);
     }
 
     @Override
