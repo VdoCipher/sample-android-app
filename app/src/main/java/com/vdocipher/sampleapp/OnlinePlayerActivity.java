@@ -77,6 +77,11 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             otp = savedInstanceState.getString("otp", null);
             Log.v(TAG, "otp: " + otp);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         getSampleOtpAndStartPlayer();
     }
 
@@ -84,6 +89,8 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     protected void onStop() {
         Log.v(TAG, "onStop called");
         super.onStop();
+        disablePlayerUI();
+        player = null;
     }
 
     @Override
@@ -161,17 +168,30 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         controlsShowing = show;
     }
 
+    private void disablePlayerUI() {
+        showControls(false);
+        showLoadingIcon(false);
+        playPauseButton.setEnabled(false);
+        currTime.setEnabled(false);
+        seekBar.setEnabled(false);
+        replayButton.setEnabled(false);
+        replayButton.setVisibility(View.INVISIBLE);
+        (findViewById(R.id.player_region)).setOnClickListener(null);
+    }
+
     @Override
     public void onInitializationSuccess(VdoPlayer player, boolean wasRestored) {
         Log.v(TAG, "onInitializationSuccess");
         this.player = player;
         player.setOnPlaybackEventListener(playbackListener);
+        if (wasRestored) player.play();
         Log.v(TAG, "player duration = " + player.getDuration());
         duration.setText(Utils.digitalClockTime(player.getDuration()));
         seekBar.setMax(player.getDuration());
         seekBar.setEnabled(true);
         seekBar.setOnSeekBarChangeListener(seekbarChangeListener);
         playPauseButton.setOnClickListener(playPauseListener);
+        playPauseButton.setEnabled(true);
         replayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -217,6 +237,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             Log.v(TAG, "onStopped");
             playPauseButton.setEnabled(false);
             playPauseButton.setVisibility(View.INVISIBLE);
+            replayButton.setEnabled(true);
             replayButton.setVisibility(View.VISIBLE);
         }
 
