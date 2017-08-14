@@ -21,9 +21,6 @@
             android:name=".OnlinePlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
-            android:name=".OfflinePlayerActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
-        <activity
             android:name=".DownloadActivity"
             android:screenOrientation="portrait" />
     </application>
