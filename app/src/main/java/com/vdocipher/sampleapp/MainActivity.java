@@ -32,14 +32,4 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, OnlinePlayerActivity.class);
         startActivity(intent);
     }
-
-    public void offlinePlayback(View v) {
-        Intent intent = new Intent(this, OfflinePlayerActivity.class);
-        startActivity(intent);
-    }
-
-    public void download(View v) {
-        Intent intent = new Intent(this, DownloadActivity.class);
-        startActivity(intent);
-    }
 }

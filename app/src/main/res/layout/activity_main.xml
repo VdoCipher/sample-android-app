@@ -27,21 +27,5 @@
             android:layout_margin="10dp"
             android:padding="20dp"
             android:onClick="onlinePlayback"/>
-        <Button
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
-            android:text="Offline Playback"
-            android:textSize="18sp"
-            android:layout_margin="10dp"
-            android:padding="20dp"
-            android:onClick="offlinePlayback"/>
-        <Button
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
-            android:text="Download"
-            android:textSize="18sp"
-            android:layout_margin="10dp"
-            android:padding="20dp"
-            android:onClick="download"/>
     </LinearLayout>
 </LinearLayout>
