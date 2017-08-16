@@ -45,6 +45,8 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     private boolean isLandscape = false;
     private int mLastSystemUiVis;
 
+    private String mOtp, mPlaybackInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +79,24 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     @Override
     protected void onStart() {
         super.onStart();
-        //getSampleOtpAndStartPlayer(null);
+        // todo use asynctask; initialize from main thread
+        // fetch otp and playbackInfo and initialize VdoPlayer
+        // here we're fetching a sample (otp + playbackInfo)
+        // TODO you need to generate/fetch (otp + playbackInfo) OR (signature + playbackInfo) for the video you wish to play
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Pair<String, String> pair = getSampleOtpAndPlaybackInfo();
+                    mOtp = pair.first;
+                    mPlaybackInfo = pair.second;
+                    playerFragment.initialize(OnlinePlayerActivity.this);
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                    showToast("Error fetching otp and playbackInfo: " + e.getClass().getSimpleName());
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -91,6 +110,15 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+    }
+
+    private void showToast(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(OnlinePlayerActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private View.OnClickListener playPauseListener = new View.OnClickListener() {
@@ -140,29 +168,15 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         Log.i(TAG, "onInitializationSuccess");
         this.player = player;
         player.addPlaybackEventListener(playbackListener);
-        if (wasRestored) player.setPlayWhenReady(true);
-        Log.v(TAG, "player duration = " + player.getDuration());
-        duration.setText(Utils.digitalClockTime(player.getDuration()));
-        seekBar.setMax((int)player.getDuration());
-        seekBar.setEnabled(true);
-        seekBar.setOnSeekBarChangeListener(seekbarChangeListener);
-        playPauseButton.setOnClickListener(playPauseListener);
-        playPauseButton.setEnabled(true);
-        replayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                replayButton.setVisibility(View.INVISIBLE);
-                if (OnlinePlayerActivity.this.player != null) {
-                    OnlinePlayerActivity.this.player.seekTo(0);
-                    playPauseButton.setEnabled(true);
-                }
-            }
-        });
         showLoadingIcon(false);
 
         (findViewById(R.id.player_region)).setOnClickListener(playerTapListener);
         (findViewById(R.id.fullscreen_toggle_button)).setOnClickListener(fullscreenToggleListener);
         showControls(true);
+
+        // load a media to the player
+        VdoPlayer.VdoInitParams vdoParams = VdoPlayer.VdoInitParams.createParamsWithOtp(mOtp, mPlaybackInfo);
+        player.load(vdoParams);
     }
 
     @Override
@@ -194,6 +208,16 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                 case VdoPlayer.STATE_ENDED: {
                     playPauseButton.setEnabled(false);
                     playPauseButton.setVisibility(View.INVISIBLE);
+                    replayButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            replayButton.setVisibility(View.INVISIBLE);
+                            if (OnlinePlayerActivity.this.player != null) {
+                                OnlinePlayerActivity.this.player.seekTo(0);
+                                playPauseButton.setEnabled(true);
+                            }
+                        }
+                    });
                     replayButton.setEnabled(true);
                     replayButton.setVisibility(View.VISIBLE);
                     break;
@@ -221,32 +245,42 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         @Override
         public void onProgress(long millis) {
             seekBar.setProgress((int)millis);
-            currTime.setText(Utils.digitalClockTime(millis));
+            currTime.setText(Utils.digitalClockTime((int)millis));
         }
 
         @Override
         public void onLoading(VdoPlayer.VdoInitParams vdoInitParams) {
             Log.i(TAG, "onLoading");
+            showLoadingIcon(true);
         }
 
         @Override
         public void onLoadError(VdoPlayer.VdoInitParams vdoInitParams, int errorCode, String msg) {
             Log.i(TAG, "onLoadError");
+            showLoadingIcon(false);
         }
 
         @Override
         public void onLoaded(VdoPlayer.VdoInitParams vdoInitParams) {
             Log.i(TAG, "onLoaded");
+            showLoadingIcon(false);
+            duration.setText(Utils.digitalClockTime((int)player.getDuration()));
+            seekBar.setMax((int)player.getDuration());
+            seekBar.setEnabled(true);
+            seekBar.setOnSeekBarChangeListener(seekbarChangeListener);
+            playPauseButton.setEnabled(true);
+            playPauseButton.setOnClickListener(playPauseListener);
         }
 
         @Override
         public void onError(VdoPlayer.VdoInitParams vdoParams, int errorCode, String msg) {
             Log.e(TAG, "onError code " + errorCode + ": " + msg);
+            showLoadingIcon(false);
         }
 
         @Override
-        public void onVideoEnded(VdoPlayer.VdoInitParams vdoInitParams) {
-            Log.i(TAG, "onVideoEnded");
+        public void onMediaEnded(VdoPlayer.VdoInitParams vdoInitParams) {
+            Log.i(TAG, "onMediaEnded");
         }
     };
 
@@ -298,7 +332,6 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             br.close();
 
             String response = responseBuffer.toString();
-            //new String(Base64.decode(respEncoded, Base64.DEFAULT));
             Log.i(TAG, "response: " + response);
 
             JSONObject jObj = new JSONObject(response);
