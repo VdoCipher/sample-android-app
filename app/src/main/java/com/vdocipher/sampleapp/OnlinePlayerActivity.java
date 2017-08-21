@@ -15,6 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.player.VdoPlayerFragment;
@@ -180,9 +181,9 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     }
 
     @Override
-    public void onInitializationFailure(VdoPlayer.PlayerHost playerHost, int errorCode, String msg) {
-        Log.e(TAG, "onInitializationFailure: errorCode = " + errorCode + ": " + msg);
-        Toast.makeText(OnlinePlayerActivity.this, "initialization failure: " + msg, Toast.LENGTH_LONG).show();
+    public void onInitializationFailure(VdoPlayer.PlayerHost playerHost, ErrorDescription errorDescription) {
+        Log.e(TAG, "onInitializationFailure: errorCode = " + errorDescription.errorCode + ": " + errorDescription.errorMsg);
+        Toast.makeText(OnlinePlayerActivity.this, "initialization failure: " + errorDescription.errorMsg, Toast.LENGTH_LONG).show();
         showLoadingIcon(false);
         errorButton.setVisibility(View.VISIBLE);
     }
@@ -249,13 +250,18 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         }
 
         @Override
+        public void onPlaybackSpeedChanged(float speed) {
+            Log.i(TAG, "onPlaybackSpeedChanged " + speed);
+        }
+
+        @Override
         public void onLoading(VdoPlayer.VdoInitParams vdoInitParams) {
             Log.i(TAG, "onLoading");
             showLoadingIcon(true);
         }
 
         @Override
-        public void onLoadError(VdoPlayer.VdoInitParams vdoInitParams, int errorCode, String msg) {
+        public void onLoadError(VdoPlayer.VdoInitParams vdoInitParams, ErrorDescription errorDescription) {
             Log.i(TAG, "onLoadError");
             showLoadingIcon(false);
         }
@@ -273,8 +279,8 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         }
 
         @Override
-        public void onError(VdoPlayer.VdoInitParams vdoParams, int errorCode, String msg) {
-            Log.e(TAG, "onError code " + errorCode + ": " + msg);
+        public void onError(VdoPlayer.VdoInitParams vdoParams, ErrorDescription errorDescription) {
+            Log.e(TAG, "onError code " + errorDescription.errorCode + ": " + errorDescription.errorMsg);
             showLoadingIcon(false);
         }
 
