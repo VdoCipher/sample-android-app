@@ -16,7 +16,6 @@
     <Button
         android:layout_marginTop="60dp"
         android:id="@+id/tv_launch_player"
-        android:onClick="startPlayback"
         android:padding="40dp"
         android:text="START PLAYBACK"
         android:layout_gravity="center"
