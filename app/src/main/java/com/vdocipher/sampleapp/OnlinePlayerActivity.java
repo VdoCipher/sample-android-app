@@ -88,7 +88,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             @Override
             public void run() {
                 try {
-                    Pair<String, String> pair = getSampleOtpAndPlaybackInfo();
+                    Pair<String, String> pair = Utils.getSampleOtpAndPlaybackInfo();
                     mOtp = pair.first;
                     mPlaybackInfo = pair.second;
                     playerFragment.initialize(OnlinePlayerActivity.this);
@@ -316,39 +316,6 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             player.seekTo(seekBar.getProgress());
         }
     };
-
-    private Pair<String, String> getSampleOtpAndPlaybackInfo() throws IOException, JSONException {
-        final String SAMPLE_OTP_PLAYBACK_INFO_URL = "https://dev.vdocipher.com/api/site/homepage_video";
-
-        URL url = new URL(SAMPLE_OTP_PLAYBACK_INFO_URL);
-        final HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-        connection.setRequestMethod("GET");
-        int responseCode = connection.getResponseCode();
-
-        if (responseCode == 200) {
-            InputStream is = connection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String inLine;
-            StringBuffer responseBuffer = new StringBuffer();
-
-            while ((inLine = br.readLine()) != null) {
-                responseBuffer.append(inLine);
-            }
-            br.close();
-
-            String response = responseBuffer.toString();
-            Log.i(TAG, "response: " + response);
-
-            JSONObject jObj = new JSONObject(response);
-            String otp = jObj.getString("otp");
-            String playbackInfo = jObj.getString("playbackInfo");
-            return Pair.create(otp, playbackInfo);
-        } else {
-            Log.e(TAG, "error response code = " + responseCode);
-            throw new IOException("Network error, code " + responseCode);
-        }
-    }
 
     private View.OnClickListener fullscreenToggleListener = new View.OnClickListener() {
         @Override
