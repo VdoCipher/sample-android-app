@@ -110,24 +110,26 @@ public class PlaybackOverlayFragment extends PlaybackFragment {
         mPlaybackControlsRow.setPrimaryActionsAdapter(mPrimaryActionsAdapter);
 
         Activity activity = getActivity();
+        mRewindAction = new PlaybackControlsRow.RewindAction(activity);
         mPlayPauseAction = new PlaybackControlsRow.PlayPauseAction(activity);
         mFastForwardAction = new PlaybackControlsRow.FastForwardAction(activity);
-        mRewindAction = new PlaybackControlsRow.RewindAction(activity);
 
         // PrimaryAction setting
+        mPrimaryActionsAdapter.add(mRewindAction);
         mPrimaryActionsAdapter.add(mPlayPauseAction);
         mPrimaryActionsAdapter.add(mFastForwardAction);
-        mPrimaryActionsAdapter.add(mRewindAction);
     }
 
     private void togglePlayback(boolean playWhenReady) {
         ((TvPlayerActivity)getActivity()).setPlayWhenReady(playWhenReady);
     }
 
+    // fast forward will simply seek 5 seconds forward
     private void fastForward() {
         ((TvPlayerActivity)getActivity()).fastForward();
     }
 
+    // rewind will simply seek 5 seconds backward
     private void rewind() {
         ((TvPlayerActivity)getActivity()).rewind();
     }
