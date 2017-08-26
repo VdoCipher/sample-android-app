@@ -1,7 +1,21 @@
 # Sample android app
-sample app using vdocipher .aar release to play videos
+Sample app demonstrating video playback using the vdocipher android sdk
 
-## Integrating the vdocipher sdk
-In Android Studio, File > New > New Module > Import .JAR/.AAR package >
-point to the .aar file and provide a subproject/module name (e.g. "vdocipher") >
-Finish > Rebuild the project
+## Integrating the vdocipher sdk into your android app
+Add VdoCipher maven repo to app module's `build.gradle`
+
+```
+repositories {
+    // other repo, e.g. jcenter()
+    maven {
+        url "https://github.com/VdoCipher/maven-repo/raw/master/repo"
+    }
+}
+```
+
+Add dependency
+
+```
+// use the latest available version
+compile 'com.vdocipher.aegis:vdocipher-android:1.0.0-alpha2'
+```
