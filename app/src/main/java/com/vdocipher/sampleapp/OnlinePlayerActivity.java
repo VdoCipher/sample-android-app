@@ -1,5 +1,7 @@
 package com.vdocipher.sampleapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +10,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -21,14 +24,8 @@ import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.player.VdoPlayerFragment;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer.InitializationListener {
 
@@ -40,6 +37,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     private TextView currTime, duration;
     private SeekBar seekBar;
     private ProgressBar bufferingIcon;
+    private Button speedControlButton;
 
     private boolean playWhenReady = false;
     private boolean controlsShowing = false;
@@ -47,6 +45,11 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     private int mLastSystemUiVis;
 
     private String mOtp, mPlaybackInfo;
+
+    private static final float allowedSpeedList[] = new float[]{0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f};
+    private static final CharSequence allowedSpeedStrList[] =
+            new CharSequence[]{"0.5x", "0.75x", "1x", "1.25x", "1.5x", "1.75x", "2x"};
+    private int chosenSpeedIndex = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +75,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         errorButton.setEnabled(false);
         errorButton.setVisibility(View.INVISIBLE);
         bufferingIcon = (ProgressBar) findViewById(R.id.loading_icon);
+        speedControlButton = (Button) findViewById(R.id.speed_control_button);
         showLoadingIcon(false);
         showControls(false);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
@@ -151,6 +155,22 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         playPauseButton.setVisibility(visibility);
         (findViewById(R.id.bottom_panel)).setVisibility(visibility);
         controlsShowing = show;
+    }
+
+    private void showSpeedControlDialog() {
+        new AlertDialog.Builder(this)
+                .setSingleChoiceItems(allowedSpeedStrList, chosenSpeedIndex, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (player != null) {
+                            float speed = allowedSpeedList[which];
+                            player.setPlaybackSpeed(speed);
+                        }
+                        dialog.dismiss();
+                    }
+                })
+                .setTitle("Choose playback speed")
+                .show();
     }
 
     private void disablePlayerUI() {
@@ -252,6 +272,8 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         @Override
         public void onPlaybackSpeedChanged(float speed) {
             Log.i(TAG, "onPlaybackSpeedChanged " + speed);
+            chosenSpeedIndex = Utils.getClosestFloatIndex(allowedSpeedList, speed);
+            ((TextView)(findViewById(R.id.speed_control_button))).setText(allowedSpeedStrList[chosenSpeedIndex]);
         }
 
         @Override
@@ -276,6 +298,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             seekBar.setOnSeekBarChangeListener(seekbarChangeListener);
             playPauseButton.setEnabled(true);
             playPauseButton.setOnClickListener(playPauseListener);
+            speedControlButton.setOnClickListener(speedButtonListener);
         }
 
         @Override
@@ -324,6 +347,13 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             isLandscape = !isLandscape;
             int fsButtonResId = isLandscape ? R.drawable.ic_action_return_from_full_screen : R.drawable.ic_action_full_screen;
             ((ImageButton)(findViewById(R.id.fullscreen_toggle_button))).setImageResource(fsButtonResId);
+        }
+    };
+
+    private View.OnClickListener speedButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            showSpeedControlDialog();
         }
     };
 

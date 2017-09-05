@@ -62,8 +62,22 @@
             android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/speed_control_button"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+            android:layout_marginLeft="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:minWidth="0dp"
+            android:textAllCaps="false"
+            android:text="1x"
+            android:textColor="@android:color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <ImageButton
             android:id="@+id/fullscreen_toggle_button"
+            android:layout_gravity="center_vertical"
             android:src="@drawable/ic_action_full_screen"
             android:background="@android:color/transparent"
             android:layout_marginLeft="8dp"

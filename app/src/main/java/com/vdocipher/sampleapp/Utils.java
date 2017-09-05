@@ -51,6 +51,22 @@ public class Utils {
         return timeThumb;
     }
 
+    /**
+     * @return index of number in provided array closest to the provided number
+     */
+    public static int getClosestFloatIndex(float[] refArray, float comp) {
+        float distance = Math.abs(refArray[0] - comp);
+        int index = 0;
+        for (int i = 1; i < refArray.length; i++) {
+            float currDistance = Math.abs(refArray[i] - comp);
+            if (currDistance < distance) {
+                index = i;
+                distance = currDistance;
+            }
+        }
+        return index;
+    }
+
     // call on non-ui thread only
     public static Pair<String, String> getSampleOtpAndPlaybackInfo() throws IOException, JSONException {
         final String SAMPLE_OTP_PLAYBACK_INFO_URL = "https://dev.vdocipher.com/api/site/homepage_video";
