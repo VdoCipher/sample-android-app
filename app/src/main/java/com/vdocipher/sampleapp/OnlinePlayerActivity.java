@@ -63,6 +63,11 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             getSupportActionBar().hide();
         }
 
+        if (savedInstanceState != null) {
+            mOtp = savedInstanceState.getString("otp");
+            mPlaybackInfo = savedInstanceState.getString("playbackInfo");
+        }
+
         seekBar = (SeekBar)findViewById(R.id.seekbar);
         seekBar.setEnabled(false);
         currTime = (TextView)findViewById(R.id.current_time);
@@ -115,6 +120,10 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (mOtp != null && mPlaybackInfo != null) {
+            outState.putString("otp", mOtp);
+            outState.putString("playbackInfo", mPlaybackInfo);
+        }
     }
 
     private void showToast(final String message) {
