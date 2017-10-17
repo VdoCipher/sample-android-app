@@ -44,7 +44,8 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     private boolean isLandscape = false;
     private int mLastSystemUiVis;
 
-    private String mOtp, mPlaybackInfo;
+    private volatile String mOtp;
+    private volatile String mPlaybackInfo;
 
     private static final float allowedSpeedList[] = new float[]{0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f};
     private static final CharSequence allowedSpeedStrList[] =
@@ -88,11 +89,48 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
 
     @Override
     protected void onStart() {
+        Log.v(TAG, "onStart called");
         super.onStart();
-        // todo use asynctask; initialize from main thread
-        // fetch otp and playbackInfo and initialize VdoPlayer
-        // here we're fetching a sample (otp + playbackInfo)
-        // TODO you need to generate/fetch (otp + playbackInfo) OR (signature + playbackInfo) for the video you wish to play
+        initializePlayer();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.v(TAG, "onStop called");
+        disablePlayerUI();
+        player = null;
+        super.onStop();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Log.v(TAG, "onSaveInstanceState called");
+        super.onSaveInstanceState(outState);
+        if (mOtp != null && mPlaybackInfo != null) {
+            outState.putString("otp", mOtp);
+            outState.putString("playbackInfo", mPlaybackInfo);
+        }
+    }
+
+    private void initializePlayer() {
+        if (mOtp != null && mPlaybackInfo != null) {
+            // initialize the playerFragment; a VdoPlayer instance will be received
+            // in onInitializationSuccess() callback
+            playerFragment.initialize(OnlinePlayerActivity.this);
+        } else {
+            // lets get otp and playbackInfo before creating the player
+            obtainOtpAndPlaybackInfo();
+        }
+    }
+
+    /**
+     * Fetch (otp + playbackInfo) and initialize VdoPlayer
+     * here we're fetching a sample (otp + playbackInfo)
+     * TODO you need to generate/fetch (otp + playbackInfo) OR (signature + playbackInfo) for the
+     * video you wish to play
+     */
+    private void obtainOtpAndPlaybackInfo() {
+        // todo use asynctask
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -100,30 +138,19 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                     Pair<String, String> pair = Utils.getSampleOtpAndPlaybackInfo();
                     mOtp = pair.first;
                     mPlaybackInfo = pair.second;
-                    playerFragment.initialize(OnlinePlayerActivity.this);
+                    Log.i(TAG, "obtained new otp and playbackInfo");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initializePlayer();
+                        }
+                    });
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
                     showToast("Error fetching otp and playbackInfo: " + e.getClass().getSimpleName());
                 }
             }
         }).start();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.v(TAG, "onStop called");
-        super.onStop();
-        disablePlayerUI();
-        player = null;
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mOtp != null && mPlaybackInfo != null) {
-            outState.putString("otp", mOtp);
-            outState.putString("playbackInfo", mPlaybackInfo);
-        }
     }
 
     private void showToast(final String message) {
