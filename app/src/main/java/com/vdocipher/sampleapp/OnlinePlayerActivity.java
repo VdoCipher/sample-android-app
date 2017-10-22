@@ -85,20 +85,20 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         showLoadingIcon(false);
         showControls(false);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+
+        initializePlayer();
     }
 
     @Override
     protected void onStart() {
         Log.v(TAG, "onStart called");
         super.onStart();
-        initializePlayer();
     }
 
     @Override
     protected void onStop() {
         Log.v(TAG, "onStop called");
         disablePlayerUI();
-        player = null;
         super.onStop();
     }
 
