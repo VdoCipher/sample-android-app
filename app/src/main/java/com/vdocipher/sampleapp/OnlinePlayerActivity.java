@@ -217,7 +217,6 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         seekBar.setEnabled(false);
         replayButton.setEnabled(false);
         replayButton.setVisibility(View.INVISIBLE);
-        (findViewById(R.id.player_region)).setOnClickListener(null);
     }
 
     @Override
