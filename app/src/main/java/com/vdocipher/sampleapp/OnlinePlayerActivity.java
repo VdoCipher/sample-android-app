@@ -265,6 +265,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                 case VdoPlayer.STATE_ENDED: {
                     playPauseButton.setEnabled(false);
                     playPauseButton.setVisibility(View.INVISIBLE);
+                    showLoadingIcon(false);
                     replayButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -280,6 +281,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                     break;
                 }
                 default:
+                    showLoadingIcon(false);
                     break;
             }
         }
