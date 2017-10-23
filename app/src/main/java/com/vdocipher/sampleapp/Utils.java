@@ -3,6 +3,8 @@ package com.vdocipher.sampleapp;
 import android.util.Log;
 import android.util.Pair;
 
+import com.vdocipher.aegis.player.VdoPlayer;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,6 +67,27 @@ public class Utils {
             }
         }
         return index;
+    }
+
+    public static String playbackStateString(boolean playWhenReady, int playbackState) {
+        String stateName;
+        switch (playbackState) {
+            case VdoPlayer.STATE_IDLE:
+                stateName = "STATE_IDLE";
+                break;
+            case VdoPlayer.STATE_READY:
+                stateName = "STATE_READY";
+                break;
+            case VdoPlayer.STATE_BUFFERING:
+                stateName = "STATE_BUFFERING";
+                break;
+            case VdoPlayer.STATE_ENDED:
+                stateName = "STATE_ENDED";
+                break;
+            default:
+                stateName = "STATE_UNKNOWN";
+        }
+        return "playWhenReady " + (playWhenReady ? "true" : "false") + ", " + stateName;
     }
 
     // call on non-ui thread only
