@@ -2,7 +2,7 @@
 Sample app demonstrating video playback using the vdocipher android sdk
 
 ## Integrating the vdocipher sdk into your android app
-Add VdoCipher maven repo to app module's `build.gradle`
+### Add VdoCipher maven repo to app module's `build.gradle`
 
 ```
 repositories {
@@ -13,9 +13,9 @@ repositories {
 }
 ```
 
-Add dependency
+### Add dependency
 
 ```
 // use the latest available version
-compile 'com.vdocipher.aegis:vdocipher-android:1.0.0-alpha2'
+compile 'com.vdocipher.aegis:vdocipher-android:1.0.0-alpha4'
 ```
