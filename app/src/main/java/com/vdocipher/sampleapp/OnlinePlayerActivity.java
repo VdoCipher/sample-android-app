@@ -426,6 +426,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
                 // hide other views
                 (findViewById(R.id.title_text)).setVisibility(View.GONE);
+                (findViewById(R.id.log_container)).setVisibility(View.GONE);
                 (findViewById(R.id.online_vdo_player_fragment)).setLayoutParams(new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
                 findViewById(R.id.player_region).setFitsSystemWindows(true);
@@ -437,6 +438,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
                 // show other views
                 (findViewById(R.id.title_text)).setVisibility(View.VISIBLE);
+                (findViewById(R.id.log_container)).setVisibility(View.VISIBLE);
                 (findViewById(R.id.online_vdo_player_fragment)).setLayoutParams(new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
                 findViewById(R.id.player_region).setFitsSystemWindows(false);
