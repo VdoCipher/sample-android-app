@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -38,6 +39,8 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     private SeekBar seekBar;
     private ProgressBar bufferingIcon;
     private Button speedControlButton;
+    private TextView eventLog;
+    private String eventLogString = "";
 
     private boolean playWhenReady = false;
     private boolean controlsShowing = false;
@@ -82,6 +85,8 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         errorButton.setVisibility(View.INVISIBLE);
         bufferingIcon = (ProgressBar) findViewById(R.id.loading_icon);
         speedControlButton = (Button) findViewById(R.id.speed_control_button);
+        eventLog = (TextView)findViewById(R.id.event_log);
+        eventLog.setMovementMethod(ScrollingMovementMethod.getInstance());
         showLoadingIcon(false);
         showControls(false);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
@@ -117,6 +122,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             // initialize the playerFragment; a VdoPlayer instance will be received
             // in onInitializationSuccess() callback
             playerFragment.initialize(OnlinePlayerActivity.this);
+            log("initializing player fragment");
         } else {
             // lets get otp and playbackInfo before creating the player
             obtainOtpAndPlaybackInfo();
@@ -160,6 +166,11 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                 Toast.makeText(OnlinePlayerActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void log(String msg) {
+        eventLogString += (msg + "\n");
+        eventLog.setText(eventLogString);
     }
 
     private View.OnClickListener playPauseListener = new View.OnClickListener() {
@@ -222,6 +233,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     @Override
     public void onInitializationSuccess(VdoPlayer.PlayerHost playerHost, VdoPlayer player, boolean wasRestored) {
         Log.i(TAG, "onInitializationSuccess");
+        log("onInitializationSuccess");
         this.player = player;
         player.addPlaybackEventListener(playbackListener);
         showLoadingIcon(false);
@@ -233,11 +245,14 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         // load a media to the player
         VdoPlayer.VdoInitParams vdoParams = VdoPlayer.VdoInitParams.createParamsWithOtp(mOtp, mPlaybackInfo);
         player.load(vdoParams);
+        log("loaded init params to player");
     }
 
     @Override
     public void onInitializationFailure(VdoPlayer.PlayerHost playerHost, ErrorDescription errorDescription) {
-        Log.e(TAG, "onInitializationFailure: errorCode = " + errorDescription.errorCode + ": " + errorDescription.errorMsg);
+        String msg = "onInitializationFailure: errorCode = " + errorDescription.errorCode + ": " + errorDescription.errorMsg;
+        log(msg);
+        Log.e(TAG, msg);
         Toast.makeText(OnlinePlayerActivity.this, "initialization failure: " + errorDescription.errorMsg, Toast.LENGTH_LONG).show();
         showLoadingIcon(false);
         errorButton.setVisibility(View.VISIBLE);
@@ -246,6 +261,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     private VdoPlayer.PlaybackEventListener playbackListener = new VdoPlayer.PlaybackEventListener() {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            log(Utils.playbackStateString(playWhenReady, playbackState));
             OnlinePlayerActivity.this.playWhenReady = playWhenReady;
             if (playWhenReady) {
                 playPauseButton.setImageResource(R.drawable.ic_pause_white_48dp);
@@ -288,6 +304,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         @Override
         public void onTracksChanged(Track[] tracks, Track[] tracks1) {
             Log.i(TAG, "onTracksChanged");
+            log("onTracksChanged");
         }
 
         @Override
@@ -309,6 +326,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         @Override
         public void onPlaybackSpeedChanged(float speed) {
             Log.i(TAG, "onPlaybackSpeedChanged " + speed);
+            log("onPlaybackSpeedChanged " + speed);
             chosenSpeedIndex = Utils.getClosestFloatIndex(allowedSpeedList, speed);
             ((TextView)(findViewById(R.id.speed_control_button))).setText(allowedSpeedStrList[chosenSpeedIndex]);
         }
@@ -316,18 +334,21 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         @Override
         public void onLoading(VdoPlayer.VdoInitParams vdoInitParams) {
             Log.i(TAG, "onLoading");
+            log("onLoading");
             showLoadingIcon(true);
         }
 
         @Override
         public void onLoadError(VdoPlayer.VdoInitParams vdoInitParams, ErrorDescription errorDescription) {
             Log.i(TAG, "onLoadError");
+            log("onLoadError");
             showLoadingIcon(false);
         }
 
         @Override
         public void onLoaded(VdoPlayer.VdoInitParams vdoInitParams) {
             Log.i(TAG, "onLoaded");
+            log("onLoaded");
             showLoadingIcon(false);
             duration.setText(Utils.digitalClockTime((int)player.getDuration()));
             seekBar.setMax((int)player.getDuration());
@@ -340,13 +361,16 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
 
         @Override
         public void onError(VdoPlayer.VdoInitParams vdoParams, ErrorDescription errorDescription) {
-            Log.e(TAG, "onError code " + errorDescription.errorCode + ": " + errorDescription.errorMsg);
+            String err = "onError code " + errorDescription.errorCode + ": " + errorDescription.errorMsg;
+            Log.e(TAG, err);
+            log(err);
             showLoadingIcon(false);
         }
 
         @Override
         public void onMediaEnded(VdoPlayer.VdoInitParams vdoInitParams) {
             Log.i(TAG, "onMediaEnded");
+            log("onMediaEnded");
         }
     };
 
