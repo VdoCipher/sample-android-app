@@ -24,12 +24,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        super.onStop();
         Log.v(TAG, "onStop called");
+        super.onStop();
     }
 
     public void onlinePlayback(View v) {
         Intent intent = new Intent(this, OnlinePlayerActivity.class);
+        startActivity(intent);
+    }
+
+    public void showDownloads(View v) {
+        Intent intent = new Intent(this, DownloadsActivity.class);
         startActivity(intent);
     }
 }

@@ -47,6 +47,7 @@
             android:screenOrientation="landscape"
             android:theme="@style/Theme.Leanback">
         </activity>
+        <activity android:name=".DownloadsActivity"></activity>
     </application>
 
 </manifest>
