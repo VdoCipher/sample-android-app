@@ -11,12 +11,13 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +52,11 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     private static final String OTP_2 = "20160313versASE3236ed272a9c42ff098324e4969c92f8da978ad54a586a881";
 
     private Button download1, download2;
-    private ListView downloadListView;
+    private RecyclerView downloadsListView;
+
+    // dataset which backs the adapter for downloads recyclerview
+    private ArrayList<DownloadStatus> downloadStatusList;
+    private DownloadsAdapter downloadsAdapter;
 
     private volatile VdoDownloadManager vdoDownloadManager;
 
@@ -64,7 +69,12 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         download2 = (Button)findViewById(R.id.download_btn_2);
         download1.setEnabled(false);
         download2.setEnabled(false);
-        downloadListView = (ListView)findViewById(R.id.offline_list);
+        downloadsListView = (RecyclerView)findViewById(R.id.downloads_list);
+
+        downloadStatusList = new ArrayList<>();
+        downloadsAdapter = new DownloadsAdapter(downloadStatusList);
+        downloadsListView.setAdapter(downloadsAdapter);
+        downloadsListView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         findViewById(R.id.refresh_list).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +132,8 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
 
     @Override
     public void onStarted(String mediaId, DownloadStatus downloadStatus) {
+        downloadStatusList.add(0, downloadStatus);
+        downloadsAdapter.notifyItemInserted(0);
         showToastAndLog("Download started : " + mediaId, Toast.LENGTH_SHORT);
     }
 
@@ -134,6 +146,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     @Override
     public void onCompleted(String mediaId, DownloadStatus downloadStatus) {
         showToastAndLog("Download complete: " + mediaId, Toast.LENGTH_SHORT);
+        updateListItem(downloadStatus);
     }
 
     @Override
@@ -160,6 +173,11 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
                 if (!containsMediaId(statusList, MEDIA_ID_2))
                     setDownloadListeners(download2, "sample 2", OTP_2, PLAYBACK_INFO_2);
 
+                // notify recyclerview
+                downloadStatusList.clear();
+                downloadStatusList.addAll(statusList);
+                downloadsAdapter.notifyDataSetChanged();
+
                 if (statusList.isEmpty()) {
                     Log.w(TAG, "No query results found");
                     Toast.makeText(DownloadsActivity.this, "No query results found", Toast.LENGTH_SHORT).show();
@@ -169,15 +187,12 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
 
                 StringBuilder builder = new StringBuilder();
                 builder.append("query results:").append("\n");
-                List<DownloadStatusWrapper> statusWrapperList = new ArrayList<>();
                 for (DownloadStatus status : statusList) {
-                    statusWrapperList.add(new DownloadStatusWrapper(status));
                     builder.append(statusString(status)).append(" : ")
                             .append(status.mediaInfo.mediaId).append(", ")
                             .append(status.mediaInfo.title).append("\n");
                 }
                 Log.i(TAG, builder.toString());
-                showNewList(statusWrapperList.toArray(new DownloadStatusWrapper[statusWrapperList.size()]));
             }
         });
     }
@@ -299,58 +314,51 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
                 }
             });
         }
-        // todo add delete button
-        /*builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //vdoDownloadManager.remove(downloadStatus.mediaInfo.mediaId);
-                //removeItem(downloadStatus);
+                maybeCreateManager();
+                vdoDownloadManager.remove(downloadStatus.mediaInfo.mediaId);
+                removeItem(downloadStatus);
                 dialog.dismiss();
             }
-        });*/
+        });
 
         builder.create().show();
     }
 
     private void updateListItem(DownloadStatus status) {
-        for (int position = 0; position < downloadListView.getCount(); position++) {
-            DownloadStatusWrapper statusWrapper = (DownloadStatusWrapper)downloadListView.
-                    getItemAtPosition(position);
-            if (statusWrapper.downloadStatus.mediaInfo.mediaId.equals(status.mediaInfo.mediaId)) {
-                View itemView = downloadListView.getChildAt(position);
-                if (itemView != null) {
-                    ((TextView)itemView.findViewById(R.id.vdo_title)).setText(
-                            new DownloadStatusWrapper(status).toString());
-                }
+        // if media already in downloadStatusList, update it
+        String mediaId = status.mediaInfo.mediaId;
+        int position = -1;
+        for (int i = 0; i < downloadStatusList.size(); i++) {
+            if (downloadStatusList.get(i).mediaInfo.mediaId.equals(mediaId)) {
+                position = i;
+                break;
             }
+        }
+        if (position >= 0) {
+            downloadStatusList.set(position, status);
+            downloadsAdapter.notifyItemChanged(position);
+        } else {
+            Log.e(TAG, "item not found in adapter");
         }
     }
 
     private void removeItem(DownloadStatus status) {
-        // todo
-    }
-
-    private void showNewList(final DownloadStatusWrapper[] statuses) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // make adapter
-                ArrayAdapter adapter = new ArrayAdapter<>(DownloadsActivity.this,
-                        R.layout.sample_list_item, R.id.vdo_title, statuses);
-
-                // set adapter
-                downloadListView.setAdapter(adapter);
-
-                // set list item click listener
-                downloadListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        DownloadStatusWrapper selectedVdo = (DownloadStatusWrapper)parent.getItemAtPosition(position);
-                        showItemSelectedDialog(selectedVdo.downloadStatus);
-                    }
-                });
+        // remove by comparing mediaId; status may change
+        String mediaId = status.mediaInfo.mediaId;
+        int position = -1;
+        for (int i = 0; i < downloadStatusList.size(); i++) {
+            if (downloadStatusList.get(i).mediaInfo.mediaId.equals(mediaId)) {
+                position = i;
+                break;
             }
-        });
+        }
+        if (position >= 0) {
+            downloadStatusList.remove(position);
+            downloadsAdapter.notifyItemRemoved(position);
+        }
     }
 
     private void startPlayback(DownloadStatus downloadStatus) {
@@ -373,23 +381,6 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         Log.i(TAG, message);
     }
 
-    /**
-     * Wrapper class around {@link DownloadStatus} with overridden toString() to show as listview item.
-     */
-    private static class DownloadStatusWrapper {
-        private final DownloadStatus downloadStatus;
-
-        DownloadStatusWrapper(DownloadStatus downloadStatus) {
-            this.downloadStatus = downloadStatus;
-        }
-
-        @Override
-        public String toString() {
-            return downloadStatus.mediaInfo.title + "\n"
-                    + "Status: " + statusString(downloadStatus);
-        }
-    }
-
     private static String getDownloadItemName(Track track, long durationMs) {
         String type = track.type == Track.TYPE_VIDEO ? "V" : track.type == Track.TYPE_AUDIO ? "A" : "?";
         return type + " " + (track.bitrate / 1024) + " kbps, " +
@@ -410,6 +401,55 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
                 return "Downloading " + status.downloadPercent + "%";
             default:
                 return "Not found";
+        }
+    }
+
+    private class DownloadsAdapter extends RecyclerView.Adapter<DownloadsAdapter.ViewHolder> {
+
+        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+            public TextView title;
+            public TextView status;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                title = (TextView)itemView.findViewById(R.id.vdo_title);
+                status = (TextView)itemView.findViewById(R.id.download_status);
+                itemView.setOnClickListener(this);
+            }
+
+            @Override
+            public void onClick(View v) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    DownloadStatus status = statusList.get(position);
+                    showItemSelectedDialog(status);
+                }
+            }
+        }
+
+        private List<DownloadStatus> statusList;
+
+        public DownloadsAdapter(List<DownloadStatus> statusList) {
+            this.statusList = statusList;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            View itemView = inflater.inflate(R.layout.sample_list_item, parent, false);
+            return new ViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            DownloadStatus status = statusList.get(position);
+            holder.title.setText(status.mediaInfo.title);
+            holder.status.setText(DownloadsActivity.statusString(status));
+        }
+
+        @Override
+        public int getItemCount() {
+            return statusList.size();
         }
     }
 }
