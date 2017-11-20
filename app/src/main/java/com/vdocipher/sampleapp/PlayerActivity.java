@@ -62,6 +62,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
             getSupportActionBar().hide();
         }
 
+        ((TextView)findViewById(R.id.title_text)).setText("Sample playback");
         seekBar = (SeekBar)findViewById(R.id.seekbar);
         seekBar.setEnabled(false);
         currTime = (TextView)findViewById(R.id.current_time);
