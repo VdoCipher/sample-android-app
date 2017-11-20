@@ -2,18 +2,22 @@ package com.vdocipher.sampleapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vdocipher.aegis.media.ErrorDescription;
@@ -32,7 +36,7 @@ import java.util.List;
 
 import static com.vdocipher.sampleapp.Utils.getSizeString;
 
-public class DownloadsActivity extends Activity {
+public class DownloadsActivity extends Activity implements VdoDownloadManager.EventListener {
     private static final String TAG = "DownloadsActivity";
 
     // some samples for download demo
@@ -102,16 +106,41 @@ public class DownloadsActivity extends Activity {
     protected void onStart() {
         super.onStart();
         if (vdoDownloadManager != null) {
-            // vdoDownloadManager.addEventListener(this);
+            vdoDownloadManager.addEventListener(this);
         }
     }
 
     @Override
     protected void onStop() {
         if (vdoDownloadManager != null) {
-            // vdoDownloadManager.removeEventListener(this);
+            vdoDownloadManager.removeEventListener(this);
         }
         super.onStop();
+    }
+
+    // VdoDownloadManager.EventListener implementation
+
+    @Override
+    public void onStarted(String mediaId, DownloadStatus downloadStatus) {
+        showToastAndLog("Download started : " + mediaId, Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    public void onProgress(String mediaId, DownloadStatus downloadStatus) {
+        Log.d(TAG, mediaId + " download progress: " + downloadStatus.downloadPercent);
+        updateListItem(downloadStatus);
+    }
+
+    @Override
+    public void onCompleted(String mediaId, DownloadStatus downloadStatus) {
+        showToastAndLog("Download complete: " + mediaId, Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    public void onFailed(String mediaId, DownloadStatus downloadStatus) {
+        Log.e(TAG, mediaId + " download error: " + downloadStatus.reason);
+        Toast.makeText(this, " download error: " + downloadStatus.reason,
+                Toast.LENGTH_LONG).show();
     }
 
     private void maybeCreateManager() {
@@ -217,6 +246,13 @@ public class DownloadsActivity extends Activity {
                         Log.i(TAG, getDownloadItemName(downloadOptions.availableTracks[trackIndex], durationMs));
                     }
                     Log.i(TAG, "---- selected tracks ----");
+
+                    // currently only (1 video + 1 audio) track supported
+                    if (selectedTracks.length != 2) {
+                        showToastAndLog("Invalid selection", Toast.LENGTH_LONG);
+                        return;
+                    }
+
                     downloadSelectedOptions(downloadOptions, selectedTracks);
 
                     // disable the corresponding download button
@@ -242,6 +278,58 @@ public class DownloadsActivity extends Activity {
         vdoDownloadManager.enqueue(request);
     }
 
+    private void showItemSelectedDialog(final DownloadStatus downloadStatus) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(DownloadsActivity.this);
+        builder.setTitle(downloadStatus.mediaInfo.title)
+                .setMessage("Status: " + statusString(downloadStatus));
+
+        if (downloadStatus.status == VdoDownloadManager.STATUS_COMPLETED) {
+            builder.setPositiveButton("PLAY", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    startPlayback(downloadStatus);
+                    dialog.dismiss();
+                }
+            });
+        } else {
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+        }
+        // todo add delete button
+        /*builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //vdoDownloadManager.remove(downloadStatus.mediaInfo.mediaId);
+                //removeItem(downloadStatus);
+                dialog.dismiss();
+            }
+        });*/
+
+        builder.create().show();
+    }
+
+    private void updateListItem(DownloadStatus status) {
+        for (int position = 0; position < downloadListView.getCount(); position++) {
+            DownloadStatusWrapper statusWrapper = (DownloadStatusWrapper)downloadListView.
+                    getItemAtPosition(position);
+            if (statusWrapper.downloadStatus.mediaInfo.mediaId.equals(status.mediaInfo.mediaId)) {
+                View itemView = downloadListView.getChildAt(position);
+                if (itemView != null) {
+                    ((TextView)itemView.findViewById(R.id.vdo_title)).setText(
+                            new DownloadStatusWrapper(status).toString());
+                }
+            }
+        }
+    }
+
+    private void removeItem(DownloadStatus status) {
+        // todo
+    }
+
     private void showNewList(final DownloadStatusWrapper[] statuses) {
         runOnUiThread(new Runnable() {
             @Override
@@ -258,7 +346,7 @@ public class DownloadsActivity extends Activity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         DownloadStatusWrapper selectedVdo = (DownloadStatusWrapper)parent.getItemAtPosition(position);
-                        startPlayback(selectedVdo.downloadStatus);
+                        showItemSelectedDialog(selectedVdo.downloadStatus);
                     }
                 });
             }
@@ -266,7 +354,13 @@ public class DownloadsActivity extends Activity {
     }
 
     private void startPlayback(DownloadStatus downloadStatus) {
-        //
+        if (downloadStatus.status != VdoDownloadManager.STATUS_COMPLETED) {
+            showToastAndLog("Download not complete", Toast.LENGTH_SHORT);
+            return;
+        }
+        Intent intent = new Intent(this, PlayerActivity.class);
+        intent.putExtra(PlayerActivity.EXTRA_MEDIA_ID, downloadStatus.mediaInfo.mediaId);
+        startActivity(intent);
     }
 
     private void showToastAndLog(final String message, final int toastLength) {
@@ -279,6 +373,9 @@ public class DownloadsActivity extends Activity {
         Log.i(TAG, message);
     }
 
+    /**
+     * Wrapper class around {@link DownloadStatus} with overridden toString() to show as listview item.
+     */
     private static class DownloadStatusWrapper {
         private final DownloadStatus downloadStatus;
 
