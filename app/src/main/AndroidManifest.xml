@@ -48,7 +48,8 @@
             android:theme="@style/Theme.Leanback">
         </activity>
         <activity android:name=".DownloadsActivity" />
-        <activity android:name=".PlayerActivity" />
+        <activity android:name=".PlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
     </application>
 
 </manifest>
