@@ -296,7 +296,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     private void showItemSelectedDialog(final DownloadStatus downloadStatus) {
         AlertDialog.Builder builder = new AlertDialog.Builder(DownloadsActivity.this);
         builder.setTitle(downloadStatus.mediaInfo.title)
-                .setMessage("Status: " + statusString(downloadStatus));
+                .setMessage("Status: " + statusString(downloadStatus).toUpperCase());
 
         if (downloadStatus.status == VdoDownloadManager.STATUS_COMPLETED) {
             builder.setPositiveButton("PLAY", new DialogInterface.OnClickListener() {
@@ -390,7 +390,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     private static String statusString(DownloadStatus status) {
         switch (status.status) {
             case VdoDownloadManager.STATUS_COMPLETED:
-                return "Ready";
+                return "Completed";
             case VdoDownloadManager.STATUS_FAILED:
                 return "Error " + status.reason;
             case VdoDownloadManager.STATUS_PENDING:
@@ -444,7 +444,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         public void onBindViewHolder(ViewHolder holder, int position) {
             DownloadStatus status = statusList.get(position);
             holder.title.setText(status.mediaInfo.title);
-            holder.status.setText(DownloadsActivity.statusString(status));
+            holder.status.setText(DownloadsActivity.statusString(status).toUpperCase());
         }
 
         @Override
