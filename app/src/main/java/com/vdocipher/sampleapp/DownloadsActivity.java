@@ -114,10 +114,10 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
 
     @Override
     protected void onStart() {
+        Log.d(TAG, "onStart");
         super.onStart();
-        if (vdoDownloadManager != null) {
-            vdoDownloadManager.addEventListener(this);
-        }
+        maybeCreateManager();
+        vdoDownloadManager.addEventListener(this);
     }
 
     @Override
