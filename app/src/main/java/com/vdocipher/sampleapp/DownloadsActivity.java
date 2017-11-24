@@ -131,15 +131,14 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     // VdoDownloadManager.EventListener implementation
 
     @Override
-    public void onStarted(String mediaId, DownloadStatus downloadStatus) {
-        downloadStatusList.add(0, downloadStatus);
-        downloadsAdapter.notifyItemInserted(0);
-        showToastAndLog("Download started : " + mediaId, Toast.LENGTH_SHORT);
+    public void onQueued(String mediaId, DownloadStatus downloadStatus) {
+        showToastAndLog("Download queued : " + mediaId, Toast.LENGTH_SHORT);
+        addListItem(downloadStatus);
     }
 
     @Override
-    public void onProgress(String mediaId, DownloadStatus downloadStatus) {
-        Log.d(TAG, mediaId + " download progress: " + downloadStatus.downloadPercent);
+    public void onChanged(String mediaId, DownloadStatus downloadStatus) {
+        Log.d(TAG, "Download status changed: " + mediaId + " " + downloadStatus.downloadPercent + "%");
         updateListItem(downloadStatus);
     }
 
@@ -154,6 +153,13 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         Log.e(TAG, mediaId + " download error: " + downloadStatus.reason);
         Toast.makeText(this, " download error: " + downloadStatus.reason,
                 Toast.LENGTH_LONG).show();
+        updateListItem(downloadStatus);
+    }
+
+    @Override
+    public void onDeleted(String mediaId) {
+        showToastAndLog("Deleted " + mediaId, Toast.LENGTH_SHORT);
+        removeListItem(mediaId);
     }
 
     private void maybeCreateManager() {
@@ -319,7 +325,6 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
             public void onClick(DialogInterface dialog, int which) {
                 maybeCreateManager();
                 vdoDownloadManager.remove(downloadStatus.mediaInfo.mediaId);
-                removeItem(downloadStatus);
                 dialog.dismiss();
             }
         });
@@ -345,9 +350,18 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         }
     }
 
-    private void removeItem(DownloadStatus status) {
+    private void addListItem(DownloadStatus downloadStatus) {
+        downloadStatusList.add(0, downloadStatus);
+        downloadsAdapter.notifyItemInserted(0);
+    }
+
+    private void removeListItem(DownloadStatus status) {
         // remove by comparing mediaId; status may change
         String mediaId = status.mediaInfo.mediaId;
+        removeListItem(mediaId);
+    }
+
+    private void removeListItem(String mediaId) {
         int position = -1;
         for (int i = 0; i < downloadStatusList.size(); i++) {
             if (downloadStatusList.get(i).mediaInfo.mediaId.equals(mediaId)) {
