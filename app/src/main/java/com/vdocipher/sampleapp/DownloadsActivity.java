@@ -1,15 +1,11 @@
 package com.vdocipher.sampleapp;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
@@ -83,33 +79,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
             }
         });
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            ArrayList<String> needPermissions = new ArrayList<>();
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                needPermissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-            }
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                needPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            }
-            if (!needPermissions.isEmpty()) {
-                requestPermissions((needPermissions.toArray(new String[needPermissions.size()])), 0);
-                return;
-            }
-        }
         refreshDownloadsList();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            refreshDownloadsList();
-        } else {
-            showToastAndLog("storage permission denied", Toast.LENGTH_LONG);
-            finish();
-        }
     }
 
     @Override
