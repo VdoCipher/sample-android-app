@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v7.app.AlertDialog;
@@ -254,19 +255,51 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
 
     private void downloadSelectedOptions(DownloadOptions downloadOptions, int[] selectionIndices) {
         DownloadSelections selections = new DownloadSelections(downloadOptions, selectionIndices);
+
+        // ensure external storage is in read-write mode
+        if (!isExternalStorageWritable()) {
+            showToastAndLog("External storage is not available", Toast.LENGTH_LONG);
+            return;
+        }
+
         String downloadLocation;
         try {
             downloadLocation = getExternalFilesDir(null).getPath() + File.separator + "offlineVdos";
         } catch (NullPointerException npe) {
-            npe.printStackTrace();
-            Log.e(TAG, "external storage not available");
+            Log.e(TAG, "external storage not available: " + Log.getStackTraceString(npe));
             Toast.makeText(this, "external storage not available", Toast.LENGTH_LONG).show();
             return;
         }
+
+        // ensure download directory is created
+        File dlLocation = new File(downloadLocation);
+        if (!(dlLocation.exists() && dlLocation.isDirectory())) {
+            // directory not created yet; let's create it
+            if (!dlLocation.mkdir()) {
+                Log.e(TAG, "failed to create storage directory");
+                Toast.makeText(this, "failed to create storage directory", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+
         Log.i(TAG, "will save media to " + downloadLocation);
+
+        // build a DownloadRequest
         DownloadRequest request = new DownloadRequest.Builder(selections, downloadLocation).build();
         VdoDownloadManager vdoDownloadManager = VdoDownloadManager.getInstance(this);
-        vdoDownloadManager.enqueue(request);
+
+        // enqueue request to VdoDownloadManager for download
+        try {
+            vdoDownloadManager.enqueue(request);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            Log.e(TAG, "error enqueuing download request");
+            Toast.makeText(this, "error enqueuing download request", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     private void showItemSelectedDialog(final DownloadStatus downloadStatus) {
