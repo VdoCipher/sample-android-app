@@ -154,6 +154,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
                     showToast("Error fetching otp and playbackInfo: " + e.getClass().getSimpleName());
+                    log("error fetching otp and playbackInfo");
                 }
             }
         }).start();
