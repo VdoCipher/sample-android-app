@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +14,14 @@ import android.widget.CheckedTextView;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.offline.DownloadOptions;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
+import static com.vdocipher.sampleapp.Utils.getSizeBytes;
 import static com.vdocipher.sampleapp.Utils.getSizeString;
+import static com.vdocipher.sampleapp.Utils.round;
 
 /**
  * Shows a dialog for selecting from available track download options.
@@ -32,16 +34,22 @@ public class OptionSelector implements DialogInterface.OnClickListener, View.OnC
 
     private static final String TAG = "OptionSelector";
 
+    public static final int SHOW_INDIVIDUAL_TRACKS = 1;
+    public static final int SHOW_HIGHEST_AND_LOWEST_QUALITY = 2;
+
     private final DownloadOptions downloadOptions;
     private final long durationMs;
+    private final int showOptionsStyle;
     private final OptionsSelectedCallback selectedCallback;
 
     private List<Integer> selectedTracks = new ArrayList<>();
 
-    public OptionSelector(DownloadOptions options, long durMs, OptionsSelectedCallback callback) {
+    public OptionSelector(DownloadOptions options, long durMs, OptionsSelectedCallback callback,
+                          int optionsStyle) {
         downloadOptions = options;
         durationMs = durMs;
         selectedCallback = callback;
+        showOptionsStyle = optionsStyle;
     }
 
     @Override
@@ -59,14 +67,31 @@ public class OptionSelector implements DialogInterface.OnClickListener, View.OnC
     @Override
     public void onClick(View v) {
         if (v instanceof CheckedTextView) {
-            CheckedTextView trackView = (CheckedTextView)v;
-            int trackIndex = (int)trackView.getTag();
-            if (trackView.isChecked()) {
-                selectedTracks.remove(Integer.valueOf(trackIndex));
-                trackView.setChecked(false);
+            if (showOptionsStyle == SHOW_INDIVIDUAL_TRACKS) {
+                CheckedTextView trackView = (CheckedTextView)v;
+                int trackIndex = (int)trackView.getTag();
+                if (trackView.isChecked()) {
+                    selectedTracks.remove(Integer.valueOf(trackIndex));
+                    trackView.setChecked(false);
+                } else {
+                    if (!selectedTracks.contains(trackIndex)) selectedTracks.add(trackIndex);
+                    trackView.setChecked(true);
+                }
             } else {
-                if (!selectedTracks.contains(trackIndex)) selectedTracks.add(trackIndex);
-                trackView.setChecked(true);
+                CheckedTextView optionView = (CheckedTextView)v;
+                Pair<Integer, Integer> audVidTrackIndexPair = (Pair<Integer, Integer>)optionView.getTag();
+                int audioTrackIndex = audVidTrackIndexPair.first;
+                int videoTrackIndex = audVidTrackIndexPair.second;
+                if (optionView.isChecked()) {
+                    selectedTracks.remove(Integer.valueOf(audioTrackIndex));
+                    selectedTracks.remove(Integer.valueOf(videoTrackIndex));
+                    optionView.setChecked(false);
+                } else {
+                    selectedTracks.clear();
+                    selectedTracks.add(audioTrackIndex);
+                    selectedTracks.add(videoTrackIndex);
+                    optionView.setChecked(true);
+                }
             }
         }
     }
@@ -92,6 +117,17 @@ public class OptionSelector implements DialogInterface.OnClickListener, View.OnC
         int selectableItemBackgroundResourceId = attributeArray.getResourceId(0, 0);
         attributeArray.recycle();
 
+        if (showOptionsStyle == SHOW_INDIVIDUAL_TRACKS) {
+            buildIndividualTracksView(context, inflater, root, selectableItemBackgroundResourceId, tracks);
+        } else {
+            buildCombinedTrackView(context, inflater, root, selectableItemBackgroundResourceId, tracks);
+        }
+
+        return view;
+    }
+
+    private void buildIndividualTracksView(Context context, LayoutInflater inflater, ViewGroup root,
+                                           int selectableItemBackgroundResourceId,Track[] tracks) {
         // video and audio type track views
         int[] vidTrackIndices = getTypeIndices(tracks, Track.TYPE_VIDEO);
         Log.i(TAG, vidTrackIndices.length + " video tracks at " + Arrays.toString(vidTrackIndices));
@@ -100,8 +136,36 @@ public class OptionSelector implements DialogInterface.OnClickListener, View.OnC
         int[] audTrackIndices = getTypeIndices(tracks, Track.TYPE_AUDIO);
         Log.i(TAG, audTrackIndices.length + " audio tracks at " + Arrays.toString(audTrackIndices));
         addTypeTracksToView(inflater, root, selectableItemBackgroundResourceId, tracks, audTrackIndices);
+    }
 
-        return view;
+    private void buildCombinedTrackView(Context context, LayoutInflater inflater, ViewGroup root,
+                                        int selectableItemBackgroundResourceId,Track[] tracks) {
+        // we'll show two options: highest quality (audio + video) and lowest quality (audio + video)
+
+        int highestQualityVidTrackIndex = getHighestBitrateIndex(tracks, Track.TYPE_VIDEO);
+        int lowestQualityVidTrackIndex = getLowestBitrateIndex(tracks, Track.TYPE_VIDEO);
+
+        int highestQualityAudTrackIndex = getHighestBitrateIndex(tracks, Track.TYPE_AUDIO);
+        int lowestQualityAudTrackIndex = getLowestBitrateIndex(tracks, Track.TYPE_AUDIO);
+
+        // if there is only one video track and one audio track, show only one option
+        boolean showSingleOption = highestQualityVidTrackIndex == lowestQualityVidTrackIndex
+                && highestQualityAudTrackIndex == lowestQualityAudTrackIndex;
+        if (showSingleOption) {
+            Log.i(TAG, String.format(Locale.US, "High quality indices (%d, %d)", highestQualityAudTrackIndex, highestQualityVidTrackIndex));
+            Pair<Integer, Integer> audVidIndexPair = Pair.create(highestQualityAudTrackIndex, highestQualityVidTrackIndex);
+            addOptionToView("High", inflater, root, selectableItemBackgroundResourceId, tracks, audVidIndexPair);
+            root.addView(inflater.inflate(R.layout.list_divider, root, false));
+        } else {
+            Log.i(TAG, String.format(Locale.US, "High quality indices (%d, %d)", highestQualityAudTrackIndex, highestQualityVidTrackIndex));
+            Pair<Integer, Integer> highQualityAudVidIndexPair = Pair.create(highestQualityAudTrackIndex, highestQualityVidTrackIndex);
+            addOptionToView("High", inflater, root, selectableItemBackgroundResourceId, tracks, highQualityAudVidIndexPair);
+            root.addView(inflater.inflate(R.layout.list_divider, root, false));
+
+            Log.i(TAG, String.format(Locale.US, "Low quality indices (%d, %d)", lowestQualityAudTrackIndex, lowestQualityVidTrackIndex));
+            Pair<Integer, Integer> lowQualityAudVidIndexPair = Pair.create(lowestQualityAudTrackIndex, lowestQualityVidTrackIndex);
+            addOptionToView("Low", inflater, root, selectableItemBackgroundResourceId, tracks, lowQualityAudVidIndexPair);
+        }
     }
 
     private void addTypeTracksToView(LayoutInflater inflater, ViewGroup root, int selectableItemBackgroundResourceId,
@@ -121,6 +185,23 @@ public class OptionSelector implements DialogInterface.OnClickListener, View.OnC
         }
     }
 
+    private void addOptionToView(String optionName, LayoutInflater inflater, ViewGroup root,
+                                 int selectableItemBackgroundResourceId, Track[] allTracks,
+                                 Pair<Integer, Integer> audioVideoTrackIndexPair) {
+        String optionText = makeOptionText(optionName, audioVideoTrackIndexPair.first,
+                audioVideoTrackIndexPair.second, allTracks, durationMs);
+        int trackViewLayoutId = android.R.layout.simple_list_item_single_choice;
+        CheckedTextView trackView = (CheckedTextView) inflater.inflate(
+                trackViewLayoutId, root, false);
+        trackView.setBackgroundResource(selectableItemBackgroundResourceId);
+        trackView.setText(optionText);
+        trackView.setFocusable(true);
+        trackView.setChecked(false);
+        trackView.setTag(audioVideoTrackIndexPair);
+        trackView.setOnClickListener(this);
+        root.addView(trackView);
+    }
+
     private static int[] getTypeIndices(Track[] tracks, int type) {
         List<Integer> indexList = new ArrayList<>();
         for (int i = 0; i < tracks.length; i++) {
@@ -133,6 +214,55 @@ public class OptionSelector implements DialogInterface.OnClickListener, View.OnC
             indices[x] = indexList.get(x);
         }
         return indices;
+    }
+
+    private static String makeOptionText(String optionName, int audioIndex, int videoIndex, Track[] tracks, long durationMs) {
+        Track audioTrack = tracks[audioIndex];
+        Track videoTrack = tracks[videoIndex];
+        long videoSizeBytes = getSizeBytes(videoTrack.bitrate, durationMs);
+        long audioSizeBytes = getSizeBytes(audioTrack.bitrate, durationMs);
+        long totalSizeBytes = videoSizeBytes + audioSizeBytes;
+        String totalSizeMB = round(totalSizeBytes / (1024 * 1024), 2) + " MB";
+
+        return optionName + " (" + (tracks[videoIndex].bitrate / 1024) + " kbps), " + totalSizeMB;
+    }
+
+    /**
+     * @return index of the track in provided array with highest bitrate, or -1 if none of type found
+     */
+    private static int getHighestBitrateIndex(Track[] tracks, int trackType) {
+        int highestBitrateTrackIndex = -1;
+        int highestBitrate = 0;
+        for (int i = 0; i < tracks.length; i++) {
+            Track track = tracks[i];
+            if (track.type == trackType) {
+                int bitrate = track.bitrate;
+                if (bitrate >= highestBitrate) {
+                    highestBitrate = bitrate;
+                    highestBitrateTrackIndex = i;
+                }
+            }
+        }
+        return highestBitrateTrackIndex;
+    }
+
+    /**
+     * @return index of the track in provided array with lowest bitrate, or -1 if none of type found
+     */
+    private static int getLowestBitrateIndex(Track[] tracks, int trackType) {
+        int lowestBitrateTrackIndex = -1;
+        int lowestBitrate = Integer.MAX_VALUE;
+        for (int i = 0; i < tracks.length; i++) {
+            Track track = tracks[i];
+            if (track.type == trackType) {
+                int bitrate = track.bitrate;
+                if (bitrate <= lowestBitrate) {
+                    lowestBitrate = bitrate;
+                    lowestBitrateTrackIndex = i;
+                }
+            }
+        }
+        return lowestBitrateTrackIndex;
     }
 
     private static String getDownloadItemName(Track track, long durationMs) {
