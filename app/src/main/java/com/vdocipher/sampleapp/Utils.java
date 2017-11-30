@@ -97,6 +97,10 @@ public class Utils {
         return round(sizeMB, 2) + " MB";
     }
 
+    public static long getSizeBytes(int bitsPerSec, long millisec) {
+        return (bitsPerSec / 8) * (millisec / 1000);
+    }
+
     public static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
