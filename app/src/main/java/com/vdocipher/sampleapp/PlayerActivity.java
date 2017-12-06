@@ -292,8 +292,9 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
 
         @Override
         public void onLoadError(VdoPlayer.VdoInitParams vdoInitParams, ErrorDescription errorDescription) {
-            Log.i(TAG, "onLoadError");
-            log("onLoadError");
+            String err = "onLoadError code: " + errorDescription.errorCode;
+            Log.e(TAG, err);
+            log(err);
             showLoadingIcon(false);
         }
 
