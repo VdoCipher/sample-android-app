@@ -408,7 +408,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         public void onClick(View v) {
             showFullScreen(!isLandscape);
             isLandscape = !isLandscape;
-            int fsButtonResId = isLandscape ? R.drawable.ic_action_return_from_full_screen : R.drawable.ic_action_full_screen;
+            int fsButtonResId = isLandscape ? R.drawable.ic_fullscreen_exit_white_24dp : R.drawable.ic_fullscreen_white_24dp;
             ((ImageButton)(findViewById(R.id.fullscreen_toggle_button))).setImageResource(fsButtonResId);
         }
     };

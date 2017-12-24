@@ -76,9 +76,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <ImageButton
+            android:id="@+id/captions_button"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_closed_caption_white_24dp"
+            android:background="@android:color/transparent"
+            android:layout_marginLeft="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageButton
             android:id="@+id/fullscreen_toggle_button"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_action_full_screen"
+            android:src="@drawable/ic_fullscreen_white_24dp"
             android:background="@android:color/transparent"
             android:layout_marginLeft="8dp"
             android:layout_width="wrap_content"
