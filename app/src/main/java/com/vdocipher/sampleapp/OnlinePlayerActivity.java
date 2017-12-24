@@ -11,8 +11,10 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -27,6 +29,7 @@ import com.vdocipher.aegis.player.VdoPlayerFragment;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer.InitializationListener {
 
@@ -241,10 +244,15 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
 
         (findViewById(R.id.player_region)).setOnClickListener(playerTapListener);
         (findViewById(R.id.fullscreen_toggle_button)).setOnClickListener(fullscreenToggleListener);
+        (findViewById(R.id.captions_button)).setOnClickListener(captionsToggleListener);
         showControls(true);
 
         // load a media to the player
-        VdoPlayer.VdoInitParams vdoParams = VdoPlayer.VdoInitParams.createParamsWithOtp(mOtp, mPlaybackInfo);
+        VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams.Builder()
+                .setOtp(mOtp)
+                .setPlaybackInfo(mPlaybackInfo)
+                .setPreferredCaptionsLanguage("en")
+                .build();
         player.load(vdoParams);
         log("loaded init params to player");
     }
@@ -413,12 +421,97 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         }
     };
 
+    private View.OnClickListener captionsToggleListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (player == null) {
+                Log.w(TAG, "player null");
+                return;
+            }
+
+            // get all available captions tracks
+            Track[] availableTracks = player.getAvailableTracks();
+            Log.i(TAG, availableTracks.length + " tracks available");
+            ArrayList<Track> textTrackList = new ArrayList<>();
+            for (Track availableTrack : availableTracks) {
+                if (availableTrack.type == Track.TYPE_CAPTIONS) {
+                    textTrackList.add(availableTrack);
+                }
+            }
+
+            // get the selected captions track
+            Track[] selectedTracks = player.getSelectedTracks();
+            Track selectedTextTrack = null;
+            for (Track selectedTrack : selectedTracks) {
+                if (selectedTrack.type == Track.TYPE_CAPTIONS) {
+                    selectedTextTrack = selectedTrack;
+                    break;
+                }
+            }
+
+            // get index of selected captions track in "textTrackList" to indicate selection in dialog
+            int selectedIndex = -1;
+            if (selectedTextTrack != null) {
+                for (int i = 0; i < textTrackList.size(); i++) {
+                    if (textTrackList.get(i).equals(selectedTextTrack)) {
+                        selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // if captions tracks are available, lets add a DISABLE_CAPTIONS track for turning off captions
+            if (textTrackList.size() > 0) {
+                textTrackList.add(Track.DISABLE_CAPTIONS);
+
+                // if no captions are selected, indicate DISABLE_CAPTIONS as selected in dialog
+                if (selectedIndex < 0) selectedIndex = textTrackList.size() - 1;
+            }
+
+            // show the text tracks in dialog for selection
+            Track[] availableTextTracks = textTrackList.toArray(new Track[textTrackList.size()]);
+            Log.i(TAG, "total " + availableTextTracks.length + ", selected " + selectedIndex);
+            showSelectionDialog("CAPTIONS", availableTextTracks, selectedIndex);
+        }
+    };
+
     private View.OnClickListener speedButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             showSpeedControlDialog();
         }
     };
+
+    public void showSelectionDialog(CharSequence title, final Track[] tracks, final int selectedTrackIndex) {
+        // first, let's convert tracks to array of TrackHolders for better display in dialog
+        ArrayList<TrackHolder> trackHolderList = new ArrayList<>();
+        for (Track track : tracks) trackHolderList.add(new TrackHolder(track));
+        final TrackHolder[] trackHolders = trackHolderList.toArray(new TrackHolder[0]);
+
+        ListAdapter adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_single_choice, trackHolders);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setSingleChoiceItems(adapter, selectedTrackIndex, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (player != null) {
+                            if (selectedTrackIndex != which) {
+                                // set selection
+                                Track selectedTrack = trackHolders[which].track;
+                                Log.i(TAG, "track selected: " + which + ", " + selectedTrack.toString());
+                                player.setSelectedTracks(new Track[]{selectedTrack});
+                            } else {
+                                Log.i(TAG, "track selection unchanged");
+                            }
+                        }
+                        dialog.dismiss();
+                    }
+                })
+                .create()
+                .show();
+
+    }
 
     private void showFullScreen(boolean show) {
         Log.v(TAG, show ? "go fullscreen" : "return from fullscreen");
@@ -480,4 +573,25 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             }
         }
     };
+
+    /**
+     * A helper class that holds a Track instance and overrides {@link Object#toString()} for
+     * captions tracks for displaying to user.
+     */
+    private static class TrackHolder {
+        final Track track;
+
+        TrackHolder(Track track) {
+            this.track = track;
+        }
+
+        @Override
+        public String toString() {
+            if (track == Track.DISABLE_CAPTIONS) {
+                return "Turn off Captions";
+            }
+
+            return track.type == Track.TYPE_CAPTIONS ? track.language : track.toString();
+        }
+    }
 }
