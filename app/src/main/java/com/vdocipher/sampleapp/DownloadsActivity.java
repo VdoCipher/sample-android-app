@@ -43,12 +43,17 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     private static final String PLAYBACK_INFO_1 = "eyJ2aWRlb0lkIjoiNjYxZjY4NjFkNTIxYTI0Mjg4ZDYwODkyM2QyYzczZjkifQ==";
     private static final String OTP_1 = "20160313versASE323ddb249fbcaf2a589401e0a5c06c601cbd4df6889b89898";
 
-    private static final String SAMPLE_NAME_2 = "Tears of steel";
-    private static final String MEDIA_ID_2 = "5392515b761ef71e8c00a2301e1cece3";
-    private static final String PLAYBACK_INFO_2 = "eyJ2aWRlb0lkIjoiNTM5MjUxNWI3NjFlZjcxZThjMDBhMjMwMWUxY2VjZTMifQ==";
-    private static final String OTP_2 = "20160313versASE3236ed272a9c42ff098324e4969c92f8da978ad54a586a881";
+    public static final String SAMPLE_NAME_2 = "Home page video";
+    public static final String MEDIA_ID_2 = "3f29b5434a5c615cda18b16a6232fd75";
+    public static final String PLAYBACK_INFO_2 = "eyJ2aWRlb0lkIjoiM2YyOWI1NDM0YTVjNjE1Y2RhMThiMTZhNjIzMmZkNzUifQ==";
+    public static final String OTP_2 = "20150519versASE31ba8fc50a0ac49b8e74b9c40f49e099755cd36dc8adccaa3";
 
-    private Button download1, download2;
+    private static final String SAMPLE_NAME_3 = "Tears of steel";
+    private static final String MEDIA_ID_3 = "5392515b761ef71e8c00a2301e1cece3";
+    private static final String PLAYBACK_INFO_3 = "eyJ2aWRlb0lkIjoiNTM5MjUxNWI3NjFlZjcxZThjMDBhMjMwMWUxY2VjZTMifQ==";
+    private static final String OTP_3 = "20160313versASE3236ed272a9c42ff098324e4969c92f8da978ad54a586a881";
+
+    private Button download1, download2, download3;
     private RecyclerView downloadsListView;
 
     // dataset which backs the adapter for downloads recyclerview
@@ -64,8 +69,10 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
 
         download1 = (Button)findViewById(R.id.download_btn_1);
         download2 = (Button)findViewById(R.id.download_btn_2);
+        download3 = (Button)findViewById(R.id.download_btn_3);
         download1.setEnabled(false);
         download2.setEnabled(false);
+        download3.setEnabled(false);
         downloadsListView = (RecyclerView)findViewById(R.id.downloads_list);
 
         downloadStatusList = new ArrayList<>();
@@ -149,6 +156,8 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
                     setDownloadListeners(download1, "sample 1", OTP_1, PLAYBACK_INFO_1);
                 if (!containsMediaId(statusList, MEDIA_ID_2))
                     setDownloadListeners(download2, "sample 2", OTP_2, PLAYBACK_INFO_2);
+                if (!containsMediaId(statusList, MEDIA_ID_3))
+                    setDownloadListeners(download3, "sample 3", OTP_3, PLAYBACK_INFO_3);
 
                 // notify recyclerview
                 downloadStatusList.clear();
@@ -250,6 +259,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
                     // disable the corresponding download button
                     if (downloadOptions.mediaId.equals(MEDIA_ID_1)) download1.setEnabled(false);
                     if (downloadOptions.mediaId.equals(MEDIA_ID_2)) download2.setEnabled(false);
+                    if (downloadOptions.mediaId.equals(MEDIA_ID_3)) download3.setEnabled(false);
                 }
             };
 
