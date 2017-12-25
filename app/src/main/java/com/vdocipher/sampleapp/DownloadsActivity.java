@@ -3,10 +3,12 @@ package com.vdocipher.sampleapp;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
@@ -83,19 +85,29 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         findViewById(R.id.refresh_list).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                refreshDownloadsList();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    refreshDownloadsList();
+                } else {
+                    showToastAndLog("Minimum api level required is 21", Toast.LENGTH_LONG);
+                }
             }
         });
 
-        refreshDownloadsList();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            refreshDownloadsList();
+        } else {
+            showToastAndLog("Minimum api level required is 21", Toast.LENGTH_LONG);
+        }
     }
 
     @Override
     protected void onStart() {
         Log.d(TAG, "onStart");
         super.onStart();
-        maybeCreateManager();
-        vdoDownloadManager.addEventListener(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            maybeCreateManager();
+            vdoDownloadManager.addEventListener(this);
+        }
     }
 
     @Override
@@ -140,12 +152,14 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         removeListItem(mediaId);
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private void maybeCreateManager() {
         if (vdoDownloadManager == null) {
             vdoDownloadManager = VdoDownloadManager.getInstance(this);
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private void refreshDownloadsList() {
         maybeCreateManager();
         vdoDownloadManager.query(new VdoDownloadManager.Query(), new VdoDownloadManager.QueryResultListener() {
@@ -296,7 +310,6 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
 
         // build a DownloadRequest
         DownloadRequest request = new DownloadRequest.Builder(selections, downloadLocation).build();
-        VdoDownloadManager vdoDownloadManager = VdoDownloadManager.getInstance(this);
 
         // enqueue request to VdoDownloadManager for download
         try {
@@ -336,7 +349,6 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                maybeCreateManager();
                 vdoDownloadManager.remove(downloadStatus.mediaInfo.mediaId);
                 dialog.dismiss();
             }
