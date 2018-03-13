@@ -76,6 +76,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
         errorButton.setVisibility(View.INVISIBLE);
         bufferingIcon = (ProgressBar) findViewById(R.id.loading_icon);
         speedControlButton = (Button) findViewById(R.id.speed_control_button);
+        speedControlButton.setVisibility(View.GONE);
         eventLog = (TextView)findViewById(R.id.event_log);
         eventLog.setMovementMethod(ScrollingMovementMethod.getInstance());
 
@@ -313,7 +314,10 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
             seekBar.setOnSeekBarChangeListener(seekbarChangeListener);
             playPauseButton.setEnabled(true);
             playPauseButton.setOnClickListener(playPauseListener);
-            speedControlButton.setOnClickListener(speedButtonListener);
+            if (player.isSpeedControlSupported()) {
+                speedControlButton.setVisibility(View.VISIBLE);
+                speedControlButton.setOnClickListener(speedButtonListener);
+            }
         }
 
         @Override
