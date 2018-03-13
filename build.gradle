@@ -19,5 +19,6 @@ allprojects {
         maven {
             url "https://github.com/VdoCipher/maven-repo/raw/master/repo"
         }
+        google()
     }
 }
