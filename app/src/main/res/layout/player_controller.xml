@@ -76,6 +76,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <ImageButton
+            android:id="@+id/quality_button"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_high_quality_white_24dp"
+            android:background="@android:color/transparent"
+            android:layout_marginLeft="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageButton
             android:id="@+id/captions_button"
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_closed_caption_white_24dp"

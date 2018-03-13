@@ -78,6 +78,10 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
         speedControlButton = (Button) findViewById(R.id.speed_control_button);
         eventLog = (TextView)findViewById(R.id.event_log);
         eventLog.setMovementMethod(ScrollingMovementMethod.getInstance());
+
+        (findViewById(R.id.captions_button)).setVisibility(View.GONE);
+        (findViewById(R.id.quality_button)).setVisibility(View.GONE);
+
         showLoadingIcon(false);
         showControls(false);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);

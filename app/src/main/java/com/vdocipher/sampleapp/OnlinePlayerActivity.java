@@ -94,6 +94,8 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         showControls(false);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
+        (findViewById(R.id.quality_button)).setVisibility(View.GONE);
+
         initializePlayer();
     }
 
