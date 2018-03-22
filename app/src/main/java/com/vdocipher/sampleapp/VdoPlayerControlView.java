@@ -4,11 +4,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -16,6 +19,8 @@ import android.widget.TextView;
 import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.VdoPlayer;
+
+import java.util.ArrayList;
 
 /**
  * A view for controlling playback via a VdoPlayer.
@@ -37,6 +42,8 @@ public class VdoPlayerControlView extends FrameLayout {
          */
         boolean onFullscreenAction(boolean enterFullscreen);
     }
+
+    private static final String TAG = "VdoPlayerControlView";
     
     public static final int DEFAULT_FAST_FORWARD_MS = 10000;
     public static final int DEFAULT_REWIND_MS = 10000;
@@ -278,7 +285,84 @@ public class VdoPlayerControlView extends FrameLayout {
     }
 
     private void showCaptionsDialog() {
-        // todo
+        if (player == null) {
+            return;
+        }
+
+        // get all available captions tracks
+        Track[] availableTracks = player.getAvailableTracks();
+        Log.i(TAG, availableTracks.length + " tracks available");
+        ArrayList<Track> textTrackList = new ArrayList<>();
+        for (Track availableTrack : availableTracks) {
+            if (availableTrack.type == Track.TYPE_CAPTIONS) {
+                textTrackList.add(availableTrack);
+            }
+        }
+
+        // get the selected captions track
+        Track[] selectedTracks = player.getSelectedTracks();
+        Track selectedTextTrack = null;
+        for (Track selectedTrack : selectedTracks) {
+            if (selectedTrack.type == Track.TYPE_CAPTIONS) {
+                selectedTextTrack = selectedTrack;
+                break;
+            }
+        }
+
+        // get index of selected captions track in "textTrackList" to indicate selection in dialog
+        int selectedIndex = -1;
+        if (selectedTextTrack != null) {
+            for (int i = 0; i < textTrackList.size(); i++) {
+                if (textTrackList.get(i).equals(selectedTextTrack)) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        // if captions tracks are available, lets add a DISABLE_CAPTIONS track for turning off captions
+        if (textTrackList.size() > 0) {
+            textTrackList.add(Track.DISABLE_CAPTIONS);
+
+            // if no captions are selected, indicate DISABLE_CAPTIONS as selected in dialog
+            if (selectedIndex < 0) selectedIndex = textTrackList.size() - 1;
+        }
+
+        // show the text tracks in dialog for selection
+        Track[] availableTextTracks = textTrackList.toArray(new Track[textTrackList.size()]);
+        Log.i(TAG, "total " + availableTextTracks.length + ", selected " + selectedIndex);
+        showSelectionDialog("CAPTIONS", availableTextTracks, selectedIndex);
+    }
+
+    private void showSelectionDialog(CharSequence title, final Track[] tracks, final int selectedTrackIndex) {
+        // first, let's convert tracks to array of TrackHolders for better display in dialog
+        ArrayList<TrackHolder> trackHolderList = new ArrayList<>();
+        for (Track track : tracks) trackHolderList.add(new TrackHolder(track));
+        final TrackHolder[] trackHolders = trackHolderList.toArray(new TrackHolder[0]);
+
+        ListAdapter adapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_list_item_single_choice, trackHolders);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(title)
+                .setSingleChoiceItems(adapter, selectedTrackIndex, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (player != null) {
+                            if (selectedTrackIndex != which) {
+                                // set selection
+                                Track selectedTrack = trackHolders[which].track;
+                                Log.i(TAG, "selected track index: " + which + ", " + selectedTrack.toString());
+                                player.setSelectedTracks(new Track[]{selectedTrack});
+                            } else {
+                                Log.i(TAG, "track selection unchanged");
+                            }
+                        }
+                        dialog.dismiss();
+                    }
+                })
+                .create()
+                .show();
+
     }
 
     private void showError(ErrorDescription errorDescription) {
@@ -412,6 +496,27 @@ public class VdoPlayerControlView extends FrameLayout {
         @Override
         public void onTracksChanged(Track[] availableTracks, Track[] selectedTracks) {
 
+        }
+    }
+
+    /**
+     * A helper class that holds a Track instance and overrides {@link Object#toString()} for
+     * captions tracks for displaying to user.
+     */
+    private static class TrackHolder {
+        final Track track;
+
+        TrackHolder(Track track) {
+            this.track = track;
+        }
+
+        @Override
+        public String toString() {
+            if (track == Track.DISABLE_CAPTIONS) {
+                return "Turn off Captions";
+            }
+
+            return track.type == Track.TYPE_CAPTIONS ? track.language : track.toString();
         }
     }
 }
