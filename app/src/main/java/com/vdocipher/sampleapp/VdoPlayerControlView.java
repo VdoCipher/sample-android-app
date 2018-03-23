@@ -178,7 +178,7 @@ public class VdoPlayerControlView extends FrameLayout {
     }
 
     public void hide() {
-        if (controllerVisible()) {
+        if (controllerVisible() && lastErrorParams == null) {
             controllerBackground.setVisibility(GONE);
             removeCallbacks(hideAction);
             if (visibilityListener != null) {
@@ -222,7 +222,7 @@ public class VdoPlayerControlView extends FrameLayout {
     private void hideAfterTimeout() {
         removeCallbacks(hideAction);
         boolean playing = player != null && player.getPlayWhenReady();
-        if (showTimeoutMs > 0 && isAttachedToWindow && playing) {
+        if (showTimeoutMs > 0 && isAttachedToWindow && lastErrorParams == null && playing) {
             postDelayed(hideAction, showTimeoutMs);
         }
     }
@@ -390,19 +390,20 @@ public class VdoPlayerControlView extends FrameLayout {
     }
 
     private void showError(ErrorDescription errorDescription) {
-        // todo finish
         updateLoader(false);
         controlPanel.setVisibility(GONE);
         errorView.setVisibility(VISIBLE);
         errorTextView.setVisibility(VISIBLE);
         String errMsg = "An error occurred : " + errorDescription.errorCode + "\nTap to retry";
         errorTextView.setText(errMsg);
+        show();
     }
 
     private void retryAfterError() {
         if (lastErrorParams != null) {
             errorView.setVisibility(GONE);
             errorTextView.setVisibility(GONE);
+            controlPanel.setVisibility(VISIBLE);
             player.load(lastErrorParams);
             lastErrorParams = null;
         }
@@ -504,6 +505,7 @@ public class VdoPlayerControlView extends FrameLayout {
         @Override
         public void onLoadError(VdoPlayer.VdoInitParams vdoParams, ErrorDescription errorDescription) {
             lastErrorParams = vdoParams;
+            showError(errorDescription);
         }
 
         @Override
@@ -514,6 +516,7 @@ public class VdoPlayerControlView extends FrameLayout {
         @Override
         public void onError(VdoPlayer.VdoInitParams vdoParams, ErrorDescription errorDescription) {
             lastErrorParams = vdoParams;
+            showError(errorDescription);
         }
 
         @Override
