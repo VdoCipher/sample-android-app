@@ -29,7 +29,7 @@
         android:layout_gravity="center"/>
     <LinearLayout
         android:id="@+id/vdo_control_panel"
-        android:background="#8c000000"
+        android:background="#be000000"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
