@@ -229,9 +229,14 @@ public class VdoPlayerControlView extends FrameLayout {
 
     private void updateAll() {
         updatePlayPauseButtons();
+        updateSpeedControlButton();
     }
 
     private void updatePlayPauseButtons() {
+        if (!controllerVisible() || !isAttachedToWindow) {
+            return;
+        }
+
         boolean playWhenReady = player != null && player.getPlayWhenReady();
         playButton.setVisibility(playWhenReady ? GONE : VISIBLE);
         pauseButton.setVisibility(playWhenReady ? VISIBLE : GONE);
@@ -252,6 +257,21 @@ public class VdoPlayerControlView extends FrameLayout {
     private void updateLoader(boolean loading) {
         loaderView.setVisibility(loading ? VISIBLE : GONE);
     }
+
+    private void updateSpeedControlButton() {
+        if (!controllerVisible() || !isAttachedToWindow) {
+            return;
+        }
+
+        if (player != null && player.isSpeedControlSupported()) {
+            speedControlButton.setVisibility(View.VISIBLE);
+            float speed = player.getPlaybackSpeed();
+            chosenSpeedIndex = Utils.getClosestFloatIndex(allowedSpeedList, speed);
+            speedControlButton.setText(allowedSpeedStrList[chosenSpeedIndex]);
+        } else {
+            speedControlButton.setVisibility(GONE);
+        }
+    }
     
     private void toggleFullscreen() {
         if (fullscreenActionListener != null) {
@@ -264,6 +284,10 @@ public class VdoPlayerControlView extends FrameLayout {
     }
 
     private void updateFullscreenButtons() {
+        if (!controllerVisible() || !isAttachedToWindow) {
+            return;
+        }
+
         enterFullscreenButton.setVisibility(fullscreen ? GONE : VISIBLE);
         exitFullscreenButton.setVisibility(fullscreen ? VISIBLE : GONE);
     }
@@ -462,8 +486,7 @@ public class VdoPlayerControlView extends FrameLayout {
 
         @Override
         public void onPlaybackSpeedChanged(float speed) {
-            chosenSpeedIndex = Utils.getClosestFloatIndex(allowedSpeedList, speed);
-            speedControlButton.setText(allowedSpeedStrList[chosenSpeedIndex]);
+            updateSpeedControlButton();
         }
 
         @Override
@@ -475,7 +498,7 @@ public class VdoPlayerControlView extends FrameLayout {
         public void onLoaded(VdoPlayer.VdoInitParams vdoInitParams) {
             durationView.setText(String.valueOf(Utils.digitalClockTime((int)player.getDuration())));
             seekBar.setMax((int)player.getDuration());
-            controlPanel.setEnabled(true);
+            updateSpeedControlButton();
         }
 
         @Override
