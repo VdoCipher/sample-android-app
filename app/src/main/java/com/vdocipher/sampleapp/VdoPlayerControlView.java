@@ -237,9 +237,12 @@ public class VdoPlayerControlView extends FrameLayout {
             return;
         }
 
-        boolean playWhenReady = player != null && player.getPlayWhenReady();
-        playButton.setVisibility(playWhenReady ? GONE : VISIBLE);
-        pauseButton.setVisibility(playWhenReady ? VISIBLE : GONE);
+        int playbackState = player.getPlaybackState();
+        boolean playing = player != null
+                && playbackState != VdoPlayer.STATE_IDLE && playbackState != VdoPlayer.STATE_ENDED
+                && player.getPlayWhenReady();
+        playButton.setVisibility(playing ? GONE : VISIBLE);
+        pauseButton.setVisibility(playing ? VISIBLE : GONE);
     }
 
     private void rewind() {
@@ -441,6 +444,9 @@ public class VdoPlayerControlView extends FrameLayout {
                 if (v == rewindButton) {
                     rewind();
                 } else if (v == playButton) {
+                    if (player.getPlaybackState() == VdoPlayer.STATE_ENDED) {
+                        player.seekTo(0);
+                    }
                     player.setPlayWhenReady(true);
                 } else if (v == pauseButton) {
                     hideAfterTimeout = false;
