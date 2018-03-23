@@ -1,8 +1,7 @@
 package com.vdocipher.sampleapp;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,13 +10,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ListAdapter;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +22,6 @@ import com.vdocipher.aegis.player.VdoPlayerFragment;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer.InitializationListener {
 
@@ -37,26 +29,15 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
 
     private VdoPlayer player;
     private VdoPlayerFragment playerFragment;
-    private ImageButton playPauseButton, replayButton, errorButton;
-    private TextView currTime, duration;
-    private SeekBar seekBar;
-    private ProgressBar bufferingIcon;
-    private Button speedControlButton;
+    private VdoPlayerControlView playerControlView;
     private TextView eventLog;
     private String eventLogString = "";
 
     private boolean playWhenReady = false;
-    private boolean controlsShowing = false;
-    private boolean isLandscape = false;
-    private int mLastSystemUiVis;
+    private int currentOrientation;
 
     private volatile String mOtp;
     private volatile String mPlaybackInfo;
-
-    private static final float allowedSpeedList[] = new float[]{0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f};
-    private static final CharSequence allowedSpeedStrList[] =
-            new CharSequence[]{"0.5x", "0.75x", "1x", "1.25x", "1.5x", "1.75x", "2x"};
-    private int chosenSpeedIndex = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,27 +56,14 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             mPlaybackInfo = savedInstanceState.getString("playbackInfo");
         }
 
-        seekBar = (SeekBar)findViewById(R.id.seekbar);
-        seekBar.setEnabled(false);
-        currTime = (TextView)findViewById(R.id.current_time);
-        duration = (TextView)findViewById(R.id.duration);
         playerFragment = (VdoPlayerFragment)getFragmentManager().findFragmentById(R.id.online_vdo_player_fragment);
-        playPauseButton = (ImageButton)findViewById(R.id.play_pause_button);
-        replayButton = (ImageButton)findViewById(R.id.replay_button);
-        replayButton.setVisibility(View.INVISIBLE);
-        errorButton = (ImageButton)findViewById(R.id.error_icon);
-        errorButton.setEnabled(false);
-        errorButton.setVisibility(View.INVISIBLE);
-        bufferingIcon = (ProgressBar) findViewById(R.id.loading_icon);
-        speedControlButton = (Button) findViewById(R.id.speed_control_button);
-        speedControlButton.setVisibility(View.GONE);
+        playerControlView = (VdoPlayerControlView)findViewById(R.id.player_control_view);
         eventLog = (TextView)findViewById(R.id.event_log);
         eventLog.setMovementMethod(ScrollingMovementMethod.getInstance());
-        showLoadingIcon(false);
         showControls(false);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
-        (findViewById(R.id.quality_button)).setVisibility(View.GONE);
+        currentOrientation = getResources().getConfiguration().orientation;
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         initializePlayer();
     }
@@ -143,6 +111,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
      */
     private void obtainOtpAndPlaybackInfo() {
         // todo use asynctask
+        log("fetching params...");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -159,8 +128,13 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
                     });
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
-                    showToast("Error fetching otp and playbackInfo: " + e.getClass().getSimpleName());
-                    log("error fetching otp and playbackInfo");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showToast("Error fetching otp and playbackInfo: " + e.getClass().getSimpleName());
+                            log("error fetching otp and playbackInfo");
+                        }
+                    });
                 }
             }
         }).start();
@@ -180,61 +154,17 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         eventLog.setText(eventLogString);
     }
 
-    private View.OnClickListener playPauseListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if (player == null) return;
-            if (playWhenReady) {
-                player.setPlayWhenReady(false);
-            } else {
-                player.setPlayWhenReady(true);
-            }
-        }
-    };
-
-    private View.OnClickListener playerTapListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showControls(!controlsShowing); // controlsShowing changed in this method
-            if (isLandscape) {
-                // show/hide system ui as well
-                showSystemUi(controlsShowing);
-            }
-        }
-    };
-
     private void showControls(boolean show) {
-        Log.v(TAG, (show ? "show " : "hide ") + "controls");
-        int visibility = show ? View.VISIBLE : View.INVISIBLE;
-        playPauseButton.setVisibility(visibility);
-        (findViewById(R.id.bottom_panel)).setVisibility(visibility);
-        controlsShowing = show;
-    }
-
-    private void showSpeedControlDialog() {
-        new AlertDialog.Builder(this)
-                .setSingleChoiceItems(allowedSpeedStrList, chosenSpeedIndex, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (player != null) {
-                            float speed = allowedSpeedList[which];
-                            player.setPlaybackSpeed(speed);
-                        }
-                        dialog.dismiss();
-                    }
-                })
-                .setTitle("Choose playback speed")
-                .show();
+        Log.v(TAG, (show ? "show" : "hide") + " controls");
+        if (show) {
+            playerControlView.show();
+        } else {
+            playerControlView.hide();
+        }
     }
 
     private void disablePlayerUI() {
-        showControls(false);
-        showLoadingIcon(false);
-        playPauseButton.setEnabled(false);
-        currTime.setEnabled(false);
-        seekBar.setEnabled(false);
-        replayButton.setEnabled(false);
-        replayButton.setVisibility(View.INVISIBLE);
+//        showControls(false);
     }
 
     @Override
@@ -243,12 +173,11 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         log("onInitializationSuccess");
         this.player = player;
         player.addPlaybackEventListener(playbackListener);
-        showLoadingIcon(false);
-
-        (findViewById(R.id.player_region)).setOnClickListener(playerTapListener);
-        (findViewById(R.id.fullscreen_toggle_button)).setOnClickListener(fullscreenToggleListener);
-        (findViewById(R.id.captions_button)).setOnClickListener(captionsToggleListener);
+        playerControlView.setPlayer(player);
         showControls(true);
+
+        playerControlView.setFullscreenActionListener(fullscreenToggleListener);
+        playerControlView.setControllerVisibilityListener(visibilityListener);
 
         // load a media to the player
         VdoPlayer.VdoInitParams vdoParams = new VdoPlayer.VdoInitParams.Builder()
@@ -266,8 +195,6 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         log(msg);
         Log.e(TAG, msg);
         Toast.makeText(OnlinePlayerActivity.this, "initialization failure: " + errorDescription.errorMsg, Toast.LENGTH_LONG).show();
-        showLoadingIcon(false);
-        errorButton.setVisibility(View.VISIBLE);
     }
 
     private VdoPlayer.PlaybackEventListener playbackListener = new VdoPlayer.PlaybackEventListener() {
@@ -275,42 +202,6 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             log(Utils.playbackStateString(playWhenReady, playbackState));
             OnlinePlayerActivity.this.playWhenReady = playWhenReady;
-            if (playWhenReady) {
-                playPauseButton.setImageResource(R.drawable.ic_pause_white_48dp);
-            } else {
-                playPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
-            }
-            switch (playbackState) {
-                case VdoPlayer.STATE_READY: {
-                    showLoadingIcon(false);
-                    break;
-                }
-                case VdoPlayer.STATE_BUFFERING: {
-                    showLoadingIcon(true);
-                    break;
-                }
-                case VdoPlayer.STATE_ENDED: {
-                    playPauseButton.setEnabled(false);
-                    playPauseButton.setVisibility(View.INVISIBLE);
-                    showLoadingIcon(false);
-                    replayButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            replayButton.setVisibility(View.INVISIBLE);
-                            if (OnlinePlayerActivity.this.player != null) {
-                                OnlinePlayerActivity.this.player.seekTo(0);
-                                playPauseButton.setEnabled(true);
-                            }
-                        }
-                    });
-                    replayButton.setEnabled(true);
-                    replayButton.setVisibility(View.VISIBLE);
-                    break;
-                }
-                default:
-                    showLoadingIcon(false);
-                    break;
-            }
         }
 
         @Override
@@ -320,9 +211,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         }
 
         @Override
-        public void onBufferUpdate(long bufferTime) {
-            seekBar.setSecondaryProgress((int)bufferTime);
-        }
+        public void onBufferUpdate(long bufferTime) {}
 
         @Override
         public void onSeekTo(long millis) {
@@ -330,24 +219,18 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         }
 
         @Override
-        public void onProgress(long millis) {
-            seekBar.setProgress((int)millis);
-            currTime.setText(Utils.digitalClockTime((int)millis));
-        }
+        public void onProgress(long millis) {}
 
         @Override
         public void onPlaybackSpeedChanged(float speed) {
             Log.i(TAG, "onPlaybackSpeedChanged " + speed);
             log("onPlaybackSpeedChanged " + speed);
-            chosenSpeedIndex = Utils.getClosestFloatIndex(allowedSpeedList, speed);
-            ((TextView)(findViewById(R.id.speed_control_button))).setText(allowedSpeedStrList[chosenSpeedIndex]);
         }
 
         @Override
         public void onLoading(VdoPlayer.VdoInitParams vdoInitParams) {
             Log.i(TAG, "onLoading");
             log("onLoading");
-            showLoadingIcon(true);
         }
 
         @Override
@@ -355,24 +238,12 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             String err = "onLoadError code: " + errorDescription.errorCode;
             Log.e(TAG, err);
             log(err);
-            showLoadingIcon(false);
         }
 
         @Override
         public void onLoaded(VdoPlayer.VdoInitParams vdoInitParams) {
             Log.i(TAG, "onLoaded");
             log("onLoaded");
-            showLoadingIcon(false);
-            duration.setText(Utils.digitalClockTime((int)player.getDuration()));
-            seekBar.setMax((int)player.getDuration());
-            seekBar.setEnabled(true);
-            seekBar.setOnSeekBarChangeListener(seekbarChangeListener);
-            playPauseButton.setEnabled(true);
-            playPauseButton.setOnClickListener(playPauseListener);
-            if (player.isSpeedControlSupported()) {
-                speedControlButton.setVisibility(View.VISIBLE);
-                speedControlButton.setOnClickListener(speedButtonListener);
-            }
         }
 
         @Override
@@ -380,7 +251,6 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             String err = "onError code " + errorDescription.errorCode + ": " + errorDescription.errorMsg;
             Log.e(TAG, err);
             log(err);
-            showLoadingIcon(false);
         }
 
         @Override
@@ -390,168 +260,83 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         }
     };
 
-    private void showLoadingIcon(final boolean showIcon) {
-        if (showIcon) {
-            bufferingIcon.setVisibility(View.VISIBLE);
-            bufferingIcon.bringToFront();
+    private VdoPlayerControlView.FullscreenActionListener fullscreenToggleListener = new VdoPlayerControlView.FullscreenActionListener() {
+        @Override
+        public boolean onFullscreenAction(boolean enterFullscreen) {
+            showFullScreen(enterFullscreen);
+            return true;
+        }
+    };
+
+    private VdoPlayerControlView.ControllerVisibilityListener visibilityListener = new VdoPlayerControlView.ControllerVisibilityListener() {
+        @Override
+        public void onControllerVisibilityChange(int visibility) {
+            Log.i(TAG, "controller visibility " + visibility);
+            if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                if (visibility != View.VISIBLE) {
+                    showSystemUi(false);
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        final int newOrientation = newConfig.orientation;
+        final int oldOrientation = currentOrientation;
+        currentOrientation = newOrientation;
+        Log.i(TAG, "new orientation " +
+                (newOrientation == Configuration.ORIENTATION_PORTRAIT ? "PORTRAIT" :
+                        newOrientation == Configuration.ORIENTATION_LANDSCAPE ? "LANDSCAPE" : "UNKNOWN"));
+        super.onConfigurationChanged(newConfig);
+        if (newOrientation == oldOrientation) {
+            Log.i(TAG, "orientation unchanged");
+        } else if (newOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // hide other views
+            (findViewById(R.id.title_text)).setVisibility(View.GONE);
+            (findViewById(R.id.log_container)).setVisibility(View.GONE);
+            (findViewById(R.id.online_vdo_player_fragment)).setLayoutParams(new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+            playerControlView.setFitsSystemWindows(true);
+            // hide system windows
+            showSystemUi(false);
+            showControls(false);
         } else {
-            bufferingIcon.setVisibility(View.INVISIBLE);
-            bufferingIcon.requestLayout();
+            // show other views
+            (findViewById(R.id.title_text)).setVisibility(View.VISIBLE);
+            (findViewById(R.id.log_container)).setVisibility(View.VISIBLE);
+            (findViewById(R.id.online_vdo_player_fragment)).setLayoutParams(new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+            playerControlView.setFitsSystemWindows(false);
+            playerControlView.setPadding(0,0,0,0);
+            // show system windows
+            showSystemUi(true);
         }
     }
 
-    private SeekBar.OnSeekBarChangeListener seekbarChangeListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
-            // nothing much to do here
+    @Override
+    public void onBackPressed() {
+        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            showFullScreen(false);
+            playerControlView.setFullscreenState(false);
+        } else {
+            super.onBackPressed();
         }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            // nothing much to do here
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            player.seekTo(seekBar.getProgress());
-        }
-    };
-
-    private View.OnClickListener fullscreenToggleListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showFullScreen(!isLandscape);
-            isLandscape = !isLandscape;
-            int fsButtonResId = isLandscape ? R.drawable.ic_fullscreen_exit_white_24dp : R.drawable.ic_fullscreen_white_24dp;
-            ((ImageButton)(findViewById(R.id.fullscreen_toggle_button))).setImageResource(fsButtonResId);
-        }
-    };
-
-    private View.OnClickListener captionsToggleListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (player == null) {
-                Log.w(TAG, "player null");
-                return;
-            }
-
-            // get all available captions tracks
-            Track[] availableTracks = player.getAvailableTracks();
-            Log.i(TAG, availableTracks.length + " tracks available");
-            ArrayList<Track> textTrackList = new ArrayList<>();
-            for (Track availableTrack : availableTracks) {
-                if (availableTrack.type == Track.TYPE_CAPTIONS) {
-                    textTrackList.add(availableTrack);
-                }
-            }
-
-            // get the selected captions track
-            Track[] selectedTracks = player.getSelectedTracks();
-            Track selectedTextTrack = null;
-            for (Track selectedTrack : selectedTracks) {
-                if (selectedTrack.type == Track.TYPE_CAPTIONS) {
-                    selectedTextTrack = selectedTrack;
-                    break;
-                }
-            }
-
-            // get index of selected captions track in "textTrackList" to indicate selection in dialog
-            int selectedIndex = -1;
-            if (selectedTextTrack != null) {
-                for (int i = 0; i < textTrackList.size(); i++) {
-                    if (textTrackList.get(i).equals(selectedTextTrack)) {
-                        selectedIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            // if captions tracks are available, lets add a DISABLE_CAPTIONS track for turning off captions
-            if (textTrackList.size() > 0) {
-                textTrackList.add(Track.DISABLE_CAPTIONS);
-
-                // if no captions are selected, indicate DISABLE_CAPTIONS as selected in dialog
-                if (selectedIndex < 0) selectedIndex = textTrackList.size() - 1;
-            }
-
-            // show the text tracks in dialog for selection
-            Track[] availableTextTracks = textTrackList.toArray(new Track[textTrackList.size()]);
-            Log.i(TAG, "total " + availableTextTracks.length + ", selected " + selectedIndex);
-            showSelectionDialog("CAPTIONS", availableTextTracks, selectedIndex);
-        }
-    };
-
-    private View.OnClickListener speedButtonListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showSpeedControlDialog();
-        }
-    };
-
-    public void showSelectionDialog(CharSequence title, final Track[] tracks, final int selectedTrackIndex) {
-        // first, let's convert tracks to array of TrackHolders for better display in dialog
-        ArrayList<TrackHolder> trackHolderList = new ArrayList<>();
-        for (Track track : tracks) trackHolderList.add(new TrackHolder(track));
-        final TrackHolder[] trackHolders = trackHolderList.toArray(new TrackHolder[0]);
-
-        ListAdapter adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_single_choice, trackHolders);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title)
-                .setSingleChoiceItems(adapter, selectedTrackIndex, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (player != null) {
-                            if (selectedTrackIndex != which) {
-                                // set selection
-                                Track selectedTrack = trackHolders[which].track;
-                                Log.i(TAG, "track selected: " + which + ", " + selectedTrack.toString());
-                                player.setSelectedTracks(new Track[]{selectedTrack});
-                            } else {
-                                Log.i(TAG, "track selection unchanged");
-                            }
-                        }
-                        dialog.dismiss();
-                    }
-                })
-                .create()
-                .show();
-
     }
 
     private void showFullScreen(boolean show) {
-        Log.v(TAG, show ? "go fullscreen" : "return from fullscreen");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (show) {
-                // go to landscape orientation
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-                // hide other views
-                (findViewById(R.id.title_text)).setVisibility(View.GONE);
-                (findViewById(R.id.log_container)).setVisibility(View.GONE);
-                (findViewById(R.id.online_vdo_player_fragment)).setLayoutParams(new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-                findViewById(R.id.player_region).setFitsSystemWindows(true);
-                // hide system windows
-                showSystemUi(false);
-                showControls(false);
-            } else {
-                // go to portrait orientation
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-                // show other views
-                (findViewById(R.id.title_text)).setVisibility(View.VISIBLE);
-                (findViewById(R.id.log_container)).setVisibility(View.VISIBLE);
-                (findViewById(R.id.online_vdo_player_fragment)).setLayoutParams(new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-                findViewById(R.id.player_region).setFitsSystemWindows(false);
-                findViewById(R.id.player_region).setPadding(0,0,0,0);
-                // show system windows
-                showSystemUi(true);
-            }
+        Log.v(TAG, (show ? "enter" : "exit") + " fullscreen");
+        if (show) {
+            // go to landscape orientation for fullscreen mode
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        } else {
+            // go to portrait orientation
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         }
     }
 
     private void showSystemUi(boolean show) {
-        Log.v(TAG, (show ? "show " : "hide ") + "system ui");
+        Log.v(TAG, (show ? "show" : "hide") + " system ui");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             if (!show) {
                 getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -570,34 +355,10 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         public void onSystemUiVisibilityChange(int visibility) {
             Log.v(TAG, "onSystemUiVisibilityChange");
             // show player controls when system ui is showing
-            int diff = mLastSystemUiVis ^ visibility;
-            mLastSystemUiVis = visibility;
-            if ((diff & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0
-                    && (visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0) {
+            if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
                 Log.v(TAG, "system ui visible, making controls visible");
                 showControls(true);
             }
         }
     };
-
-    /**
-     * A helper class that holds a Track instance and overrides {@link Object#toString()} for
-     * captions tracks for displaying to user.
-     */
-    private static class TrackHolder {
-        final Track track;
-
-        TrackHolder(Track track) {
-            this.track = track;
-        }
-
-        @Override
-        public String toString() {
-            if (track == Track.DISABLE_CAPTIONS) {
-                return "Turn off Captions";
-            }
-
-            return track.type == Track.TYPE_CAPTIONS ? track.language : track.toString();
-        }
-    }
 }
