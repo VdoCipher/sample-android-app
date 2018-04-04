@@ -54,7 +54,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreate called");
-        setContentView(R.layout.activity_online_player);
+        setContentView(R.layout.activity_offline_player);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(uiVisibilityListener);
 
@@ -62,7 +62,6 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
             getSupportActionBar().hide();
         }
 
-        ((TextView)findViewById(R.id.title_text)).setText("Sample playback");
         seekBar = (SeekBar)findViewById(R.id.seekbar);
         seekBar.setEnabled(false);
         currTime = (TextView)findViewById(R.id.current_time);
