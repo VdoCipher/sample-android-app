@@ -58,6 +58,7 @@ public class VdoPlayerControlView extends FrameLayout {
     private final SeekBar seekBar;
     private final Button speedControlButton;
     private final ImageButton captionsButton;
+    private final ImageButton qualityButton;
     private final ImageButton enterFullscreenButton;
     private final ImageButton exitFullscreenButton;
     private final ProgressBar loaderView;
@@ -128,6 +129,8 @@ public class VdoPlayerControlView extends FrameLayout {
         speedControlButton.setOnClickListener(uiListener);
         captionsButton = (ImageButton)findViewById(R.id.vdo_captions);
         captionsButton.setOnClickListener(uiListener);
+        qualityButton = (ImageButton)findViewById(R.id.vdo_quality);
+        qualityButton.setOnClickListener(uiListener);
         enterFullscreenButton = (ImageButton)findViewById(R.id.vdo_enter_fullscreen);
         enterFullscreenButton.setOnClickListener(uiListener);
         exitFullscreenButton = (ImageButton)findViewById(R.id.vdo_exit_fullscreen);
@@ -459,6 +462,9 @@ public class VdoPlayerControlView extends FrameLayout {
                 } else if (v == captionsButton) {
                     hideAfterTimeout = false;
                     showCaptionsDialog();
+                } else if (v == qualityButton) {
+                    //hideAfterTimeout = false;
+                    //showQualityDialog();
                 } else if (v == enterFullscreenButton || v == exitFullscreenButton) {
                     toggleFullscreen();
                 } else if (v == errorView || v == errorTextView) {
