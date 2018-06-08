@@ -314,36 +314,36 @@ public class VdoPlayerControlView extends FrameLayout {
                 .show();
     }
 
-    private void showCaptionsDialog() {
+    private void showTrackSelectionDialog(int trackType) {
         if (player == null) {
             return;
         }
 
-        // get all available captions tracks
+        // get all available tracks of type trackType
         Track[] availableTracks = player.getAvailableTracks();
         Log.i(TAG, availableTracks.length + " tracks available");
-        ArrayList<Track> textTrackList = new ArrayList<>();
+        ArrayList<Track> typeTrackList = new ArrayList<>();
         for (Track availableTrack : availableTracks) {
-            if (availableTrack.type == Track.TYPE_CAPTIONS) {
-                textTrackList.add(availableTrack);
+            if (availableTrack.type == trackType) {
+                typeTrackList.add(availableTrack);
             }
         }
 
-        // get the selected captions track
+        // get the selected track of type trackType
         Track[] selectedTracks = player.getSelectedTracks();
-        Track selectedTextTrack = null;
+        Track selectedTypeTrack = null;
         for (Track selectedTrack : selectedTracks) {
-            if (selectedTrack.type == Track.TYPE_CAPTIONS) {
-                selectedTextTrack = selectedTrack;
+            if (selectedTrack.type == trackType) {
+                selectedTypeTrack = selectedTrack;
                 break;
             }
         }
 
-        // get index of selected captions track in "textTrackList" to indicate selection in dialog
+        // get index of selected type track in "typeTrackList" to indicate selection in dialog
         int selectedIndex = -1;
-        if (selectedTextTrack != null) {
-            for (int i = 0; i < textTrackList.size(); i++) {
-                if (textTrackList.get(i).equals(selectedTextTrack)) {
+        if (selectedTypeTrack != null) {
+            for (int i = 0; i < typeTrackList.size(); i++) {
+                if (typeTrackList.get(i).equals(selectedTypeTrack)) {
                     selectedIndex = i;
                     break;
                 }
@@ -351,17 +351,20 @@ public class VdoPlayerControlView extends FrameLayout {
         }
 
         // if captions tracks are available, lets add a DISABLE_CAPTIONS track for turning off captions
-        if (textTrackList.size() > 0) {
-            textTrackList.add(Track.DISABLE_CAPTIONS);
+        if (trackType == Track.TYPE_CAPTIONS && typeTrackList.size() > 0) {
+            typeTrackList.add(Track.DISABLE_CAPTIONS);
 
             // if no captions are selected, indicate DISABLE_CAPTIONS as selected in dialog
-            if (selectedIndex < 0) selectedIndex = textTrackList.size() - 1;
+            if (selectedIndex < 0) selectedIndex = typeTrackList.size() - 1;
+        } else if (trackType == Track.TYPE_VIDEO) {
+            // todo auto option
         }
 
-        // show the text tracks in dialog for selection
-        Track[] availableTextTracks = textTrackList.toArray(new Track[textTrackList.size()]);
-        Log.i(TAG, "total " + availableTextTracks.length + ", selected " + selectedIndex);
-        showSelectionDialog("CAPTIONS", availableTextTracks, selectedIndex);
+        // show the type tracks in dialog for selection
+        Track[] availableTypeTracks = typeTrackList.toArray(new Track[typeTrackList.size()]);
+        Log.i(TAG, "total " + availableTypeTracks.length + ", selected " + selectedIndex);
+        String title = trackType == Track.TYPE_CAPTIONS ? "CAPTIONS" : "Quality";
+        showSelectionDialog(title, availableTypeTracks, selectedIndex);
     }
 
     private void showSelectionDialog(CharSequence title, final Track[] tracks, final int selectedTrackIndex) {
@@ -461,10 +464,10 @@ public class VdoPlayerControlView extends FrameLayout {
                     showSpeedControlDialog();
                 } else if (v == captionsButton) {
                     hideAfterTimeout = false;
-                    showCaptionsDialog();
+                    showTrackSelectionDialog(Track.TYPE_CAPTIONS);
                 } else if (v == qualityButton) {
-                    //hideAfterTimeout = false;
-                    //showQualityDialog();
+                    hideAfterTimeout = false;
+                    showTrackSelectionDialog(Track.TYPE_VIDEO);
                 } else if (v == enterFullscreenButton || v == exitFullscreenButton) {
                     toggleFullscreen();
                 } else if (v == errorView || v == errorTextView) {
