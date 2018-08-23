@@ -17,5 +17,5 @@ repositories {
 
 ```
 // use the latest available version
-compile 'com.vdocipher.aegis:vdocipher-android:1.0.0-beta1'
+compile 'com.vdocipher.aegis:vdocipher-android:1.0.0-beta2'
 ```
