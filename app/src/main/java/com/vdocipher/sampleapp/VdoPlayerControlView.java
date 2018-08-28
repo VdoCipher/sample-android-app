@@ -171,10 +171,10 @@ public class VdoPlayerControlView extends FrameLayout {
 
     public void show() {
         if (!controllerVisible()) {
-            controllerBackground.setVisibility(VISIBLE);
+            controlPanel.setVisibility(VISIBLE);
             updateAll();
             if (visibilityListener != null) {
-                visibilityListener.onControllerVisibilityChange(controllerBackground.getVisibility());
+                visibilityListener.onControllerVisibilityChange(controlPanel.getVisibility());
             }
         }
         hideAfterTimeout();
@@ -182,10 +182,10 @@ public class VdoPlayerControlView extends FrameLayout {
 
     public void hide() {
         if (controllerVisible() && lastErrorParams == null) {
-            controllerBackground.setVisibility(GONE);
+            controlPanel.setVisibility(GONE);
             removeCallbacks(hideAction);
             if (visibilityListener != null) {
-                visibilityListener.onControllerVisibilityChange(controllerBackground.getVisibility());
+                visibilityListener.onControllerVisibilityChange(controlPanel.getVisibility());
             }
         }
     }
@@ -219,7 +219,7 @@ public class VdoPlayerControlView extends FrameLayout {
      * @return true if playback controls are visible
      */
     public boolean controllerVisible() {
-        return controllerBackground.getVisibility() == VISIBLE;
+        return controlPanel.getVisibility() == VISIBLE;
     }
 
     private void hideAfterTimeout() {
