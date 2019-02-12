@@ -53,7 +53,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     private static final String SAMPLE_NAME_3 = "Tears of steel";
     private static final String MEDIA_ID_3 = "5392515b761ef71e8c00a2301e1cece3";
     private static final String PLAYBACK_INFO_3 = "eyJ2aWRlb0lkIjoiNTM5MjUxNWI3NjFlZjcxZThjMDBhMjMwMWUxY2VjZTMifQ==";
-    private static final String OTP_3 = "20160313versASE3236ed272a9c42ff098324e4969c92f8da978ad54a586a881";
+    private static final String OTP_3 = "20160313versASE313g1RqQe0enZ5HaydmXOfGBn9e4Wzu2T6nfWQnYwXWjjxI4F";
 
     private Button download1, download2, download3;
     private RecyclerView downloadsListView;
