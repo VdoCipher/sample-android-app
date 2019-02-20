@@ -115,6 +115,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         if (vdoDownloadManager != null) {
             vdoDownloadManager.removeEventListener(this);
         }
+        startNotificationService();
         super.onStop();
     }
 
@@ -150,6 +151,12 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     public void onDeleted(String mediaId) {
         showToastAndLog("Deleted " + mediaId, Toast.LENGTH_SHORT);
         removeListItem(mediaId);
+    }
+
+    // Private
+
+    private void startNotificationService() {
+        startService(new Intent(this, DownloadNotificationService.class));
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
