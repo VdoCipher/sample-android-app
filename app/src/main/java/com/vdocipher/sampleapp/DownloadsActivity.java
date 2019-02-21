@@ -56,6 +56,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     private static final String OTP_3 = "20160313versASE313g1RqQe0enZ5HaydmXOfGBn9e4Wzu2T6nfWQnYwXWjjxI4F";
 
     private Button download1, download2, download3;
+    private Button deleteAll, refreshList;
     private RecyclerView downloadsListView;
 
     // dataset which backs the adapter for downloads recyclerview
@@ -77,18 +78,31 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         download3.setEnabled(false);
         downloadsListView = (RecyclerView)findViewById(R.id.downloads_list);
 
+        deleteAll = (Button)findViewById(R.id.delete_all);
+        deleteAll.setEnabled(false);
+        refreshList = (Button)findViewById(R.id.refresh_list);
+
         downloadStatusList = new ArrayList<>();
         downloadsAdapter = new DownloadsAdapter(downloadStatusList);
         downloadsListView.setAdapter(downloadsAdapter);
         downloadsListView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        findViewById(R.id.refresh_list).setOnClickListener(new View.OnClickListener() {
+        refreshList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     refreshDownloadsList();
                 } else {
                     showToastAndLog("Minimum api level required is 21", Toast.LENGTH_LONG);
+                }
+            }
+        });
+
+        deleteAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    deleteAllDownloads();
                 }
             }
         });
@@ -183,6 +197,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
                 // notify recyclerview
                 downloadStatusList.clear();
                 downloadStatusList.addAll(statusList);
+                updateDeleteAllButton();
                 downloadsAdapter.notifyDataSetChanged();
 
                 if (statusList.isEmpty()) {
@@ -202,6 +217,19 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
                 Log.i(TAG, builder.toString());
             }
         });
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private void deleteAllDownloads() {
+        if (!downloadStatusList.isEmpty()) {
+            maybeCreateManager();
+            ArrayList<String> mediaIdList = new ArrayList<>();
+            for (DownloadStatus status : downloadStatusList) {
+                mediaIdList.add(status.mediaInfo.mediaId);
+            }
+            String[] mediaIds = mediaIdList.toArray(new String[mediaIdList.size()]);
+            vdoDownloadManager.remove(mediaIds);
+        }
     }
 
     private boolean containsMediaId(List<DownloadStatus> statusList, String mediaId) {
@@ -380,10 +408,12 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         } else {
             Log.e(TAG, "item not found in adapter");
         }
+        updateDeleteAllButton();
     }
 
     private void addListItem(DownloadStatus downloadStatus) {
         downloadStatusList.add(0, downloadStatus);
+        updateDeleteAllButton();
         downloadsAdapter.notifyItemInserted(0);
     }
 
@@ -405,6 +435,11 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
             downloadStatusList.remove(position);
             downloadsAdapter.notifyItemRemoved(position);
         }
+        updateDeleteAllButton();
+    }
+
+    private void updateDeleteAllButton() {
+        deleteAll.setEnabled(!downloadStatusList.isEmpty());
     }
 
     private void startPlayback(DownloadStatus downloadStatus) {

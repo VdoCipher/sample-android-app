@@ -45,7 +45,7 @@
         <View
             android:background="@android:color/darker_gray"
             android:layout_width="match_parent"
-            android:layout_height="2dp" />
+            android:layout_height="1dp" />
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/available_downloads"
-                    android:text="Available downloads"
+                    android:text="Downloads"
                     android:textColor="#263238"
                     android:textSize="24sp"
                     android:layout_centerVertical="true"
@@ -63,11 +63,20 @@
                     android:layout_height="wrap_content" />
                 <Button
                     android:id="@+id/refresh_list"
-                    android:layout_toRightOf="@+id/available_downloads"
                     android:gravity="right|center_vertical"
                     android:text="REFRESH"
+                    android:textSize="12sp"
                     android:background="@android:color/transparent"
                     android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Button
+                    android:id="@+id/delete_all"
+                    android:layout_toLeftOf="@+id/refresh_list"
+                    android:gravity="right|center_vertical"
+                    android:text="DELETE ALL"
+                    android:textSize="12sp"
+                    android:background="@android:color/transparent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </RelativeLayout>
