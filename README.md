@@ -19,3 +19,7 @@ repositories {
 // use the latest available version
 compile 'com.vdocipher.aegis:vdocipher-android:1.0.0-beta4'
 ```
+
+### Issues
+
+Please send all issues and feedback to support@vdocipher.com
