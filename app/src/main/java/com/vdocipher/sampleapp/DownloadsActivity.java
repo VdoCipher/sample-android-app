@@ -43,17 +43,17 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     private static final String SAMPLE_NAME_1 = "VdoCipher product demo";
     private static final String MEDIA_ID_1 = "661f6861d521a24288d608923d2c73f9";
     private static final String PLAYBACK_INFO_1 = "eyJ2aWRlb0lkIjoiNjYxZjY4NjFkNTIxYTI0Mjg4ZDYwODkyM2QyYzczZjkifQ==";
-    private static final String OTP_1 = "20160313versASE323ddb249fbcaf2a589401e0a5c06c601cbd4df6889b89898";
+    private static final String OTP_1 = "20160313versASE313WAGCdGbRSkojp0pMJpESFT9RVVrbGSnzwVOr2ANUxMrfZ5";
 
     public static final String SAMPLE_NAME_2 = "Home page video";
     public static final String MEDIA_ID_2 = "3f29b5434a5c615cda18b16a6232fd75";
     public static final String PLAYBACK_INFO_2 = "eyJ2aWRlb0lkIjoiM2YyOWI1NDM0YTVjNjE1Y2RhMThiMTZhNjIzMmZkNzUifQ==";
-    public static final String OTP_2 = "20150519versASE31ba8fc50a0ac49b8e74b9c40f49e099755cd36dc8adccaa3";
+    public static final String OTP_2 = "20160313versASE313BlEe9YKEaDuju5J0XcX2Z03Hrvm5rzKScvuyojMSBZBxfZ";
 
     private static final String SAMPLE_NAME_3 = "Tears of steel";
     private static final String MEDIA_ID_3 = "5392515b761ef71e8c00a2301e1cece3";
     private static final String PLAYBACK_INFO_3 = "eyJ2aWRlb0lkIjoiNTM5MjUxNWI3NjFlZjcxZThjMDBhMjMwMWUxY2VjZTMifQ==";
-    private static final String OTP_3 = "20160313versASE313g1RqQe0enZ5HaydmXOfGBn9e4Wzu2T6nfWQnYwXWjjxI4F";
+    private static final String OTP_3 = "20160313versASE313TKtOGPa5FImICHI4Q62Gkmj41zyTBlAOV8V2uLVgMUPYgT";
 
     private Button download1, download2, download3;
     private Button deleteAll, refreshList;
