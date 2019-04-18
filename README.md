@@ -17,7 +17,7 @@ repositories {
 
 ```
 // use the latest available version
-implementation 'com.vdocipher.aegis:vdocipher-android:1.0.0-beta5'
+implementation 'com.vdocipher.aegis:vdocipher-android:1.0.0-beta6'
 ```
 
 ## Issues
