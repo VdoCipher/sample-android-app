@@ -3,6 +3,7 @@ package com.vdocipher.sampleapp;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -75,7 +76,7 @@ public class VdoPlayerControlView extends FrameLayout {
     private boolean isAttachedToWindow;
     private boolean fullscreen;
 
-    private VdoPlayer player;
+    private @Nullable VdoPlayer player;
     private UiListener uiListener;
     private VdoPlayer.VdoInitParams lastErrorParams;
     private FullscreenActionListener fullscreenActionListener;
@@ -240,7 +241,7 @@ public class VdoPlayerControlView extends FrameLayout {
             return;
         }
 
-        int playbackState = player.getPlaybackState();
+        int playbackState = player != null ? player.getPlaybackState() : VdoPlayer.STATE_IDLE;
         boolean playing = player != null
                 && playbackState != VdoPlayer.STATE_IDLE && playbackState != VdoPlayer.STATE_ENDED
                 && player.getPlayWhenReady();
@@ -249,13 +250,13 @@ public class VdoPlayerControlView extends FrameLayout {
     }
 
     private void rewind() {
-        if (rewindMs > 0) {
+        if (player != null && rewindMs > 0) {
             player.seekTo(Math.max(0, player.getCurrentTime() - rewindMs));
         }
     }
 
     private void fastForward() {
-        if (ffwdMs > 0) {
+        if (player != null && ffwdMs > 0) {
             player.seekTo(Math.min(player.getDuration(), player.getCurrentTime() + ffwdMs));
         }
     }
@@ -414,7 +415,7 @@ public class VdoPlayerControlView extends FrameLayout {
     }
 
     private void retryAfterError() {
-        if (lastErrorParams != null) {
+        if (player != null && lastErrorParams != null) {
             errorView.setVisibility(GONE);
             errorTextView.setVisibility(GONE);
             controlPanel.setVisibility(VISIBLE);
@@ -438,7 +439,7 @@ public class VdoPlayerControlView extends FrameLayout {
         public void onStopTrackingTouch(SeekBar seekBar) {
             scrubbing = false;
             int seekTarget = seekBar.getProgress();
-            player.seekTo(seekTarget);
+            if (player != null) player.seekTo(seekTarget);
             hideAfterTimeout();
         }
 
