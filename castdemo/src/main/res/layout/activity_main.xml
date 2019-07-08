@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:textSize="24sp"
+        android:textColor="@android:color/holo_green_light"
+        android:text="VdoCipher Sample Application"/>
+
+    <TextView
+        android:id="@+id/params_loader_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:textSize="14sp"
+        android:textAlignment="center"
+        android:text="@string/load_active_msg"/>
+
+    <Button
+        android:id="@+id/player_btn"
+        android:enabled="false"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:text="Load Player"
+        android:textSize="18sp"
+        android:layout_margin="10dp"
+        android:padding="20dp" />
+</LinearLayout>

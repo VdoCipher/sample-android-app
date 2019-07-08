@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Cast demo</string>
+
+    <string name="load_active_msg">Loading video params…</string>
+    <string name="load_done_msg"> </string>
+    <string name="load_error_msg">Error loading video params.\nTap to retry</string>
+</resources>

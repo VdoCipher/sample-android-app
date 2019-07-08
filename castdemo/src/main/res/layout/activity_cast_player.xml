@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.vdocipher.sampleapp.castdemo.CastVdoPlayerActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <fragment
+            android:name="com.vdocipher.aegis.player.VdoPlayerFragment"
+            android:id="@+id/online_vdo_player_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:keepScreenOn="true"/>
+        <com.vdocipher.sampleapp.castdemo.VdoPlayerControlView
+            android:id="@+id/player_control_view"
+            android:layout_alignTop="@id/online_vdo_player_fragment"
+            android:layout_alignBottom="@id/online_vdo_player_fragment"
+            android:layout_alignLeft="@id/online_vdo_player_fragment"
+            android:layout_alignRight="@id/online_vdo_player_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:textSize="24sp"
+        android:text="Sample online playback"/>
+
+    <LinearLayout
+        android:id="@+id/log_container"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="8dp"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:gravity="left|bottom">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:textColor="@android:color/black"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Event Log"/>
+        <TextView
+            android:id="@+id/event_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:gravity="bottom"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:maxLines="10"
+            android:scrollbars="vertical"
+            android:requiresFadingEdge="vertical"
+            android:hint="No events yet" />
+    </LinearLayout>
+
+</LinearLayout>
