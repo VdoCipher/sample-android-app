@@ -20,6 +20,19 @@ repositories {
 implementation 'com.vdocipher.aegis:vdocipher-android:1.0.0-beta7'
 ```
 
+### Add cast plugin dependency
+
+Download the cast plugin sdk (aar file) and integrate into your Android Studio project using the following steps:
+
+In Android Studio -> File -> New Module -> Import JAR/AAR package -> locate the downloaded aar file -> Finish.
+
+Then add a dependency to the newly added cast plugin module in your cast app module's build.gradle file.
+
+```
+implementation project(':vdocipher-cast')
+implementation 'com.google.android.gms:play-services-cast-framework:16.2.0'
+```
+
 ## Issues
 
 Please send all issues and feedback to support@vdocipher.com
