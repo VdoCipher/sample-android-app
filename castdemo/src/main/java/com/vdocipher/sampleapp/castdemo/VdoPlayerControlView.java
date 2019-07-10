@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.vdocipher.aegis.cast.CastVdoPlayer;
 import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.VdoPlayer;
@@ -65,6 +66,7 @@ public class VdoPlayerControlView extends FrameLayout {
     private final ProgressBar loaderView;
     private final ImageButton errorView;
     private final TextView errorTextView;
+    private final TextView castInfoView;
     private final View controlPanel;
     private final View controllerBackground;
 
@@ -75,15 +77,16 @@ public class VdoPlayerControlView extends FrameLayout {
     private boolean scrubbing;
     private boolean isAttachedToWindow;
     private boolean fullscreen;
+    private boolean castMode;
 
     private @Nullable VdoPlayer player;
-    private UiListener uiListener;
+    private final UiListener uiListener;
     private VdoPlayer.VdoInitParams lastErrorParams;
     private FullscreenActionListener fullscreenActionListener;
     private ControllerVisibilityListener visibilityListener;
 
-    private static final float allowedSpeedList[] = new float[]{0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f};
-    private static final CharSequence allowedSpeedStrList[] =
+    private static final float[] allowedSpeedList = new float[]{0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f};
+    private static final CharSequence[] allowedSpeedStrList =
             new CharSequence[]{"0.5x", "0.75x", "1x", "1.25x", "1.5x", "1.75x", "2x"};
     private int chosenSpeedIndex = 2;
 
@@ -122,30 +125,32 @@ public class VdoPlayerControlView extends FrameLayout {
         fastForwardButton.setOnClickListener(uiListener);
         rewindButton = findViewById(R.id.vdo_rewind);
         rewindButton.setOnClickListener(uiListener);
-        durationView = (TextView)findViewById(R.id.vdo_duration);
-        positionView = (TextView)findViewById(R.id.vdo_position);
-        seekBar = (SeekBar)findViewById(R.id.vdo_seekbar);
+        durationView = findViewById(R.id.vdo_duration);
+        positionView = findViewById(R.id.vdo_position);
+        seekBar = findViewById(R.id.vdo_seekbar);
         seekBar.setOnSeekBarChangeListener(uiListener);
-        speedControlButton = (Button)findViewById(R.id.vdo_speed);
+        speedControlButton = findViewById(R.id.vdo_speed);
         speedControlButton.setOnClickListener(uiListener);
-        captionsButton = (ImageButton)findViewById(R.id.vdo_captions);
+        captionsButton = findViewById(R.id.vdo_captions);
         captionsButton.setOnClickListener(uiListener);
-        qualityButton = (ImageButton)findViewById(R.id.vdo_quality);
+        qualityButton = findViewById(R.id.vdo_quality);
         qualityButton.setOnClickListener(uiListener);
-        enterFullscreenButton = (ImageButton)findViewById(R.id.vdo_enter_fullscreen);
+        enterFullscreenButton = findViewById(R.id.vdo_enter_fullscreen);
         enterFullscreenButton.setOnClickListener(uiListener);
         enterFullscreenButton.setVisibility(GONE);
-        exitFullscreenButton = (ImageButton)findViewById(R.id.vdo_exit_fullscreen);
+        exitFullscreenButton = findViewById(R.id.vdo_exit_fullscreen);
         exitFullscreenButton.setOnClickListener(uiListener);
         exitFullscreenButton.setVisibility(GONE);
-        loaderView = (ProgressBar)findViewById(R.id.vdo_loader);
+        loaderView = findViewById(R.id.vdo_loader);
         loaderView.setVisibility(GONE);
-        errorView = (ImageButton)findViewById(R.id.vdo_error);
+        errorView = findViewById(R.id.vdo_error);
         errorView.setOnClickListener(uiListener);
         errorView.setVisibility(GONE);
-        errorTextView = (TextView)findViewById(R.id.vdo_error_text);
+        errorTextView = findViewById(R.id.vdo_error_text);
         errorTextView.setOnClickListener(uiListener);
         errorTextView.setVisibility(GONE);
+        castInfoView = findViewById(R.id.cast_info_text);
+        castInfoView.setVisibility(GONE);
         controlPanel = findViewById(R.id.vdo_control_panel);
         controllerBackground = findViewById(R.id.vdo_controller_bg);
         setOnClickListener(uiListener);
@@ -158,9 +163,11 @@ public class VdoPlayerControlView extends FrameLayout {
             player.removePlaybackEventListener(uiListener);
         }
         player = vdoPlayer;
-        if (player != null) {
-            player.addPlaybackEventListener(uiListener);
+        if (vdoPlayer != null) {
+            vdoPlayer.addPlaybackEventListener(uiListener);
         }
+
+        setCastMode(vdoPlayer instanceof CastVdoPlayer);
     }
     
     public void setFullscreenActionListener(FullscreenActionListener fullscreenActionListener) {
@@ -222,6 +229,11 @@ public class VdoPlayerControlView extends FrameLayout {
      */
     public boolean controllerVisible() {
         return controlPanel.getVisibility() == VISIBLE;
+    }
+
+    private void setCastMode(boolean castMode) {
+        this.castMode = castMode;
+        castInfoView.setVisibility(castMode ? VISIBLE : GONE);
     }
 
     private void hideAfterTimeout() {
