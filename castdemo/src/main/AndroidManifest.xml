@@ -18,7 +18,9 @@
         </activity>
         <activity
             android:name=".CastVdoPlayerActivity"
-            android:label="CastVdoPlayerActivity">
+            android:label="CastVdoPlayerActivity"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 </manifest>
