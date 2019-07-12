@@ -93,7 +93,10 @@ public class CastVdoPlayerActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (castPlayer != null) castPlayer.release();
+        if (castPlayer != null) {
+            castPlayer.setSessionAvailabilityListener(null);
+            castPlayer.release();
+        }
         castPlayer = null;
     }
 
