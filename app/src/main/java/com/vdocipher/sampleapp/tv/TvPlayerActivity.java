@@ -15,7 +15,7 @@ import com.vdocipher.sampleapp.R;
 /**
  * This class serves as a basic example of integrating playback in android TV.
  *
- * It uses a class extending {@link android.support.v17.leanback.app.PlaybackFragment} to provide a
+ * It uses a class extending {@link androidx.leanback.app.PlaybackFragment} to provide a
  * standard playback control ui for android TV. However, you can make your own or use a different
  * playback controller layout.
  *
