@@ -274,31 +274,52 @@ public class CastVdoPlayerActivity extends AppCompatActivity
         }
     };
 
-    private void setCurrentPlayer(@Nullable VdoPlayer player) {
-        if (currentPlayer == player) {
+    private void setCurrentPlayer(@Nullable VdoPlayer newPlayer) {
+        if (currentPlayer == newPlayer) {
             return;
         }
 
         if (currentPlayer != null) {
             playWhenReady = currentPlayer.getPlayWhenReady();
             playPositionMs = currentPlayer.getCurrentTime();
-            currentPlayer.stop();
+
+            initParams = initParams.getBuilder()
+                    .setResumeTime((int)playPositionMs)
+                    .setAutoplay(playWhenReady)
+                    .build();
         }
 
-        currentPlayer = player;
+        if (newPlayer == null) {
+            // stop all playback
+            if (currentPlayer != null) currentPlayer.stop();
+        } else if (newPlayer == castPlayer) {
+            // join/load cast player, stop local player
+            // DO NOT stop previous instance of castPlayer by referencing currentPlayer
+            if (localPlayer != null) localPlayer.stop();
+        } else {
+            // load local player, stop cast player
+            if (castPlayer != null) castPlayer.stop();
+        }
 
-        playerControlView.setPlayer(player);
-
-        // todo if castLoadPending
-        maybeLoadInitParams();
+        playerControlView.setPlayer(newPlayer);
+        currentPlayer = newPlayer;
+        maybeLoadInitParams(newPlayer);
     }
 
-    private void maybeLoadInitParams() {
-        if (currentPlayer != null && initParams != null) {
-            currentPlayer.load(initParams);
-            //currentPlayer.seekTo(playPositionMs);
-            //currentPlayer.setPlayWhenReady(playWhenReady);
-            log("loaded init params to player");
+    private void maybeLoadInitParams(@Nullable VdoPlayer player) {
+        if (player != null && initParams != null) {
+            if (player == castPlayer) {
+                // join cast session, else load new params
+                if (!castPlayer.joinSession(initParams)) {
+                    castPlayer.load(initParams);
+                    log("loaded init params to cast player");
+                } else {
+                    log("joined cast media session");
+                }
+            } else {
+                player.load(initParams);
+                log("loaded init params to local player");
+            }
         }
     }
 
