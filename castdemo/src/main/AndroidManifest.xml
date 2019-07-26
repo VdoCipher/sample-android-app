@@ -19,7 +19,7 @@
         <activity
             android:name=".CastVdoPlayerActivity"
             android:label="CastVdoPlayerActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
         </activity>
     </application>
