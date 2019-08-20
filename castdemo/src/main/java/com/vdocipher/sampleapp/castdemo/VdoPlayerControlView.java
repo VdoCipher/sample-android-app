@@ -22,6 +22,8 @@ import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.VdoPlayer;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -580,15 +582,38 @@ public class VdoPlayerControlView extends FrameLayout {
             this.track = track;
         }
 
+        /**
+         * Change this implementation to show track descriptions as per your app's UI requirements.
+         */
         @Override
         public String toString() {
             if (track == Track.DISABLE_CAPTIONS) {
                 return "Turn off Captions";
             } else if (track.type == Track.TYPE_VIDEO) {
-                return track.height + "p (" + track.bitrate / 1024 + "kbps)";
+                return track.bitrate / 1024 + "kbps (" + dataExpenditurePerHour(track.bitrate) + ")";
             }
 
             return track.type == Track.TYPE_CAPTIONS ? track.language : track.toString();
+        }
+
+        private String dataExpenditurePerHour(int bitsPerSec) {
+            final long bytesPerHour = bitsPerSec <= 0 ? 0 : bitsPerSec * 3600L / 8;
+            if (bytesPerHour == 0) {
+                return "-";
+            } else {
+                float megabytesPerHour = bytesPerHour / (float)(1024 * 1024);
+
+                if (megabytesPerHour < 1) {
+                    return "1 MB per hour";
+                } else if (megabytesPerHour < 1000) {
+                    return (int)megabytesPerHour + " MB per hour";
+                } else {
+                    DecimalFormat df = new DecimalFormat("#.#");
+                    df.setRoundingMode(RoundingMode.CEILING);
+                    return df.format(megabytesPerHour / 1024) + " GB per hour";
+                }
+
+            }
         }
     }
 }
