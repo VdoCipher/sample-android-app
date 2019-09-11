@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <fragment
-            android:name="com.vdocipher.aegis.player.VdoPlayerFragment"
+            android:name="com.vdocipher.aegis.player.VdoPlayerSupportFragment"
             android:id="@+id/online_vdo_player_fragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -21,7 +21,7 @@ import android.widget.Toast;
 import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.VdoPlayer;
-import com.vdocipher.aegis.player.VdoPlayerFragment;
+import com.vdocipher.aegis.player.VdoPlayerSupportFragment;
 
 public class PlayerActivity extends AppCompatActivity implements VdoPlayer.InitializationListener {
 
@@ -29,7 +29,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
     public static final String EXTRA_MEDIA_ID = "media_id";
 
     private VdoPlayer player;
-    private VdoPlayerFragment playerFragment;
+    private VdoPlayerSupportFragment playerFragment;
     private ImageButton playPauseButton, replayButton, errorButton;
     private TextView currTime, duration;
     private SeekBar seekBar;
@@ -66,7 +66,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
         seekBar.setEnabled(false);
         currTime = (TextView)findViewById(R.id.current_time);
         duration = (TextView)findViewById(R.id.duration);
-        playerFragment = (VdoPlayerFragment)getFragmentManager().findFragmentById(R.id.online_vdo_player_fragment);
+        playerFragment = (VdoPlayerSupportFragment)getSupportFragmentManager().findFragmentById(R.id.online_vdo_player_fragment);
         playPauseButton = (ImageButton)findViewById(R.id.play_pause_button);
         replayButton = (ImageButton)findViewById(R.id.replay_button);
         replayButton.setVisibility(View.INVISIBLE);

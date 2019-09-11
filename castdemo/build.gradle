@@ -28,12 +28,14 @@ android {
 
 }
 
+def vdocipher_sdk_version = '1.0.1'
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'com.vdocipher.aegis:vdocipher-android:1.0.0-beta9'
-    implementation 'com.vdocipher.aegis:vdocipher-cast:1.0.0-beta9'
+    implementation 'com.vdocipher.aegis:vdocipher-android:' + vdocipher_sdk_version
+    implementation 'com.vdocipher.aegis:vdocipher-cast:' + vdocipher_sdk_version
     implementation 'com.google.android.gms:play-services-cast-framework:16.2.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'

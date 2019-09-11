@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.VdoPlayer;
-import com.vdocipher.aegis.player.VdoPlayerFragment;
+import com.vdocipher.aegis.player.VdoPlayerSupportFragment;
 
 import org.json.JSONException;
 
@@ -28,7 +28,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     private final String TAG = "OnlinePlayerActivity";
 
     private VdoPlayer player;
-    private VdoPlayerFragment playerFragment;
+    private VdoPlayerSupportFragment playerFragment;
     private VdoPlayerControlView playerControlView;
     private TextView eventLog;
     private String eventLogString = "";
@@ -56,7 +56,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
             mPlaybackInfo = savedInstanceState.getString("playbackInfo");
         }
 
-        playerFragment = (VdoPlayerFragment)getFragmentManager().findFragmentById(R.id.online_vdo_player_fragment);
+        playerFragment = (VdoPlayerSupportFragment)getSupportFragmentManager().findFragmentById(R.id.online_vdo_player_fragment);
         playerControlView = (VdoPlayerControlView)findViewById(R.id.player_control_view);
         eventLog = (TextView)findViewById(R.id.event_log);
         eventLog.setMovementMethod(ScrollingMovementMethod.getInstance());
