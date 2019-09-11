@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements ProviderInstaller
     }
 
     public void onlinePlayback(View v) {
-        Intent intent = new Intent(this, OnlinePlayerActivity.class);
+        Intent intent = new Intent(this, PlayerActivity.class);
         startActivity(intent);
     }
 

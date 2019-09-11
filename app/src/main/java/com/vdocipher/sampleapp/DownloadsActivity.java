@@ -28,6 +28,7 @@ import com.vdocipher.aegis.offline.DownloadSelections;
 import com.vdocipher.aegis.offline.DownloadStatus;
 import com.vdocipher.aegis.offline.OptionsDownloader;
 import com.vdocipher.aegis.offline.VdoDownloadManager;
+import com.vdocipher.aegis.player.VdoPlayer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -448,7 +449,8 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
             return;
         }
         Intent intent = new Intent(this, PlayerActivity.class);
-        intent.putExtra(PlayerActivity.EXTRA_MEDIA_ID, downloadStatus.mediaInfo.mediaId);
+        VdoPlayer.VdoInitParams vdoParams = VdoPlayer.VdoInitParams.createParamsForOffline(downloadStatus.mediaInfo.mediaId);
+        intent.putExtra(PlayerActivity.EXTRA_VDO_PARAMS, vdoParams);
         startActivity(intent);
     }
 

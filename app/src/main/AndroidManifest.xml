@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".OnlinePlayerActivity"
+            android:name=".PlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".tv.TvLandingActivity"
@@ -50,8 +50,6 @@
             android:theme="@style/Theme.Leanback">
         </activity>
         <activity android:name=".DownloadsActivity" />
-        <activity android:name=".PlayerActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <service
             android:name=".DownloadNotificationService"

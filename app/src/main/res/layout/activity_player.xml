@@ -4,24 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.vdocipher.sampleapp.OnlinePlayerActivity">
+    tools:context="com.vdocipher.sampleapp.PlayerActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <fragment
             android:name="com.vdocipher.aegis.player.VdoPlayerSupportFragment"
-            android:id="@+id/online_vdo_player_fragment"
+            android:id="@+id/vdo_player_fragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:keepScreenOn="true"/>
         <com.vdocipher.sampleapp.VdoPlayerControlView
             android:id="@+id/player_control_view"
-            android:layout_alignTop="@id/online_vdo_player_fragment"
-            android:layout_alignBottom="@id/online_vdo_player_fragment"
-            android:layout_alignLeft="@id/online_vdo_player_fragment"
-            android:layout_alignRight="@id/online_vdo_player_fragment"
+            android:layout_alignTop="@id/vdo_player_fragment"
+            android:layout_alignBottom="@id/vdo_player_fragment"
+            android:layout_alignLeft="@id/vdo_player_fragment"
+            android:layout_alignRight="@id/vdo_player_fragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </RelativeLayout>
@@ -33,7 +33,7 @@
         android:layout_gravity="center"
         android:padding="10dp"
         android:textSize="24sp"
-        android:text="Sample online playback"/>
+        android:text="Sample playback"/>
 
     <LinearLayout
         android:id="@+id/log_container"
