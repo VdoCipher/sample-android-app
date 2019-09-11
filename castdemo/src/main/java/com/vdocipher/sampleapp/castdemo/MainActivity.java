@@ -35,9 +35,9 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        loadInfo = ((TextView)findViewById(R.id.params_loader_info));
+        loadInfo = findViewById(R.id.params_loader_info);
         loadInfo.setText(R.string.load_active_msg);
-        playerButton = ((Button)findViewById(R.id.player_btn));
+        playerButton = findViewById(R.id.player_btn);
 
         obtainOtpAndPlaybackInfo();
     }

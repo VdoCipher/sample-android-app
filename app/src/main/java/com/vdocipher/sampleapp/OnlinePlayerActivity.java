@@ -27,13 +27,11 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
 
     private final String TAG = "OnlinePlayerActivity";
 
-    private VdoPlayer player;
     private VdoPlayerSupportFragment playerFragment;
     private VdoPlayerControlView playerControlView;
     private TextView eventLog;
     private String eventLogString = "";
 
-    private boolean playWhenReady = false;
     private int currentOrientation;
 
     private volatile String mOtp;
@@ -57,8 +55,8 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         }
 
         playerFragment = (VdoPlayerSupportFragment)getSupportFragmentManager().findFragmentById(R.id.online_vdo_player_fragment);
-        playerControlView = (VdoPlayerControlView)findViewById(R.id.player_control_view);
-        eventLog = (TextView)findViewById(R.id.event_log);
+        playerControlView = findViewById(R.id.player_control_view);
+        eventLog = findViewById(R.id.event_log);
         eventLog.setMovementMethod(ScrollingMovementMethod.getInstance());
         showControls(false);
 
@@ -171,7 +169,6 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
     public void onInitializationSuccess(VdoPlayer.PlayerHost playerHost, VdoPlayer player, boolean wasRestored) {
         Log.i(TAG, "onInitializationSuccess");
         log("onInitializationSuccess");
-        this.player = player;
         player.addPlaybackEventListener(playbackListener);
         playerControlView.setPlayer(player);
         showControls(true);
@@ -201,7 +198,6 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             log(Utils.playbackStateString(playWhenReady, playbackState));
-            OnlinePlayerActivity.this.playWhenReady = playWhenReady;
         }
 
         @Override
@@ -215,7 +211,7 @@ public class OnlinePlayerActivity extends AppCompatActivity implements VdoPlayer
 
         @Override
         public void onSeekTo(long millis) {
-            Log.i(TAG, "onSeekTo: " + String.valueOf(millis));
+            Log.i(TAG, "onSeekTo: " + millis);
         }
 
         @Override

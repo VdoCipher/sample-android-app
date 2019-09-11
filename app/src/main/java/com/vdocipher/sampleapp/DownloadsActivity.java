@@ -281,7 +281,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     }
 
     public void showSelectionDialog(DownloadOptions downloadOptions, long durationMs) {
-        new OptionSelector(downloadOptions, durationMs, optionsSelectedCallback, OptionSelector.SHOW_HIGHEST_AND_LOWEST_QUALITY)
+        new OptionSelector(downloadOptions, durationMs, optionsSelectedCallback, OptionSelector.OptionStyle.SHOW_HIGHEST_AND_LOWEST_QUALITY)
                 .showSelectionDialog(this, "Download options");
     }
 

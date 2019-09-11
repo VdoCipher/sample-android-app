@@ -34,22 +34,24 @@ public class OptionSelector implements DialogInterface.OnClickListener, View.OnC
 
     private static final String TAG = "OptionSelector";
 
-    public static final int SHOW_INDIVIDUAL_TRACKS = 1;
-    public static final int SHOW_HIGHEST_AND_LOWEST_QUALITY = 2;
+    enum OptionStyle {
+        SHOW_INDIVIDUAL_TRACKS,
+        SHOW_HIGHEST_AND_LOWEST_QUALITY
+    }
 
     private final DownloadOptions downloadOptions;
     private final long durationMs;
-    private final int showOptionsStyle;
+    private final OptionStyle optionStyle;
     private final OptionsSelectedCallback selectedCallback;
 
     private List<Integer> selectedTracks = new ArrayList<>();
 
     public OptionSelector(DownloadOptions options, long durMs, OptionsSelectedCallback callback,
-                          int optionsStyle) {
+                          OptionStyle optionStyle) {
         downloadOptions = options;
         durationMs = durMs;
         selectedCallback = callback;
-        showOptionsStyle = optionsStyle;
+        this.optionStyle = optionStyle;
     }
 
     @Override
@@ -67,7 +69,7 @@ public class OptionSelector implements DialogInterface.OnClickListener, View.OnC
     @Override
     public void onClick(View v) {
         if (v instanceof CheckedTextView) {
-            if (showOptionsStyle == SHOW_INDIVIDUAL_TRACKS) {
+            if (optionStyle == OptionStyle.SHOW_INDIVIDUAL_TRACKS) {
                 CheckedTextView trackView = (CheckedTextView)v;
                 int trackIndex = (int)trackView.getTag();
                 if (trackView.isChecked()) {
@@ -117,7 +119,7 @@ public class OptionSelector implements DialogInterface.OnClickListener, View.OnC
         int selectableItemBackgroundResourceId = attributeArray.getResourceId(0, 0);
         attributeArray.recycle();
 
-        if (showOptionsStyle == SHOW_INDIVIDUAL_TRACKS) {
+        if (optionStyle == OptionStyle.SHOW_INDIVIDUAL_TRACKS) {
             buildIndividualTracksView(context, inflater, root, selectableItemBackgroundResourceId, tracks);
         } else {
             buildCombinedTrackView(context, inflater, root, selectableItemBackgroundResourceId, tracks);
