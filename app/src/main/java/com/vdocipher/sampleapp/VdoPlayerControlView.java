@@ -2,7 +2,6 @@ package com.vdocipher.sampleapp;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -68,7 +67,6 @@ public class VdoPlayerControlView extends FrameLayout {
     private final ImageButton errorView;
     private final TextView errorTextView;
     private final View controlPanel;
-    private final View controllerBackground;
 
     private int ffwdMs;
     private int rewindMs;
@@ -84,17 +82,12 @@ public class VdoPlayerControlView extends FrameLayout {
     private FullscreenActionListener fullscreenActionListener;
     private ControllerVisibilityListener visibilityListener;
 
-    private static final float allowedSpeedList[] = new float[]{0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f};
-    private static final CharSequence allowedSpeedStrList[] =
+    private static final float[] allowedSpeedList = new float[]{0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f};
+    private static final CharSequence[] allowedSpeedStrList =
             new CharSequence[]{"0.5x", "0.75x", "1x", "1.25x", "1.5x", "1.75x", "2x"};
     private int chosenSpeedIndex = 2;
 
-    private Runnable hideAction = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };
+    private Runnable hideAction = this::hide;
 
     public VdoPlayerControlView(Context context) {
         this(context, null);
@@ -124,31 +117,30 @@ public class VdoPlayerControlView extends FrameLayout {
         fastForwardButton.setOnClickListener(uiListener);
         rewindButton = findViewById(R.id.vdo_rewind);
         rewindButton.setOnClickListener(uiListener);
-        durationView = (TextView)findViewById(R.id.vdo_duration);
-        positionView = (TextView)findViewById(R.id.vdo_position);
-        seekBar = (SeekBar)findViewById(R.id.vdo_seekbar);
+        durationView = findViewById(R.id.vdo_duration);
+        positionView = findViewById(R.id.vdo_position);
+        seekBar = findViewById(R.id.vdo_seekbar);
         seekBar.setOnSeekBarChangeListener(uiListener);
-        speedControlButton = (Button)findViewById(R.id.vdo_speed);
+        speedControlButton = findViewById(R.id.vdo_speed);
         speedControlButton.setOnClickListener(uiListener);
-        captionsButton = (ImageButton)findViewById(R.id.vdo_captions);
+        captionsButton = findViewById(R.id.vdo_captions);
         captionsButton.setOnClickListener(uiListener);
-        qualityButton = (ImageButton)findViewById(R.id.vdo_quality);
+        qualityButton = findViewById(R.id.vdo_quality);
         qualityButton.setOnClickListener(uiListener);
-        enterFullscreenButton = (ImageButton)findViewById(R.id.vdo_enter_fullscreen);
+        enterFullscreenButton = findViewById(R.id.vdo_enter_fullscreen);
         enterFullscreenButton.setOnClickListener(uiListener);
-        exitFullscreenButton = (ImageButton)findViewById(R.id.vdo_exit_fullscreen);
+        exitFullscreenButton = findViewById(R.id.vdo_exit_fullscreen);
         exitFullscreenButton.setOnClickListener(uiListener);
         exitFullscreenButton.setVisibility(GONE);
-        loaderView = (ProgressBar)findViewById(R.id.vdo_loader);
+        loaderView = findViewById(R.id.vdo_loader);
         loaderView.setVisibility(GONE);
-        errorView = (ImageButton)findViewById(R.id.vdo_error);
+        errorView = findViewById(R.id.vdo_error);
         errorView.setOnClickListener(uiListener);
         errorView.setVisibility(GONE);
-        errorTextView = (TextView)findViewById(R.id.vdo_error_text);
+        errorTextView = findViewById(R.id.vdo_error_text);
         errorTextView.setOnClickListener(uiListener);
         errorTextView.setVisibility(GONE);
         controlPanel = findViewById(R.id.vdo_control_panel);
-        controllerBackground = findViewById(R.id.vdo_controller_bg);
         setOnClickListener(uiListener);
     }
 
@@ -303,15 +295,12 @@ public class VdoPlayerControlView extends FrameLayout {
 
     private void showSpeedControlDialog() {
         new AlertDialog.Builder(getContext())
-                .setSingleChoiceItems(allowedSpeedStrList, chosenSpeedIndex, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (player != null) {
-                            float speed = allowedSpeedList[which];
-                            player.setPlaybackSpeed(speed);
-                        }
-                        dialog.dismiss();
+                .setSingleChoiceItems(allowedSpeedStrList, chosenSpeedIndex, (dialog, which) -> {
+                    if (player != null) {
+                        float speed = allowedSpeedList[which];
+                        player.setPlaybackSpeed(speed);
                     }
+                    dialog.dismiss();
                 })
                 .setTitle("Choose playback speed")
                 .show();
@@ -385,21 +374,18 @@ public class VdoPlayerControlView extends FrameLayout {
                 android.R.layout.simple_list_item_single_choice, trackHolders);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(title)
-                .setSingleChoiceItems(adapter, selectedTrackIndex, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (player != null) {
-                            if (selectedTrackIndex != which) {
-                                // set selection
-                                Track selectedTrack = trackHolders[which].track;
-                                Log.i(TAG, "selected track index: " + which + ", " + selectedTrack.toString());
-                                player.setSelectedTracks(new Track[]{selectedTrack});
-                            } else {
-                                Log.i(TAG, "track selection unchanged");
-                            }
+                .setSingleChoiceItems(adapter, selectedTrackIndex, (dialog, which) -> {
+                    if (player != null) {
+                        if (selectedTrackIndex != which) {
+                            // set selection
+                            Track selectedTrack = trackHolders[which].track;
+                            Log.i(TAG, "selected track index: " + which + ", " + selectedTrack.toString());
+                            player.setSelectedTracks(new Track[]{selectedTrack});
+                        } else {
+                            Log.i(TAG, "track selection unchanged");
                         }
-                        dialog.dismiss();
                     }
+                    dialog.dismiss();
                 })
                 .create()
                 .show();

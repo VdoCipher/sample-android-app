@@ -1,7 +1,6 @@
 package com.vdocipher.sampleapp;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -71,40 +70,34 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_downloads);
 
-        download1 = (Button)findViewById(R.id.download_btn_1);
-        download2 = (Button)findViewById(R.id.download_btn_2);
-        download3 = (Button)findViewById(R.id.download_btn_3);
+        download1 = findViewById(R.id.download_btn_1);
+        download2 = findViewById(R.id.download_btn_2);
+        download3 = findViewById(R.id.download_btn_3);
         download1.setEnabled(false);
         download2.setEnabled(false);
         download3.setEnabled(false);
-        downloadsListView = (RecyclerView)findViewById(R.id.downloads_list);
+        downloadsListView = findViewById(R.id.downloads_list);
 
-        deleteAll = (Button)findViewById(R.id.delete_all);
+        deleteAll = findViewById(R.id.delete_all);
         deleteAll.setEnabled(false);
-        refreshList = (Button)findViewById(R.id.refresh_list);
+        refreshList = findViewById(R.id.refresh_list);
 
         downloadStatusList = new ArrayList<>();
         downloadsAdapter = new DownloadsAdapter(downloadStatusList);
         downloadsListView.setAdapter(downloadsAdapter);
         downloadsListView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        refreshList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    refreshDownloadsList();
-                } else {
-                    showToastAndLog("Minimum api level required is 21", Toast.LENGTH_LONG);
-                }
+        refreshList.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                refreshDownloadsList();
+            } else {
+                showToastAndLog("Minimum api level required is 21", Toast.LENGTH_LONG);
             }
         });
 
-        deleteAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    deleteAllDownloads();
-                }
+        deleteAll.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                deleteAllDownloads();
             }
         });
 
@@ -242,43 +235,32 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
 
     private void setDownloadListeners(final Button downloadButton, final String mediaName,
                                       final String otp, final String playbackInfo) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                downloadButton.setEnabled(true);
-                downloadButton.setText("Download " + mediaName);
-                downloadButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        getOptions(otp, playbackInfo);
-                    }
-                });
-            }
+        runOnUiThread(() -> {
+            downloadButton.setEnabled(true);
+            downloadButton.setText("Download " + mediaName);
+            downloadButton.setOnClickListener(view -> getOptions(otp, playbackInfo));
         });
     }
 
     private void getOptions(final String otp, final String playbackInfo) {
         HandlerThread handlerThread = new HandlerThread(TAG);
         handlerThread.start();
-        new Handler(handlerThread.getLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                new OptionsDownloader().downloadOptionsWithOtp(otp, playbackInfo, new OptionsDownloader.Callback() {
-                    @Override
-                    public void onOptionsReceived(DownloadOptions options) {
-                        Log.i(TAG, "onOptionsReceived");
-                        showSelectionDialog(options, options.mediaInfo.duration);
-                    }
+        new Handler(handlerThread.getLooper()).post(
+                () -> new OptionsDownloader().downloadOptionsWithOtp(
+                        otp, playbackInfo, new OptionsDownloader.Callback() {
+                            @Override
+                            public void onOptionsReceived(DownloadOptions options) {
+                                Log.i(TAG, "onOptionsReceived");
+                                showSelectionDialog(options, options.mediaInfo.duration);
+                            }
 
-                    @Override
-                    public void onOptionsNotReceived(ErrorDescription errDesc) {
-                        String errMsg = "onOptionsNotReceived : " + errDesc.toString();
-                        Log.e(TAG, errMsg);
-                        Toast.makeText(DownloadsActivity.this, errMsg, Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        });
+                            @Override
+                            public void onOptionsNotReceived(ErrorDescription errDesc) {
+                                String errMsg = "onOptionsNotReceived : " + errDesc.toString();
+                                Log.e(TAG, errMsg);
+                                Toast.makeText(DownloadsActivity.this, errMsg, Toast.LENGTH_LONG).show();
+                            }
+        }));
     }
 
     public void showSelectionDialog(DownloadOptions downloadOptions, long durationMs) {
@@ -367,27 +349,16 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
                 .setMessage("Status: " + statusString(downloadStatus).toUpperCase());
 
         if (downloadStatus.status == VdoDownloadManager.STATUS_COMPLETED) {
-            builder.setPositiveButton("PLAY", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    startPlayback(downloadStatus);
-                    dialog.dismiss();
-                }
+            builder.setPositiveButton("PLAY", (dialog, which) -> {
+                startPlayback(downloadStatus);
+                dialog.dismiss();
             });
         } else {
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+            builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
         }
-        builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                vdoDownloadManager.remove(downloadStatus.mediaInfo.mediaId);
-                dialog.dismiss();
-            }
+        builder.setNegativeButton("DELETE", (dialog, which) -> {
+            vdoDownloadManager.remove(downloadStatus.mediaInfo.mediaId);
+            dialog.dismiss();
         });
 
         builder.create().show();
@@ -455,12 +426,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     }
 
     private void showToastAndLog(final String message, final int toastLength) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), message, toastLength).show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), message, toastLength).show());
         Log.i(TAG, message);
     }
 
@@ -495,8 +461,8 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
 
             public ViewHolder(View itemView) {
                 super(itemView);
-                title = (TextView)itemView.findViewById(R.id.vdo_title);
-                status = (TextView)itemView.findViewById(R.id.download_status);
+                title = itemView.findViewById(R.id.vdo_title);
+                status = itemView.findViewById(R.id.download_status);
                 itemView.setOnClickListener(this);
             }
 

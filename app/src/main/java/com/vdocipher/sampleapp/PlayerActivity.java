@@ -112,44 +112,28 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
     private void obtainOtpAndPlaybackInfo() {
         // todo use asynctask
         log("fetching params...");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Pair<String, String> pair = Utils.getSampleOtpAndPlaybackInfo();
-                    vdoParams = new VdoInitParams.Builder()
-                            .setOtp(pair.first)
-                            .setPlaybackInfo(pair.second)
-                            .setPreferredCaptionsLanguage("en")
-                            .build();
-                    Log.i(TAG, "obtained new otp and playbackInfo");
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initializePlayer();
-                        }
-                    });
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showToast("Error fetching otp and playbackInfo: " + e.getClass().getSimpleName());
-                            log("error fetching otp and playbackInfo");
-                        }
-                    });
-                }
+        new Thread(() -> {
+            try {
+                Pair<String, String> pair = Utils.getSampleOtpAndPlaybackInfo();
+                vdoParams = new VdoInitParams.Builder()
+                        .setOtp(pair.first)
+                        .setPlaybackInfo(pair.second)
+                        .setPreferredCaptionsLanguage("en")
+                        .build();
+                Log.i(TAG, "obtained new otp and playbackInfo");
+                runOnUiThread(this::initializePlayer);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    showToast("Error fetching otp and playbackInfo: " + e.getClass().getSimpleName());
+                    log("error fetching otp and playbackInfo");
+                });
             }
         }).start();
     }
 
     private void showToast(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(PlayerActivity.this, message, Toast.LENGTH_SHORT).show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(PlayerActivity.this, message, Toast.LENGTH_SHORT).show());
     }
 
     private void log(String msg) {
@@ -256,12 +240,9 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
         }
     };
 
-    private VdoPlayerControlView.FullscreenActionListener fullscreenToggleListener = new VdoPlayerControlView.FullscreenActionListener() {
-        @Override
-        public boolean onFullscreenAction(boolean enterFullscreen) {
-            showFullScreen(enterFullscreen);
-            return true;
-        }
+    private VdoPlayerControlView.FullscreenActionListener fullscreenToggleListener = enterFullscreen -> {
+        showFullScreen(enterFullscreen);
+        return true;
     };
 
     private VdoPlayerControlView.ControllerVisibilityListener visibilityListener = new VdoPlayerControlView.ControllerVisibilityListener() {
@@ -346,15 +327,12 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
         }
     }
 
-    private View.OnSystemUiVisibilityChangeListener uiVisibilityListener = new View.OnSystemUiVisibilityChangeListener() {
-        @Override
-        public void onSystemUiVisibilityChange(int visibility) {
-            Log.v(TAG, "onSystemUiVisibilityChange");
-            // show player controls when system ui is showing
-            if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                Log.v(TAG, "system ui visible, making controls visible");
-                showControls(true);
-            }
+    private View.OnSystemUiVisibilityChangeListener uiVisibilityListener = visibility -> {
+        Log.v(TAG, "onSystemUiVisibilityChange");
+        // show player controls when system ui is showing
+        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+            Log.v(TAG, "system ui visible, making controls visible");
+            showControls(true);
         }
     };
 }
