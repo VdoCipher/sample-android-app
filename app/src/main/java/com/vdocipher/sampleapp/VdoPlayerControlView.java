@@ -78,7 +78,7 @@ public class VdoPlayerControlView extends FrameLayout {
 
     private @Nullable VdoPlayer player;
     private UiListener uiListener;
-    private VdoPlayer.VdoInitParams lastErrorParams;
+    private VdoPlayer.VdoInitParams lastErrorParams; // todo gather all relevant state and update UI using it
     private FullscreenActionListener fullscreenActionListener;
     private ControllerVisibilityListener visibilityListener;
 
@@ -392,14 +392,21 @@ public class VdoPlayerControlView extends FrameLayout {
 
     }
 
-    private void showError(ErrorDescription errorDescription) {
-        updateLoader(false);
-        controlPanel.setVisibility(GONE);
-        errorView.setVisibility(VISIBLE);
-        errorTextView.setVisibility(VISIBLE);
-        String errMsg = "An error occurred : " + errorDescription.errorCode + "\nTap to retry";
-        errorTextView.setText(errMsg);
-        show();
+    private void updateErrorView(@Nullable ErrorDescription errorDescription) {
+        if (errorDescription != null) {
+            updateLoader(false);
+            controlPanel.setVisibility(GONE);
+            errorView.setVisibility(VISIBLE);
+            errorTextView.setVisibility(VISIBLE);
+            String errMsg = "An error occurred : " + errorDescription.errorCode + "\nTap to retry";
+            errorTextView.setText(errMsg);
+            show();
+        } else {
+            controlPanel.setVisibility(VISIBLE);
+            errorView.setVisibility(GONE);
+            errorTextView.setVisibility(GONE);
+            show();
+        }
     }
 
     private void retryAfterError() {
@@ -502,6 +509,8 @@ public class VdoPlayerControlView extends FrameLayout {
         @Override
         public void onLoading(VdoPlayer.VdoInitParams vdoInitParams) {
             updateLoader(true);
+            lastErrorParams = null;
+            updateErrorView(null);
         }
 
         @Override
@@ -514,7 +523,7 @@ public class VdoPlayerControlView extends FrameLayout {
         @Override
         public void onLoadError(VdoPlayer.VdoInitParams vdoParams, ErrorDescription errorDescription) {
             lastErrorParams = vdoParams;
-            showError(errorDescription);
+            updateErrorView(errorDescription);
         }
 
         @Override
@@ -525,7 +534,7 @@ public class VdoPlayerControlView extends FrameLayout {
         @Override
         public void onError(VdoPlayer.VdoInitParams vdoParams, ErrorDescription errorDescription) {
             lastErrorParams = vdoParams;
-            showError(errorDescription);
+            updateErrorView(errorDescription);
         }
 
         @Override
