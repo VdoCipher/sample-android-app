@@ -25,8 +25,8 @@ import com.vdocipher.sampleapp.R;
 public class TvPlayerActivity extends Activity implements VdoPlayer.InitializationListener,
         VdoPlayer.PlaybackEventListener {
     private static final String TAG = "TvPlayerActivity";
-    public static final String OTP = "otp";
-    public static final String PLAYBACK_INFO = "playbackInfo";
+    public static final String EXTRA_OTP = "otp";
+    public static final String EXTRA_PLAYBACK_INFO = "playbackInfo";
 
     private VdoPlayerFragment playerFragment;
     private PlaybackOverlayFragment overlayFragment;
@@ -107,8 +107,8 @@ public class TvPlayerActivity extends Activity implements VdoPlayer.Initializati
 
     private void loadParams() {
         Intent intent = getIntent();
-        String otp = intent.getStringExtra(OTP);
-        String playbackInfo = intent.getStringExtra(PLAYBACK_INFO);
+        String otp = intent.getStringExtra(EXTRA_OTP);
+        String playbackInfo = intent.getStringExtra(EXTRA_PLAYBACK_INFO);
         VdoPlayer.VdoInitParams vdoParams = VdoPlayer.VdoInitParams.createParamsWithOtp(otp, playbackInfo);
         mPlayer.load(vdoParams);
     }

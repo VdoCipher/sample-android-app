@@ -71,8 +71,8 @@ public class TvLandingActivity extends Activity {
 
     private void startPlayback() {
         Intent intent = new Intent(this, TvPlayerActivity.class);
-        intent.putExtra(TvPlayerActivity.OTP, mOtp);
-        intent.putExtra(TvPlayerActivity.PLAYBACK_INFO, mPlaybackInfo);
+        intent.putExtra(TvPlayerActivity.EXTRA_OTP, mOtp);
+        intent.putExtra(TvPlayerActivity.EXTRA_PLAYBACK_INFO, mPlaybackInfo);
         startActivity(intent);
     }
 
