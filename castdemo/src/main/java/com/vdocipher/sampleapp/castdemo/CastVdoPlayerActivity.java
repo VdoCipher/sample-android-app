@@ -175,7 +175,6 @@ public class CastVdoPlayerActivity extends AppCompatActivity
         log("onInitializationSuccess");
         localPlayer = player;
         player.addPlaybackEventListener(localPlaybackListener);
-        playerControlView.setPlayer(player);
         showControls(true);
 
         playerControlView.setFullscreenActionListener(fullscreenToggleListener);
