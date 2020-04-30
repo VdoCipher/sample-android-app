@@ -342,9 +342,16 @@ public class VdoPlayerControlView extends FrameLayout {
             }
         }
 
+        // We need audio track bitrate in order to show combined bandwidth
+        final int audioBitrate = getAudioBitrate(selectedTracks);
+
         // first, let's convert tracks to array of TrackHolders for better display in dialog
         ArrayList<TrackHolder> trackHolderList = new ArrayList<>();
-        for (Track track : typeTrackList) trackHolderList.add(new TrackHolder(track));
+        for (Track track : typeTrackList) {
+            TrackHolder trackHolder = trackType == Track.TYPE_VIDEO ? new TrackHolder(track, audioBitrate)
+                    : new TrackHolder(track);
+            trackHolderList.add(trackHolder);
+        }
 
         // if captions tracks are available, lets add a DISABLE_CAPTIONS track for turning off captions
         if (trackType == Track.TYPE_CAPTIONS && trackHolderList.size() > 0) {
@@ -393,6 +400,15 @@ public class VdoPlayerControlView extends FrameLayout {
                 .create()
                 .show();
 
+    }
+
+    private int getAudioBitrate(Track[] selectedTracks) {
+        for (Track selectedTrack : selectedTracks) {
+            if (selectedTrack.type == Track.TYPE_AUDIO) {
+                return selectedTrack.bitrate;
+            }
+        }
+        return 0;
     }
 
     private void updateErrorView(@Nullable ErrorDescription errorDescription) {
@@ -559,9 +575,15 @@ public class VdoPlayerControlView extends FrameLayout {
         };
 
         final Track track;
+        final int audioBitrate;
 
         TrackHolder(Track track) {
+            this(track, 0);
+        }
+
+        TrackHolder(Track track, int audioBitrate) {
             this.track = track;
+            this.audioBitrate = audioBitrate;
         }
 
         /**
@@ -572,7 +594,8 @@ public class VdoPlayerControlView extends FrameLayout {
             if (track == Track.DISABLE_CAPTIONS) {
                 return "Turn off Captions";
             } else if (track.type == Track.TYPE_VIDEO) {
-                return track.bitrate / 1024 + "kbps (" + dataExpenditurePerHour(track.bitrate) + ")";
+                return (track.bitrate + audioBitrate) / 1024 + "kbps ("
+                        + dataExpenditurePerHour(track.bitrate + audioBitrate) + ")";
             }
 
             return track.type == Track.TYPE_CAPTIONS ? track.language : track.toString();
