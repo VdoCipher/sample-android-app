@@ -353,12 +353,15 @@ public class VdoPlayerControlView extends FrameLayout {
             // if no captions are selected, indicate DISABLE_CAPTIONS as selected in dialog
             if (selectedIndex < 0) selectedIndex = trackHolderList.size() - 1;
         } else if (trackType == Track.TYPE_VIDEO) {
-            // todo auto option
+            // todo auto option to go back to adaptive mode
+            /*
+            Uncomment to show a "default" option when only one track available
             if (trackHolderList.size() == 1) {
                 // just show a default track option
                 trackHolderList.clear();
                 trackHolderList.add(TrackHolder.DEFAULT);
             }
+             */
         }
 
         final TrackHolder[] trackHolders = trackHolderList.toArray(new TrackHolder[0]);
