@@ -3,6 +3,8 @@ package com.vdocipher.sampleapp;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
+
+import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -114,13 +116,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
         log("fetching params...");
         new Thread(() -> {
             try {
-                Pair<String, String> pair = Utils.getSampleOtpAndPlaybackInfo();
-                vdoParams = new VdoInitParams.Builder()
-                        .setOtp(pair.first)
-                        .setPlaybackInfo(pair.second)
-                        .setPreferredCaptionsLanguage("en")
-                        .build();
-                Log.i(TAG, "obtained new otp and playbackInfo");
+                vdoParams = obtainNewVdoParams();
                 runOnUiThread(this::initializePlayer);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
@@ -130,6 +126,18 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
                 });
             }
         }).start();
+    }
+
+    @WorkerThread
+    private VdoInitParams obtainNewVdoParams() throws IOException, JSONException {
+        Pair<String, String> pair = Utils.getSampleOtpAndPlaybackInfo();
+        VdoInitParams vdoParams = new VdoInitParams.Builder()
+                .setOtp(pair.first)
+                .setPlaybackInfo(pair.second)
+                .setPreferredCaptionsLanguage("en")
+                .build();
+        Log.i(TAG, "obtained new otp and playbackInfo");
+        return vdoParams;
     }
 
     private void showToast(final String message) {
@@ -164,6 +172,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
 
         playerControlView.setFullscreenActionListener(fullscreenToggleListener);
         playerControlView.setControllerVisibilityListener(visibilityListener);
+        playerControlView.setVdoParamsGenerator(vdoParamsGenerator);
 
         // load a media to the player
         player.load(vdoParams);
@@ -215,7 +224,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
 
         @Override
         public void onLoadError(VdoPlayer.VdoInitParams vdoInitParams, ErrorDescription errorDescription) {
-            String err = "onLoadError code: " + errorDescription.errorCode;
+            String err = "onLoadError code: " + errorDescription.errorCode + ": " + errorDescription.errorMsg;
             Log.e(TAG, err);
             log(err);
         }
@@ -253,6 +262,22 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
                 if (visibility != View.VISIBLE) {
                     showSystemUi(false);
                 }
+            }
+        }
+    };
+
+    private VdoPlayerControlView.VdoParamsGenerator vdoParamsGenerator = new VdoPlayerControlView.VdoParamsGenerator() {
+        @Override
+        public VdoInitParams getNewVdoInitParams() {
+            try {
+                return obtainNewVdoParams();
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    showToast("Error generating new otp and playbackInfo: " + e.getClass().getSimpleName());
+                    log("Error generating new otp and playbackInfo");
+                });
+                return null;
             }
         }
     };

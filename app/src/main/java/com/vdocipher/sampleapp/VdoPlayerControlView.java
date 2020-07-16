@@ -3,6 +3,9 @@ package com.vdocipher.sampleapp;
 import android.app.AlertDialog;
 import android.content.Context;
 import androidx.annotation.Nullable;
+
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +18,7 @@ import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
@@ -23,6 +27,8 @@ import com.vdocipher.aegis.player.VdoPlayer;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A view for controlling playback via a VdoPlayer.
@@ -43,6 +49,13 @@ public class VdoPlayerControlView extends FrameLayout {
          * @return if enter or exit fullscreen action was handled
          */
         boolean onFullscreenAction(boolean enterFullscreen);
+    }
+
+    public interface VdoParamsGenerator {
+        /**
+         * @return new vdo params
+         */
+        VdoPlayer.VdoInitParams getNewVdoInitParams();
     }
 
     private static final String TAG = "VdoPlayerControlView";
@@ -68,6 +81,9 @@ public class VdoPlayerControlView extends FrameLayout {
     private final TextView errorTextView;
     private final View controlPanel;
 
+    private HandlerThread helperThread;
+    private Handler helperHandler;
+
     private int ffwdMs;
     private int rewindMs;
     private int showTimeoutMs;
@@ -79,13 +95,17 @@ public class VdoPlayerControlView extends FrameLayout {
     private @Nullable VdoPlayer player;
     private UiListener uiListener;
     private VdoPlayer.VdoInitParams lastErrorParams; // todo gather all relevant state and update UI using it
+    private boolean needNewVdoParams;
     private FullscreenActionListener fullscreenActionListener;
     private ControllerVisibilityListener visibilityListener;
+    private VdoParamsGenerator vdoParamsGenerator;
 
     private static final float[] allowedSpeedList = new float[]{0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f};
     private static final CharSequence[] allowedSpeedStrList =
             new CharSequence[]{"0.5x", "0.75x", "1x", "1.25x", "1.5x", "1.75x", "2x"};
     private int chosenSpeedIndex = 2;
+
+    private static final List<Integer> ERROR_CODES_FOR_NEW_PARAMS = Arrays.asList(2013, 2018);
 
     private Runnable hideAction = this::hide;
 
@@ -164,6 +184,10 @@ public class VdoPlayerControlView extends FrameLayout {
         this.visibilityListener = visibilityListener;
     }
 
+    public void setVdoParamsGenerator(VdoParamsGenerator vdoParamsGenerator) {
+        this.vdoParamsGenerator = vdoParamsGenerator;
+    }
+
     public void show() {
         if (!controllerVisible()) {
             controlPanel.setVisibility(VISIBLE);
@@ -199,6 +223,10 @@ public class VdoPlayerControlView extends FrameLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         isAttachedToWindow = true;
+
+        helperThread = new HandlerThread(TAG);
+        helperThread.start();
+        helperHandler = new Handler(helperThread.getLooper());
     }
 
     @Override
@@ -206,6 +234,10 @@ public class VdoPlayerControlView extends FrameLayout {
         super.onDetachedFromWindow();
         isAttachedToWindow = false;
         removeCallbacks(hideAction);
+
+        helperThread.quit();
+        helperThread = null;
+        helperHandler = null;
     }
 
     /**
@@ -430,11 +462,29 @@ public class VdoPlayerControlView extends FrameLayout {
 
     private void retryAfterError() {
         if (player != null && lastErrorParams != null) {
-            errorView.setVisibility(GONE);
-            errorTextView.setVisibility(GONE);
-            controlPanel.setVisibility(VISIBLE);
-            player.load(lastErrorParams);
-            lastErrorParams = null;
+            if (!needNewVdoParams) {
+                errorView.setVisibility(GONE);
+                errorTextView.setVisibility(GONE);
+                controlPanel.setVisibility(VISIBLE);
+                player.load(lastErrorParams);
+                lastErrorParams = null;
+            } else if (vdoParamsGenerator != null && helperHandler != null) {
+                helperHandler.post(() -> {
+                    VdoPlayer.VdoInitParams retryParams = vdoParamsGenerator.getNewVdoInitParams();
+                    if (retryParams != null) {
+                        post(() -> {
+                            errorView.setVisibility(GONE);
+                            errorTextView.setVisibility(GONE);
+                            controlPanel.setVisibility(VISIBLE);
+                            player.load(retryParams);
+                            lastErrorParams = null;
+                        });
+                    }
+                });
+            } else {
+                Log.e(TAG, "cannot retry loading params");
+                Toast.makeText(getContext(), "cannot retry loading params", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -542,6 +592,7 @@ public class VdoPlayerControlView extends FrameLayout {
         @Override
         public void onLoadError(VdoPlayer.VdoInitParams vdoParams, ErrorDescription errorDescription) {
             lastErrorParams = vdoParams;
+            needNewVdoParams = ERROR_CODES_FOR_NEW_PARAMS.contains(errorDescription.errorCode);
             updateErrorView(errorDescription);
         }
 
@@ -553,6 +604,7 @@ public class VdoPlayerControlView extends FrameLayout {
         @Override
         public void onError(VdoPlayer.VdoInitParams vdoParams, ErrorDescription errorDescription) {
             lastErrorParams = vdoParams;
+            needNewVdoParams = ERROR_CODES_FOR_NEW_PARAMS.contains(errorDescription.errorCode);
             updateErrorView(errorDescription);
         }
 
