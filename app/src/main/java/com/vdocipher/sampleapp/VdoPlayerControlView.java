@@ -464,25 +464,40 @@ public class VdoPlayerControlView extends FrameLayout {
      * Customize error message displayed on the player view depending on the error code.
      */
     private String getErrorMessage(ErrorDescription errorDescription) {
+        String messagePrefix = "Error: " + errorDescription.errorCode + ". ";
+
         switch (errorDescription.errorCode) {
+            case 5110:
+            case 5124:
+            case 5130:
+                return messagePrefix + "Please check your internet connection and try restarting " +
+                        "the app.";
+            case 5160:
             case 5161:
-                return "Error : 5161. Downloaded media files have been accidentally deleted by " +
+                return messagePrefix + "Downloaded media files have been accidentally deleted by " +
                         "some other app in your mobile. Kindly download the video again and do " +
                         "not use cleaner apps.";
             case 6101:
-                return "Error: 6101. Kindly try restarting the phone and app.";
+            case 6120:
+                return messagePrefix + "Kindly try restarting the phone and app.";
+            case 1220:
+            case 1250:
+            case 1253:
             case 2021:
-                return "Error : 2021. Phone is not compatible for secure DRM playback. " +
+            case 6155:
+            case 6156:
+            case 6157:
+            case 6166:
+            case 6178:
+            case 6186:
+                return messagePrefix + "Phone is not compatible for secure playback. " +
                         "Kindly update your OS, restart the phone and app. If still not " +
                         "corrected, factory reset can be tried if possible.";
-            case 6166:
-                return "Error : 6166. Phone is not compatible for secure DRM playback. Kindly " +
-                        "update your OS, restart the phone and app.";
-            case 5124:
-                return "Error : 5124. Please check your internet connection and try restarting " +
-                        "the app.";
+            case 6187:
+                return messagePrefix + "Rental license for downloaded video has expired. Kindly " +
+                        "download again.";
             default:
-                return "An error occurred : " + errorDescription.errorCode + "\nTap to retry";
+                return "An error occurred: " + errorDescription.errorCode + "\nTap to retry";
         }
     }
 
