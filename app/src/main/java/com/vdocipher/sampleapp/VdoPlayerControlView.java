@@ -449,7 +449,7 @@ public class VdoPlayerControlView extends FrameLayout {
             controlPanel.setVisibility(GONE);
             errorView.setVisibility(VISIBLE);
             errorTextView.setVisibility(VISIBLE);
-            String errMsg = "An error occurred : " + errorDescription.errorCode + "\nTap to retry";
+            String errMsg = getErrorMessage(errorDescription);
             errorTextView.setText(errMsg);
             show();
         } else {
@@ -457,6 +457,32 @@ public class VdoPlayerControlView extends FrameLayout {
             errorView.setVisibility(GONE);
             errorTextView.setVisibility(GONE);
             show();
+        }
+    }
+
+    /**
+     * Customize error message displayed on the player view depending on the error code.
+     */
+    private String getErrorMessage(ErrorDescription errorDescription) {
+        switch (errorDescription.errorCode) {
+            case 5161:
+                return "Error : 5161. Downloaded media files have been accidentally deleted by " +
+                        "some other app in your mobile. Kindly download the video again and do " +
+                        "not use cleaner apps.";
+            case 6101:
+                return "Error: 6101. Kindly try restarting the phone and app.";
+            case 2021:
+                return "Error : 2021. Phone is not compatible for secure DRM playback. " +
+                        "Kindly update your OS, restart the phone and app. If still not " +
+                        "corrected, factory reset can be tried if possible.";
+            case 6166:
+                return "Error : 6166. Phone is not compatible for secure DRM playback. Kindly " +
+                        "update your OS, restart the phone and app.";
+            case 5124:
+                return "Error : 5124. Please check your internet connection and try restarting " +
+                        "the app.";
+            default:
+                return "An error occurred : " + errorDescription.errorCode + "\nTap to retry";
         }
     }
 
