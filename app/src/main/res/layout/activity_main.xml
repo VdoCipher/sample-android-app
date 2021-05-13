@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -46,5 +47,19 @@
             android:layout_margin="10dp"
             android:padding="20dp"
             android:onClick="showDownloads"/>
+    </LinearLayout>
+    <LinearLayout
+        android:gravity="bottom|center"
+        android:paddingBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/library_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:text=""
+            tools:hint="VdoCipher sdk version: a.b.c"/>
     </LinearLayout>
 </LinearLayout>

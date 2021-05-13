@@ -1,12 +1,12 @@
 package com.vdocipher.sampleapp;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements ProviderInstaller
         }
 
         Log.i(TAG, "version name = " + com.vdocipher.aegis.BuildConfig.VERSION_NAME);
+        ((TextView)findViewById(R.id.library_version))
+                .setText("VdoCipher sdk version: " + com.vdocipher.aegis.BuildConfig.VERSION_NAME);
 
         if (Build.VERSION.SDK_INT <= 19) {
             allowUserInteraction(false);
