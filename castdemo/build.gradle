@@ -1,14 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.vdocipher.sampleapp.castdemo"
-        minSdkVersion 16
-        targetSdkVersion 28
+        minSdkVersion 17
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -28,7 +29,7 @@ android {
 
 }
 
-def vdocipher_sdk_version = '1.7.0'
+def vdocipher_sdk_version = '1.7.3'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -40,4 +41,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation "androidx.multidex:multidex:2.0.1"
 }

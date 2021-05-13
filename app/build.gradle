@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "28.0.3"
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.vdocipher.sampleapp"
-        minSdkVersion 16
-        targetSdkVersion 28
+        minSdkVersion 17
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -29,6 +29,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.leanback:leanback:1.0.0'
     implementation 'com.loopj.android:android-async-http:1.4.9'
-    implementation 'com.vdocipher.aegis:vdocipher-android:1.7.0'
+    implementation 'com.vdocipher.aegis:vdocipher-android:1.7.3'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    implementation "androidx.multidex:multidex:2.0.1"
 }
