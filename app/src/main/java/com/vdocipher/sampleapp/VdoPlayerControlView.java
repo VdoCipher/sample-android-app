@@ -449,7 +449,7 @@ public class VdoPlayerControlView extends FrameLayout {
             controlPanel.setVisibility(GONE);
             errorView.setVisibility(VISIBLE);
             errorTextView.setVisibility(VISIBLE);
-            String errMsg = "An error occurred : " + errorDescription.errorCode + "\nTap to retry";
+            String errMsg = ErrorMessages.getErrorMessage(errorDescription);
             errorTextView.setText(errMsg);
             show();
         } else {
