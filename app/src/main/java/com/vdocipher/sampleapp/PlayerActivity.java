@@ -61,6 +61,10 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
 
         playerFragment = (VdoPlayerSupportFragment)getSupportFragmentManager().findFragmentById(R.id.vdo_player_fragment);
         playerControlView = findViewById(R.id.player_control_view);
+
+        ((TextView)findViewById(R.id.library_version))
+                .setText("sdk version: " + com.vdocipher.aegis.BuildConfig.VERSION_NAME);
+
         eventLog = findViewById(R.id.event_log);
         eventLog.setMovementMethod(ScrollingMovementMethod.getInstance());
         showControls(false);
@@ -296,6 +300,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
         } else if (newOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             // hide other views
             (findViewById(R.id.title_text)).setVisibility(View.GONE);
+            (findViewById(R.id.library_version)).setVisibility(View.GONE);
             (findViewById(R.id.log_container)).setVisibility(View.GONE);
             (findViewById(R.id.vdo_player_fragment)).setLayoutParams(new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -306,6 +311,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
         } else {
             // show other views
             (findViewById(R.id.title_text)).setVisibility(View.VISIBLE);
+            (findViewById(R.id.library_version)).setVisibility(View.VISIBLE);
             (findViewById(R.id.log_container)).setVisibility(View.VISIBLE);
             (findViewById(R.id.vdo_player_fragment)).setLayoutParams(new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
