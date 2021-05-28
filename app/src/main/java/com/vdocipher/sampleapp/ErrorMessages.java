@@ -14,6 +14,9 @@ public final class ErrorMessages {
         String messagePrefix = "Error: " + errorDescription.errorCode + ". ";
 
         switch (errorDescription.errorCode) {
+            case 1201:
+                return messagePrefix + "Please make sure USB debugging is disabled. In " +
+                        "\"Settings > System > Advanced > Developer options > Turn off USB debugging\"";
             case 2013:
             case 2018:
                 return messagePrefix + "OTP is expired or invalid. Please go back, and start " +
