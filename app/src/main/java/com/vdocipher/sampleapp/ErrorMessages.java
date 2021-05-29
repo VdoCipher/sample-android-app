@@ -15,6 +15,7 @@ public final class ErrorMessages {
 
         switch (errorDescription.errorCode) {
             case 1201:
+            case 1202:
                 return messagePrefix + "Please make sure USB debugging is disabled. In " +
                         "\"Settings > System > Advanced > Developer options > Turn off USB debugging\"";
             case 2013:
