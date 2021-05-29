@@ -29,7 +29,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.leanback:leanback:1.0.0'
     implementation 'com.loopj.android:android-async-http:1.4.9'
-    implementation 'com.vdocipher.aegis:vdocipher-android:1.7.3'
+    implementation 'com.vdocipher.aegis:vdocipher-android:1.8.0'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     implementation "androidx.multidex:multidex:2.0.1"
 }
