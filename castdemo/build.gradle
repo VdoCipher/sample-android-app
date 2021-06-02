@@ -29,7 +29,7 @@ android {
 
 }
 
-def vdocipher_sdk_version = '1.8.0'
+def vdocipher_sdk_version = '1.8.1'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
