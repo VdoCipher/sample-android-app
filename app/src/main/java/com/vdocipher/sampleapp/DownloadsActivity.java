@@ -149,8 +149,8 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
 
     @Override
     public void onFailed(String mediaId, DownloadStatus downloadStatus) {
-        Log.e(TAG, mediaId + " download error: " + downloadStatus.reason);
-        Toast.makeText(this, " download error: " + downloadStatus.reason,
+        Log.e(TAG, mediaId + " download error: " + downloadStatus.reason + " " + downloadStatus.reasonDescription);
+        Toast.makeText(this, " download error: " + downloadStatus.reason + " " + downloadStatus.reasonDescription,
                 Toast.LENGTH_LONG).show();
         updateListItem(downloadStatus);
     }
@@ -441,7 +441,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
             case VdoDownloadManager.STATUS_COMPLETED:
                 return "Completed";
             case VdoDownloadManager.STATUS_FAILED:
-                return "Error " + status.reason;
+                return "Error " + status.reason + " " + status.reasonDescription;
             case VdoDownloadManager.STATUS_PENDING:
                 return "Queued";
             case VdoDownloadManager.STATUS_PAUSED:
