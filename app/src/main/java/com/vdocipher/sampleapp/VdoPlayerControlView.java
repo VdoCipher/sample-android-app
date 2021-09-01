@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
+import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayer;
 
 import java.math.RoundingMode;
@@ -55,7 +56,7 @@ public class VdoPlayerControlView extends FrameLayout {
         /**
          * @return new vdo params
          */
-        VdoPlayer.VdoInitParams getNewVdoInitParams();
+        VdoInitParams getNewVdoInitParams();
     }
 
     private static final String TAG = "VdoPlayerControlView";
@@ -94,7 +95,7 @@ public class VdoPlayerControlView extends FrameLayout {
 
     private @Nullable VdoPlayer player;
     private UiListener uiListener;
-    private VdoPlayer.VdoInitParams lastErrorParams; // todo gather all relevant state and update UI using it
+    private VdoInitParams lastErrorParams; // todo gather all relevant state and update UI using it
     private boolean needNewVdoParams;
     private FullscreenActionListener fullscreenActionListener;
     private ControllerVisibilityListener visibilityListener;
@@ -470,7 +471,7 @@ public class VdoPlayerControlView extends FrameLayout {
                 lastErrorParams = null;
             } else if (vdoParamsGenerator != null && helperHandler != null) {
                 helperHandler.post(() -> {
-                    VdoPlayer.VdoInitParams retryParams = vdoParamsGenerator.getNewVdoInitParams();
+                    VdoInitParams retryParams = vdoParamsGenerator.getNewVdoInitParams();
                     if (retryParams != null) {
                         post(() -> {
                             errorView.setVisibility(GONE);
@@ -576,33 +577,33 @@ public class VdoPlayerControlView extends FrameLayout {
         }
 
         @Override
-        public void onLoading(VdoPlayer.VdoInitParams vdoInitParams) {
+        public void onLoading(VdoInitParams vdoInitParams) {
             updateLoader(true);
             lastErrorParams = null;
             updateErrorView(null);
         }
 
         @Override
-        public void onLoaded(VdoPlayer.VdoInitParams vdoInitParams) {
+        public void onLoaded(VdoInitParams vdoInitParams) {
             durationView.setText(String.valueOf(Utils.digitalClockTime((int)player.getDuration())));
             seekBar.setMax((int)player.getDuration());
             updateSpeedControlButton();
         }
 
         @Override
-        public void onLoadError(VdoPlayer.VdoInitParams vdoParams, ErrorDescription errorDescription) {
+        public void onLoadError(VdoInitParams vdoParams, ErrorDescription errorDescription) {
             lastErrorParams = vdoParams;
             needNewVdoParams = ERROR_CODES_FOR_NEW_PARAMS.contains(errorDescription.errorCode);
             updateErrorView(errorDescription);
         }
 
         @Override
-        public void onMediaEnded(VdoPlayer.VdoInitParams vdoInitParams) {
+        public void onMediaEnded(VdoInitParams vdoInitParams) {
             // todo
         }
 
         @Override
-        public void onError(VdoPlayer.VdoInitParams vdoParams, ErrorDescription errorDescription) {
+        public void onError(VdoInitParams vdoParams, ErrorDescription errorDescription) {
             lastErrorParams = vdoParams;
             needNewVdoParams = ERROR_CODES_FOR_NEW_PARAMS.contains(errorDescription.errorCode);
             updateErrorView(errorDescription);

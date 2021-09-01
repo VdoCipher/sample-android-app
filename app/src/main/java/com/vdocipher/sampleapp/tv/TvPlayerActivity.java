@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
+import com.vdocipher.aegis.player.PlayerHost;
+import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.player.VdoPlayerFragment;
 import com.vdocipher.sampleapp.R;
@@ -22,7 +24,7 @@ import com.vdocipher.sampleapp.R;
  * The {@link PlaybackOverlayFragment} handles user interaction and interacts with the {@link VdoPlayer}
  * held by this class.
  */
-public class TvPlayerActivity extends Activity implements VdoPlayer.InitializationListener,
+public class TvPlayerActivity extends Activity implements PlayerHost.InitializationListener,
         VdoPlayer.PlaybackEventListener {
     private static final String TAG = "TvPlayerActivity";
     public static final String EXTRA_OTP = "otp";
@@ -43,7 +45,7 @@ public class TvPlayerActivity extends Activity implements VdoPlayer.Initializati
     }
 
     @Override
-    public void onInitializationSuccess(VdoPlayer.PlayerHost playerHost, VdoPlayer vdoPlayer, boolean restored) {
+    public void onInitializationSuccess(PlayerHost playerHost, VdoPlayer vdoPlayer, boolean restored) {
         Log.i(TAG, "init success");
         mPlayer = vdoPlayer;
         vdoPlayer.addPlaybackEventListener(TvPlayerActivity.this);
@@ -51,7 +53,7 @@ public class TvPlayerActivity extends Activity implements VdoPlayer.Initializati
     }
 
     @Override
-    public void onInitializationFailure(VdoPlayer.PlayerHost playerHost, ErrorDescription errorDescription) {
+    public void onInitializationFailure(PlayerHost playerHost, ErrorDescription errorDescription) {
         Log.e(TAG, "init failure");
         showToast("Initialization failure. Reason: " + errorDescription.errorCode + ", " + errorDescription.errorMsg);
     }
@@ -76,29 +78,29 @@ public class TvPlayerActivity extends Activity implements VdoPlayer.Initializati
     public void onPlaybackSpeedChanged(float speed) {}
 
     @Override
-    public void onLoading(VdoPlayer.VdoInitParams vdoInitParams) {
+    public void onLoading(VdoInitParams vdoInitParams) {
         Log.i(TAG, "onLoading");
     }
 
     @Override
-    public void onLoaded(VdoPlayer.VdoInitParams vdoInitParams) {
+    public void onLoaded(VdoInitParams vdoInitParams) {
         Log.i(TAG, "onLoaded");
         mPlayer.setPlayWhenReady(true);
         overlayFragment.playbackDurationChanged(mPlayer.getDuration());
     }
 
     @Override
-    public void onLoadError(VdoPlayer.VdoInitParams vdoInitParams, ErrorDescription errorDescription) {
+    public void onLoadError(VdoInitParams vdoInitParams, ErrorDescription errorDescription) {
         showToast("onLoadError " + errorDescription.errorCode + ": " + errorDescription.errorMsg);
     }
 
     @Override
-    public void onMediaEnded(VdoPlayer.VdoInitParams vdoInitParams) {
+    public void onMediaEnded(VdoInitParams vdoInitParams) {
         Log.i(TAG, "onMediaEnded");
     }
 
     @Override
-    public void onError(VdoPlayer.VdoInitParams vdoInitParams, ErrorDescription errorDescription) {
+    public void onError(VdoInitParams vdoInitParams, ErrorDescription errorDescription) {
         showToast("onError code " + errorDescription.errorCode + ": " + errorDescription.errorMsg);
     }
 
@@ -109,7 +111,7 @@ public class TvPlayerActivity extends Activity implements VdoPlayer.Initializati
         Intent intent = getIntent();
         String otp = intent.getStringExtra(EXTRA_OTP);
         String playbackInfo = intent.getStringExtra(EXTRA_PLAYBACK_INFO);
-        VdoPlayer.VdoInitParams vdoParams = VdoPlayer.VdoInitParams.createParamsWithOtp(otp, playbackInfo);
+        VdoInitParams vdoParams = VdoInitParams.createParamsWithOtp(otp, playbackInfo);
         mPlayer.load(vdoParams);
     }
 

@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
-import com.vdocipher.aegis.player.VdoPlayer;
+import com.vdocipher.aegis.player.VdoInitParams;
 
 import org.json.JSONException;
 
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView loadInfo;
     private Button playerButton;
-    private VdoPlayer.VdoInitParams initParams;
+    private VdoInitParams initParams;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                     Pair<String, String> pair = Utils.getSampleOtpAndPlaybackInfo();
                     String otp = pair.first;
                     String playbackInfo = pair.second;
-                    initParams = new VdoPlayer.VdoInitParams.Builder()
+                    initParams = new VdoInitParams.Builder()
                             .setOtp(otp)
                             .setPlaybackInfo(playbackInfo)
                             .setPreferredCaptionsLanguage("en")

@@ -18,15 +18,16 @@ import android.widget.Toast;
 
 import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
+import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoPlayer;
-import com.vdocipher.aegis.player.VdoPlayer.VdoInitParams;
+import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayerSupportFragment;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 
-public class PlayerActivity extends AppCompatActivity implements VdoPlayer.InitializationListener {
+public class PlayerActivity extends AppCompatActivity implements PlayerHost.InitializationListener {
 
     private static final String TAG = "PlayerActivity";
     public static final String EXTRA_VDO_PARAMS = "vdo_params";
@@ -63,7 +64,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
         playerControlView = findViewById(R.id.player_control_view);
 
         ((TextView)findViewById(R.id.library_version))
-                .setText("sdk version: " + com.vdocipher.aegis.BuildConfig.VERSION_NAME);
+                .setText("sdk version: " + com.vdocipher.aegis.BuildConfig.VDO_VERSION_NAME);
 
         eventLog = findViewById(R.id.event_log);
         eventLog.setMovementMethod(ScrollingMovementMethod.getInstance());
@@ -167,7 +168,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
     }
 
     @Override
-    public void onInitializationSuccess(VdoPlayer.PlayerHost playerHost, VdoPlayer player, boolean wasRestored) {
+    public void onInitializationSuccess(PlayerHost playerHost, VdoPlayer player, boolean wasRestored) {
         Log.i(TAG, "onInitializationSuccess");
         log("onInitializationSuccess");
         player.addPlaybackEventListener(playbackListener);
@@ -184,7 +185,7 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
     }
 
     @Override
-    public void onInitializationFailure(VdoPlayer.PlayerHost playerHost, ErrorDescription errorDescription) {
+    public void onInitializationFailure(PlayerHost playerHost, ErrorDescription errorDescription) {
         String msg = "onInitializationFailure: errorCode = " + errorDescription.errorCode + ": " + errorDescription.errorMsg;
         log(msg);
         Log.e(TAG, msg);
@@ -221,33 +222,33 @@ public class PlayerActivity extends AppCompatActivity implements VdoPlayer.Initi
         }
 
         @Override
-        public void onLoading(VdoPlayer.VdoInitParams vdoInitParams) {
+        public void onLoading(VdoInitParams vdoInitParams) {
             Log.i(TAG, "onLoading");
             log("onLoading");
         }
 
         @Override
-        public void onLoadError(VdoPlayer.VdoInitParams vdoInitParams, ErrorDescription errorDescription) {
+        public void onLoadError(VdoInitParams vdoInitParams, ErrorDescription errorDescription) {
             String err = "onLoadError code: " + errorDescription.errorCode + ": " + errorDescription.errorMsg;
             Log.e(TAG, err);
             log(err);
         }
 
         @Override
-        public void onLoaded(VdoPlayer.VdoInitParams vdoInitParams) {
+        public void onLoaded(VdoInitParams vdoInitParams) {
             Log.i(TAG, "onLoaded");
             log("onLoaded");
         }
 
         @Override
-        public void onError(VdoPlayer.VdoInitParams vdoParams, ErrorDescription errorDescription) {
+        public void onError(VdoInitParams vdoParams, ErrorDescription errorDescription) {
             String err = "onError code " + errorDescription.errorCode + ": " + errorDescription.errorMsg;
             Log.e(TAG, err);
             log(err);
         }
 
         @Override
-        public void onMediaEnded(VdoPlayer.VdoInitParams vdoInitParams) {
+        public void onMediaEnded(VdoInitParams vdoInitParams) {
             Log.i(TAG, "onMediaEnded");
             log("onMediaEnded");
         }

@@ -26,15 +26,16 @@ import com.vdocipher.aegis.cast.CastSessionAvailabilityListener;
 import com.vdocipher.aegis.cast.CastVdoPlayer;
 import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
+import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoPlayer;
-import com.vdocipher.aegis.player.VdoPlayer.VdoInitParams;
+import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayerSupportFragment;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 public class CastVdoPlayerActivity extends AppCompatActivity
-        implements VdoPlayer.InitializationListener, CastSessionAvailabilityListener {
+        implements PlayerHost.InitializationListener, CastSessionAvailabilityListener {
 
     private final String TAG = "CastVdoPlayerActivity";
 
@@ -171,7 +172,7 @@ public class CastVdoPlayerActivity extends AppCompatActivity
     // VdoPlayer.InitializationListener impl
 
     @Override
-    public void onInitializationSuccess(VdoPlayer.PlayerHost playerHost, VdoPlayer player, boolean wasRestored) {
+    public void onInitializationSuccess(PlayerHost playerHost, VdoPlayer player, boolean wasRestored) {
         log("onInitializationSuccess");
         localPlayer = player;
         player.addPlaybackEventListener(localPlaybackListener);
@@ -186,7 +187,7 @@ public class CastVdoPlayerActivity extends AppCompatActivity
     }
 
     @Override
-    public void onInitializationFailure(VdoPlayer.PlayerHost playerHost, ErrorDescription errorDescription) {
+    public void onInitializationFailure(PlayerHost playerHost, ErrorDescription errorDescription) {
         String msg = "onInitializationFailure: errorCode = " + errorDescription.errorCode + ": " + errorDescription.errorMsg;
         log(errorText(msg));
         Log.e(TAG, msg);

@@ -28,9 +28,9 @@ public class MainActivity extends AppCompatActivity implements ProviderInstaller
             getSupportActionBar().hide();
         }
 
-        Log.i(TAG, "version name = " + com.vdocipher.aegis.BuildConfig.VERSION_NAME);
+        Log.i(TAG, "version name = " + com.vdocipher.aegis.BuildConfig.VDO_VERSION_NAME);
         ((TextView)findViewById(R.id.library_version))
-                .setText("VdoCipher sdk version: " + com.vdocipher.aegis.BuildConfig.VERSION_NAME);
+                .setText("VdoCipher sdk version: " + com.vdocipher.aegis.BuildConfig.VDO_VERSION_NAME);
 
         if (Build.VERSION.SDK_INT <= 19) {
             allowUserInteraction(false);
