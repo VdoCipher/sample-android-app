@@ -238,6 +238,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
         public void onLoaded(VdoInitParams vdoInitParams) {
             Log.i(TAG, "onLoaded");
             log("onLoaded");
+            playerControlView.verifyAndUpdateCaptionsButton();
         }
 
         @Override

@@ -146,6 +146,7 @@ public class VdoPlayerControlView extends FrameLayout {
         speedControlButton.setOnClickListener(uiListener);
         captionsButton = findViewById(R.id.vdo_captions);
         captionsButton.setOnClickListener(uiListener);
+        captionsButton.setVisibility(View.GONE);
         qualityButton = findViewById(R.id.vdo_quality);
         qualityButton.setOnClickListener(uiListener);
         enterFullscreenButton = findViewById(R.id.vdo_enter_fullscreen);
@@ -174,6 +175,21 @@ public class VdoPlayerControlView extends FrameLayout {
         player = vdoPlayer;
         if (player != null) {
             player.addPlaybackEventListener(uiListener);
+        }
+    }
+
+    public void verifyAndUpdateCaptionsButton() {
+        // get all available tracks of type trackType
+        Track[] availableTracks = player.getAvailableTracks();
+        Log.i(TAG, availableTracks.length + " tracks available");
+        ArrayList<Track> typeTrackList = new ArrayList<>();
+        for (Track availableTrack : availableTracks) {
+            if (availableTrack.type == Track.TYPE_CAPTIONS) {
+                typeTrackList.add(availableTrack);
+            }
+        }
+        if(typeTrackList != null && typeTrackList.size() > 0) {
+            captionsButton.setVisibility(View.VISIBLE);
         }
     }
     
