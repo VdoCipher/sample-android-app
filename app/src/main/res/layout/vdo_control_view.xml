@@ -74,34 +74,47 @@
             android:orientation="horizontal">
             <ImageButton android:id="@+id/vdo_rewind"
                 style="@style/VdoMediaButton"
+                android:layout_weight="1"
                 android:src="@drawable/ic_replay_10_white_24dp"/>
             <ImageButton android:id="@+id/vdo_play"
                 style="@style/VdoMediaButton"
+                android:layout_weight="1"
                 android:src="@drawable/ic_play_arrow_white_24dp"/>
             <ImageButton android:id="@+id/vdo_pause"
                 style="@style/VdoMediaButton"
+                android:layout_weight="1"
                 android:src="@drawable/ic_pause_white_24dp"/>
             <ImageButton android:id="@+id/vdo_ffwd"
                 style="@style/VdoMediaButton"
+                android:layout_weight="1"
                 android:src="@drawable/ic_forward_10_white_24dp"/>
             <Button
                 android:id="@+id/vdo_speed"
                 style="@style/VdoMediaButton"
                 android:minWidth="0dp"
                 android:textAllCaps="false"
+                android:layout_weight="1"
                 android:textColor="@android:color/white"
                 android:text="1x"/>
             <ImageButton android:id="@+id/vdo_captions"
                 style="@style/VdoMediaButton"
+                android:layout_weight="1"
                 android:src="@drawable/ic_closed_caption_white_24dp"/>
+            <ImageButton android:id="@+id/vdo_search"
+                style="@style/VdoMediaButton"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_search_light"/>
             <ImageButton android:id="@+id/vdo_quality"
                 style="@style/VdoMediaButton"
+                android:layout_weight="1"
                 android:src="@drawable/ic_high_quality_white_24dp"/>
             <ImageButton android:id="@+id/vdo_enter_fullscreen"
                 style="@style/VdoMediaButton"
+                android:layout_weight="1"
                 android:src="@drawable/ic_fullscreen_white_24dp"/>
             <ImageButton android:id="@+id/vdo_exit_fullscreen"
                 style="@style/VdoMediaButton"
+                android:layout_weight="1"
                 android:src="@drawable/ic_fullscreen_exit_white_24dp"/>
         </LinearLayout>
     </LinearLayout>

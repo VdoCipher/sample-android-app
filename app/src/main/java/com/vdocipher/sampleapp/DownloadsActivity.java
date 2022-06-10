@@ -7,10 +7,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,12 +55,12 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     public static final String OTP_2 = "20160313versASE313BlEe9YKEaDuju5J0XcX2Z03Hrvm5rzKScvuyojMSBZBxfZ";
 
     private static final String SAMPLE_NAME_3 = "Tears of steel";
-    private static final String MEDIA_ID_3 = "5392515b761ef71e8c00a2301e1cece3";
-    private static final String PLAYBACK_INFO_3 = "eyJ2aWRlb0lkIjoiNTM5MjUxNWI3NjFlZjcxZThjMDBhMjMwMWUxY2VjZTMifQ==";
-    private static final String OTP_3 = "20160313versASE313TKtOGPa5FImICHI4Q62Gkmj41zyTBlAOV8V2uLVgMUPYgT";
+    private static final String MEDIA_ID_3 = "015de7e97f434865aa155ca83b690f4b";
+    private static final String PLAYBACK_INFO_3 = "eyJ2aWRlb0lkIjoiMDE1ZGU3ZTk3ZjQzNDg2NWFhMTU1Y2E4M2I2OTBmNGIifQ==";
+    private static final String OTP_3 = "20160313versASE323jKE0G7M1XT3mORYiaD1qft79B9nufTVGgshAd6fJ5QLHpU";
 
     private Button download1, download2, download3;
-    private Button deleteAll, refreshList;
+    private AppCompatButton deleteAll, refreshList, resumeAll, pauseAll;
     private RecyclerView downloadsListView;
 
     // dataset which backs the adapter for downloads recyclerview
@@ -79,6 +83,8 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         downloadsListView = findViewById(R.id.downloads_list);
 
         deleteAll = findViewById(R.id.delete_all);
+        resumeAll = findViewById(R.id.resume_all);
+        pauseAll = findViewById(R.id.pause_all);
         deleteAll.setEnabled(false);
         refreshList = findViewById(R.id.refresh_list);
 
@@ -88,23 +94,44 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         downloadsListView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         refreshList.setOnClickListener(v -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                refreshDownloadsList();
-            } else {
-                showToastAndLog("Minimum api level required is 21", Toast.LENGTH_LONG);
-            }
+            refreshDownloadsList();
         });
 
         deleteAll.setOnClickListener(v -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                deleteAllDownloads();
-            }
+            deleteAllDownloads();
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            refreshDownloadsList();
-        } else {
-            showToastAndLog("Minimum api level required is 21", Toast.LENGTH_LONG);
+        pauseAll.setOnClickListener(v -> {
+            pauseAll();
+        });
+
+        resumeAll.setOnClickListener(v -> {
+            resumeAll();
+        });
+
+        refreshDownloadsList();
+    }
+
+    private String[] getAllMediaIds() {
+        ArrayList<String> mediaIdList = new ArrayList<>();
+        for (DownloadStatus status : downloadStatusList) {
+            mediaIdList.add(status.mediaInfo.mediaId);
+        }
+        return mediaIdList.toArray(new String[0]);
+    }
+
+    public void pauseAll() {
+        if (!downloadStatusList.isEmpty()) {
+            String[] mediaIds = getAllMediaIds();
+            vdoDownloadManager.pauseAllDownloads(mediaIds);
+        }
+    }
+
+
+    public void resumeAll() {
+        if (!downloadStatusList.isEmpty()) {
+            String[] mediaIds = getAllMediaIds();
+            vdoDownloadManager.resumeAllDownloads(mediaIds);
         }
     }
 
@@ -112,10 +139,8 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     protected void onStart() {
         Log.d(TAG, "onStart");
         super.onStart();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            maybeCreateManager();
-            vdoDownloadManager.addEventListener(this);
-        }
+        maybeCreateManager();
+        vdoDownloadManager.addEventListener(this);
     }
 
     @Override
@@ -170,46 +195,46 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private void maybeCreateManager() {
         if (vdoDownloadManager == null) {
-            vdoDownloadManager = VdoDownloadManager.getInstance(this);
+            String downloadLocation = getDownloadLocation();
+            vdoDownloadManager = VdoDownloadManager.getInstance(this, downloadLocation);
+            //Provide custom implementation if you want to customize notifications look and feel
+            vdoDownloadManager.setDownloadNotificationHelper(CustomDownloadNotificationHelper.class);
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private void refreshDownloadsList() {
         maybeCreateManager();
-        vdoDownloadManager.query(new VdoDownloadManager.Query(), new VdoDownloadManager.QueryResultListener() {
-            @Override
-            public void onQueryResult(List<DownloadStatus> statusList) {
-                // enable sample download buttons for media not downloaded or queued
-                if (!containsMediaId(statusList, MEDIA_ID_1))
-                    setDownloadListeners(download1, "sample 1", OTP_1, PLAYBACK_INFO_1);
-                if (!containsMediaId(statusList, MEDIA_ID_2))
-                    setDownloadListeners(download2, "sample 2", OTP_2, PLAYBACK_INFO_2);
-                if (!containsMediaId(statusList, MEDIA_ID_3))
-                    setDownloadListeners(download3, "sample 3", OTP_3, PLAYBACK_INFO_3);
+        vdoDownloadManager.query(new VdoDownloadManager.Query(), statusList -> {
+            // enable sample download buttons for media not downloaded or queued
+            if (!containsMediaId(statusList, MEDIA_ID_1))
+                setDownloadListeners(download1, "sample 1", OTP_1, PLAYBACK_INFO_1);
+            if (!containsMediaId(statusList, MEDIA_ID_2))
+                setDownloadListeners(download2, "sample 2", OTP_2, PLAYBACK_INFO_2);
+            if (!containsMediaId(statusList, MEDIA_ID_3))
+                setDownloadListeners(download3, "sample 3", OTP_3, PLAYBACK_INFO_3);
 
-                // notify recyclerview
-                downloadStatusList.clear();
-                downloadStatusList.addAll(statusList);
-                updateDeleteAllButton();
-                downloadsAdapter.notifyDataSetChanged();
+            // notify recyclerview
+            downloadStatusList.clear();
+            downloadStatusList.addAll(statusList);
+            updateDeleteAllButton();
+            downloadsAdapter.notifyDataSetChanged();
 
-                if (statusList.isEmpty()) {
-                    Log.w(TAG, "No query results found");
-                    Toast.makeText(DownloadsActivity.this, "No query results found", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                Log.i(TAG, statusList.size() + " results found");
-
-                StringBuilder builder = new StringBuilder();
-                builder.append("query results:").append("\n");
-                for (DownloadStatus status : statusList) {
-                    builder.append(statusString(status)).append(" : ")
-                            .append(status.mediaInfo.mediaId).append(", ")
-                            .append(status.mediaInfo.title).append("\n");
-                }
-                Log.i(TAG, builder.toString());
+            if (statusList.isEmpty()) {
+                Log.w(TAG, "No query results found");
+                Toast.makeText(DownloadsActivity.this, "No query results found", Toast.LENGTH_SHORT).show();
+                return;
             }
+            Log.i(TAG, statusList.size() + " results found");
+
+            StringBuilder builder = new StringBuilder();
+            builder.append("query results:").append("\n");
+            for (DownloadStatus status : statusList) {
+                builder.append(statusString(status)).append(" : ")
+                        .append(status.mediaInfo.mediaId).append(", ")
+                        .append(status.mediaInfo.title).append("\n");
+            }
+            Log.i(TAG, builder.toString());
         });
     }
 
@@ -237,7 +262,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
                                       final String otp, final String playbackInfo) {
         runOnUiThread(() -> {
             downloadButton.setEnabled(true);
-            downloadButton.setText("Download " + mediaName);
+            downloadButton.setText(String.format("Download %s", mediaName));
             downloadButton.setOnClickListener(view -> getOptions(otp, playbackInfo));
         });
     }
@@ -295,22 +320,14 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
                 }
             };
 
-    private void downloadSelectedOptions(DownloadOptions downloadOptions, int[] selectionIndices) {
-        DownloadSelections selections = new DownloadSelections(downloadOptions, selectionIndices);
-
-        // ensure external storage is in read-write mode
-        if (!isExternalStorageWritable()) {
-            showToastAndLog("External storage is not available", Toast.LENGTH_LONG);
-            return;
-        }
-
-        String downloadLocation;
+    private String getDownloadLocation() {
+        String downloadLocation = "";
         try {
             downloadLocation = getExternalFilesDir(null).getPath() + File.separator + "offlineVdos";
         } catch (NullPointerException npe) {
-            Log.e(TAG, "external storage not available: " + Log.getStackTraceString(npe));
+            Log.e(TAG, "external storage not available");
             Toast.makeText(this, "external storage not available", Toast.LENGTH_LONG).show();
-            return;
+            return null;
         }
 
         // ensure download directory is created
@@ -320,18 +337,21 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
             if (!dlLocation.mkdir()) {
                 Log.e(TAG, "failed to create storage directory");
                 Toast.makeText(this, "failed to create storage directory", Toast.LENGTH_LONG).show();
-                return;
             }
         }
 
-        Log.i(TAG, "will save media to " + downloadLocation);
+        return downloadLocation;
+    }
+
+    private void downloadSelectedOptions(DownloadOptions downloadOptions, int[] selectionIndices) {
+        DownloadSelections selections = new DownloadSelections(downloadOptions, selectionIndices);
 
         // build a DownloadRequest
-        DownloadRequest request = new DownloadRequest.Builder(selections, downloadLocation).build();
+        DownloadRequest request = new DownloadRequest.Builder(selections).build();
 
         // enqueue request to VdoDownloadManager for download
         try {
-            vdoDownloadManager.enqueue(request);
+            vdoDownloadManager.enqueueV2(request);
         } catch (IllegalArgumentException | IllegalStateException e) {
             Log.e(TAG, "error enqueuing download request");
             Toast.makeText(this, "error enqueuing download request", Toast.LENGTH_LONG).show();
@@ -439,17 +459,23 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     private static String statusString(DownloadStatus status) {
         switch (status.status) {
             case VdoDownloadManager.STATUS_COMPLETED:
-                return "Completed";
-            case VdoDownloadManager.STATUS_FAILED:
-                return "Error " + status.reason + " " + status.reasonDescription;
-            case VdoDownloadManager.STATUS_PENDING:
-                return "Queued";
-            case VdoDownloadManager.STATUS_PAUSED:
-                return "Paused " + status.downloadPercent + "%";
+                return "COMPLETED";
             case VdoDownloadManager.STATUS_DOWNLOADING:
-                return "Downloading " + status.downloadPercent + "%";
+                return "DOWNLOADING";
+            case VdoDownloadManager.STATUS_FAILED:
+                return "FAILED " + status.reason + " " + status.reasonDescription + "\n";
+            case VdoDownloadManager.STATUS_NOT_FOUND:
+                return "NOT FOUND";
+            case VdoDownloadManager.STATUS_PAUSED:
+                return "PAUSED";
+            case VdoDownloadManager.STATUS_PENDING:
+                return "PENDING";
+            case VdoDownloadManager.STATUS_REMOVING:
+                return "REMOVING";
+            case VdoDownloadManager.STATUS_RESTARTING:
+                return "RESTARTING";
             default:
-                return "Not found";
+                throw new IllegalArgumentException("invalid download status");
         }
     }
 
@@ -458,30 +484,48 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             public TextView title;
             public TextView status;
+            public TextView downloadPercent;
+            public AppCompatButton stop, resume, delete;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 title = itemView.findViewById(R.id.vdo_title);
                 status = itemView.findViewById(R.id.download_status);
+                downloadPercent = itemView.findViewById(R.id.download_percentage);
+                stop = itemView.findViewById(R.id.download_stop_btn);
+                resume = itemView.findViewById(R.id.download_resume_btn);
+                delete = itemView.findViewById(R.id.download_delete_btn);
+                stop.setOnClickListener(this);
+                resume.setOnClickListener(this);
+                delete.setOnClickListener(this);
                 itemView.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View v) {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    DownloadStatus status = statusList.get(position);
-                    showItemSelectedDialog(status);
+                int position = getBindingAdapterPosition();
+                if (v.getId() == R.id.download_resume_btn) {
+                    vdoDownloadManager.resumeDownload(downloadStatusList.get(position).mediaInfo.mediaId);
+                } else if (v.getId() == R.id.download_stop_btn) {
+                    vdoDownloadManager.stopDownload(downloadStatusList.get(position).mediaInfo.mediaId);
+                } else if (v.getId() == R.id.download_delete_btn) {
+                    vdoDownloadManager.remove(downloadStatusList.get(position).mediaInfo.mediaId);
+                } else {
+                    if (position != RecyclerView.NO_POSITION) {
+                        DownloadStatus status = statusList.get(position);
+                        showItemSelectedDialog(status);
+                    }
                 }
             }
         }
 
-        private List<DownloadStatus> statusList;
+        private final List<DownloadStatus> statusList;
 
         public DownloadsAdapter(List<DownloadStatus> statusList) {
             this.statusList = statusList;
         }
 
+        @NonNull
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -494,6 +538,14 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
             DownloadStatus status = statusList.get(position);
             holder.title.setText(status.mediaInfo.title);
             holder.status.setText(DownloadsActivity.statusString(status).toUpperCase());
+            holder.downloadPercent.setText(String.format("%s%%",status.downloadPercent));
+            if (status.status == VdoDownloadManager.STATUS_DOWNLOADING) {
+                holder.stop.setEnabled(true);
+                holder.resume.setEnabled(false);
+            } else {
+                holder.stop.setEnabled(false);
+                holder.resume.setEnabled(status.status == VdoDownloadManager.STATUS_PAUSED);
+            }
         }
 
         @Override

@@ -1,8 +1,14 @@
 package com.vdocipher.sampleapp;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -24,6 +30,8 @@ import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayer;
+import com.vdocipher.aegis.player.internal.subtitle.SubtitleCue;
+import com.vdocipher.aegis.player.internal.subtitle.SubtitleSearchListener;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -40,7 +48,7 @@ public class VdoPlayerControlView extends FrameLayout {
          * Called when the visibility of the controller ui changes.
          *
          * @param visibility new visibility of controller ui. Either {@link View#VISIBLE} or
-         * {@link View#GONE}.
+         *                   {@link View#GONE}.
          */
         void onControllerVisibilityChange(int visibility);
     }
@@ -60,7 +68,7 @@ public class VdoPlayerControlView extends FrameLayout {
     }
 
     private static final String TAG = "VdoPlayerControlView";
-    
+
     public static final int DEFAULT_FAST_FORWARD_MS = 10000;
     public static final int DEFAULT_REWIND_MS = 10000;
     public static final int DEFAULT_SHOW_TIMEOUT_MS = 3000;
@@ -77,6 +85,7 @@ public class VdoPlayerControlView extends FrameLayout {
     private final ImageButton qualityButton;
     private final ImageButton enterFullscreenButton;
     private final ImageButton exitFullscreenButton;
+    private final ImageButton captionSearchButton;
     private final ProgressBar loaderView;
     private final ImageButton errorView;
     private final TextView errorTextView;
@@ -93,7 +102,8 @@ public class VdoPlayerControlView extends FrameLayout {
     private boolean isAttachedToWindow;
     private boolean fullscreen;
 
-    private @Nullable VdoPlayer player;
+    private @Nullable
+    VdoPlayer player;
     private UiListener uiListener;
     private VdoInitParams lastErrorParams; // todo gather all relevant state and update UI using it
     private boolean needNewVdoParams;
@@ -147,6 +157,9 @@ public class VdoPlayerControlView extends FrameLayout {
         captionsButton = findViewById(R.id.vdo_captions);
         captionsButton.setOnClickListener(uiListener);
         captionsButton.setVisibility(View.GONE);
+        captionSearchButton = (ImageButton) findViewById(R.id.vdo_search);
+        captionSearchButton.setOnClickListener(uiListener);
+        captionSearchButton.setVisibility(View.GONE);
         qualityButton = findViewById(R.id.vdo_quality);
         qualityButton.setOnClickListener(uiListener);
         enterFullscreenButton = findViewById(R.id.vdo_enter_fullscreen);
@@ -188,11 +201,12 @@ public class VdoPlayerControlView extends FrameLayout {
                 typeTrackList.add(availableTrack);
             }
         }
-        if(typeTrackList != null && typeTrackList.size() > 0) {
+        if (typeTrackList != null && typeTrackList.size() > 0) {
             captionsButton.setVisibility(View.VISIBLE);
+            captionSearchButton.setVisibility(VISIBLE);
         }
     }
-    
+
     public void setFullscreenActionListener(FullscreenActionListener fullscreenActionListener) {
         this.fullscreenActionListener = fullscreenActionListener;
     }
@@ -229,6 +243,7 @@ public class VdoPlayerControlView extends FrameLayout {
     /**
      * Call if fullscreen in entered/exited in response to external triggers such as orientation
      * change, back button etc.
+     *
      * @param fullscreen true if fullscreen in new state
      */
     public void setFullscreenState(boolean fullscreen) {
@@ -260,6 +275,7 @@ public class VdoPlayerControlView extends FrameLayout {
     /**
      * Call to know the visibility of the playback controls ui. VdoPlayerControlView itself doesn't
      * change visibility when hiding ui controls.
+     *
      * @return true if playback controls are visible
      */
     public boolean controllerVisible() {
@@ -322,7 +338,7 @@ public class VdoPlayerControlView extends FrameLayout {
             speedControlButton.setVisibility(GONE);
         }
     }
-    
+
     private void toggleFullscreen() {
         if (fullscreenActionListener != null) {
             boolean handled = fullscreenActionListener.onFullscreenAction(!fullscreen);
@@ -451,6 +467,71 @@ public class VdoPlayerControlView extends FrameLayout {
 
     }
 
+    private void showSubtitleSearchDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.caption_search_dialog_view, this, false);
+        SearchView searchView = view.findViewById(R.id.et_search);
+        RecyclerView recyclerView = view.findViewById(R.id.rv_search_result);
+        AppCompatTextView tvErrorMsg = view.findViewById(R.id.tv_error_msg);
+        builder.setView(view);
+        AlertDialog alertDialog = builder.create();
+        SubtitleSearchRvAdapter subtitleSearchRvAdapter = new SubtitleSearchRvAdapter(getContext(), subtitleCue -> {
+            if (subtitleCue != null) {
+                player.seekTo(subtitleCue.getStartTime());
+                alertDialog.dismiss();
+            }
+        });
+        recyclerView.setAdapter(subtitleSearchRvAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (!newText.isEmpty()) {
+                    player.searchInSelectedSubtitle(newText, new SubtitleSearchListener() {
+                        @Override
+                        public void onResult(List<SubtitleCue> searchResults) {
+                            tvErrorMsg.setVisibility(GONE);
+                            subtitleSearchRvAdapter.setSubtitleCues(searchResults);
+                        }
+
+                        @SuppressLint("SetTextI18n")
+                        @Override
+                        public void onError(Error error) {
+                            tvErrorMsg.setVisibility(VISIBLE);
+                            switch (error) {
+                                case CAPTION_NOT_SELECTED:
+                                    tvErrorMsg.setText("Please select a caption and try again");
+                                    break;
+                                case UNABLE_TO_PARSE_CAPTION_FILE:
+                                    tvErrorMsg.setText("Unable to parse selected caption file");
+                                    break;
+                                case INVALID_FILE_URL:
+                                    tvErrorMsg.setText("Invalid caption file url");
+                                    break;
+                                case NETWORK_ERROR:
+                                    tvErrorMsg.setText("Please check your internet connection and try again");
+                                    break;
+                                default:
+                                    tvErrorMsg.setText("");
+
+                            }
+                        }
+                    });
+                } else {
+                    subtitleSearchRvAdapter.clearResults();
+                    tvErrorMsg.setVisibility(GONE);
+                }
+                return true;
+            }
+        });
+        alertDialog.show();
+    }
+
     private int getAudioBitrate(Track[] selectedTracks) {
         for (Track selectedTrack : selectedTracks) {
             if (selectedTrack.type == Track.TYPE_AUDIO) {
@@ -508,7 +589,8 @@ public class VdoPlayerControlView extends FrameLayout {
     private final class UiListener implements VdoPlayer.PlaybackEventListener,
             SeekBar.OnSeekBarChangeListener, OnClickListener {
         @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        }
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -566,6 +648,9 @@ public class VdoPlayerControlView extends FrameLayout {
                     } else {
                         show();
                     }
+                } else if (v == captionSearchButton) {
+                    hideAfterTimeout = false;
+                    showSubtitleSearchDialog();
                 }
             }
             if (hideAfterTimeout) {
@@ -574,17 +659,18 @@ public class VdoPlayerControlView extends FrameLayout {
         }
 
         @Override
-        public void onSeekTo(long millis) {}
+        public void onSeekTo(long millis) {
+        }
 
         @Override
         public void onProgress(long millis) {
-            positionView.setText(Utils.digitalClockTime((int)millis));
-            seekBar.setProgress((int)millis);
+            positionView.setText(Utils.digitalClockTime((int) millis));
+            seekBar.setProgress((int) millis);
         }
 
         @Override
         public void onBufferUpdate(long bufferTime) {
-            seekBar.setSecondaryProgress((int)bufferTime);
+            seekBar.setSecondaryProgress((int) bufferTime);
         }
 
         @Override
@@ -601,8 +687,8 @@ public class VdoPlayerControlView extends FrameLayout {
 
         @Override
         public void onLoaded(VdoInitParams vdoInitParams) {
-            durationView.setText(String.valueOf(Utils.digitalClockTime((int)player.getDuration())));
-            seekBar.setMax((int)player.getDuration());
+            durationView.setText(String.valueOf(Utils.digitalClockTime((int) player.getDuration())));
+            seekBar.setMax((int) player.getDuration());
             updateSpeedControlButton();
         }
 
@@ -675,12 +761,12 @@ public class VdoPlayerControlView extends FrameLayout {
             if (bytesPerHour == 0) {
                 return "-";
             } else {
-                float megabytesPerHour = bytesPerHour / (float)(1024 * 1024);
+                float megabytesPerHour = bytesPerHour / (float) (1024 * 1024);
 
                 if (megabytesPerHour < 1) {
                     return "1 MB per hour";
                 } else if (megabytesPerHour < 1000) {
-                    return (int)megabytesPerHour + " MB per hour";
+                    return (int) megabytesPerHour + " MB per hour";
                 } else {
                     DecimalFormat df = new DecimalFormat("#.#");
                     df.setRoundingMode(RoundingMode.CEILING);

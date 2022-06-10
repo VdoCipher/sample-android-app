@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.vdocipher.sampleapp.castdemo"
@@ -29,7 +29,7 @@ android {
 
 }
 
-def vdocipher_sdk_version = '1.10.1'
+def vdocipher_sdk_version = '1.11.0'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
