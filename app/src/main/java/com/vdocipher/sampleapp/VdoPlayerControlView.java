@@ -413,7 +413,7 @@ public class VdoPlayerControlView extends FrameLayout {
         // first, let's convert tracks to array of TrackHolders for better display in dialog
         ArrayList<TrackHolder> trackHolderList = new ArrayList<>();
         for (Track track : typeTrackList) {
-            TrackHolder trackHolder = trackType == Track.TYPE_VIDEO ? new TrackHolder(track, audioBitrate)
+            TrackHolder trackHolder = trackType == Track.TYPE_VIDEO ? new TrackHolder(track, audioBitrate, player.getDuration())
                     : new TrackHolder(track);
             trackHolderList.add(trackHolder);
         }
@@ -731,14 +731,16 @@ public class VdoPlayerControlView extends FrameLayout {
 
         final Track track;
         final int audioBitrate;
+        final long videoDuration;
 
         TrackHolder(Track track) {
-            this(track, 0);
+            this(track, 0, 0);
         }
 
-        TrackHolder(Track track, int audioBitrate) {
+        TrackHolder(Track track, int audioBitrate, long videoDuration) {
             this.track = track;
             this.audioBitrate = audioBitrate;
+            this.videoDuration = videoDuration;
         }
 
         /**
@@ -749,11 +751,32 @@ public class VdoPlayerControlView extends FrameLayout {
             if (track == Track.DISABLE_CAPTIONS) {
                 return "Turn off Captions";
             } else if (track.type == Track.TYPE_VIDEO) {
-                return (track.bitrate + audioBitrate) / 1024 + "kbps ("
-                        + dataExpenditurePerHour(track.bitrate + audioBitrate) + ")";
+                final long bitrateInKbps = (track.bitrate + audioBitrate) / 1024;
+                final long roundedOffBitrateInKbps = Math.round(bitrateInKbps/10.0) * 10;
+                return "(" + totalDataExpenditureInMb(track.bitrate + audioBitrate, videoDuration) +
+                        ", " + roundedOffBitrateInKbps + "kbps)";
             }
 
             return track.type == Track.TYPE_CAPTIONS ? track.language : track.toString();
+        }
+
+        private String totalDataExpenditureInMb(int bitsPerSec, long videoDuration) {
+            final long totalBytes = bitsPerSec <= 0 ? 0 : (bitsPerSec * (videoDuration/1000)) / 8;
+            if (totalBytes == 0) {
+            return "-";
+            } else {
+                final float totalMB = totalBytes / (float) (1024 * 1024);
+
+                if(totalMB < 1) {
+                    return "1MB";
+                } else if (totalMB < 1000) {
+                    return (int) totalMB + " MB";
+                } else {
+                    DecimalFormat df = new DecimalFormat("#.#");
+                    df.setRoundingMode(RoundingMode.CEILING);
+                    return df.format(totalMB / 1024) + " GB";
+                }
+            }
         }
 
         private String dataExpenditurePerHour(int bitsPerSec) {
