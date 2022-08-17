@@ -4,4 +4,15 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="caption_search_dialog_title">Search in selected caption</string>
+    <string name="vdocipher_sample_application">VdoCipher Sample Application</string>
+    <string name="online_playback">Online Playback</string>
+    <string name="play_with_custom_ui">Play with custom ui</string>
+    <string name="play_with_inbuilt_ui">Play with inbuilt ui</string>
+    <string name="offline_playback">Offline Playback</string>
+    <string name="stop_all">STOP ALL</string>
+    <string name="resume_all">RESUME ALL</string>
+    <string name="delete_all">DELETE ALL</string>
+    <string name="refresh">REFRESH</string>
+    <string name="downloads">Downloads</string>
+    <string name="download_all">Download All</string>
 </resources>

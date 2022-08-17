@@ -3,13 +3,6 @@ package com.vdocipher.sampleapp;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.AttributeSet;
@@ -25,6 +18,12 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
@@ -97,7 +96,6 @@ public class VdoPlayerControlView extends FrameLayout {
     private int ffwdMs;
     private int rewindMs;
     private int showTimeoutMs;
-
     private boolean scrubbing;
     private boolean isAttachedToWindow;
     private boolean fullscreen;
@@ -425,15 +423,14 @@ public class VdoPlayerControlView extends FrameLayout {
             // if no captions are selected, indicate DISABLE_CAPTIONS as selected in dialog
             if (selectedIndex < 0) selectedIndex = trackHolderList.size() - 1;
         } else if (trackType == Track.TYPE_VIDEO) {
-            // todo auto option to go back to adaptive mode
-            /*
-            Uncomment to show a "default" option when only one track available
-            if (trackHolderList.size() == 1) {
+            if (trackHolderList.size() <= 1) {
                 // just show a default track option
                 trackHolderList.clear();
                 trackHolderList.add(TrackHolder.DEFAULT);
+            } else {
+                trackHolderList.add(0, new TrackHolder(Track.SET_ADAPTIVE));
+                selectedIndex = player.isAdaptive() ? 0 : selectedIndex + 1;
             }
-             */
         }
 
         final TrackHolder[] trackHolders = trackHolderList.toArray(new TrackHolder[0]);
@@ -665,7 +662,8 @@ public class VdoPlayerControlView extends FrameLayout {
         @Override
         public void onProgress(long millis) {
             positionView.setText(Utils.digitalClockTime((int) millis));
-            seekBar.setProgress((int) millis);
+            if (!scrubbing)
+                seekBar.setProgress((int) millis);
         }
 
         @Override
@@ -750,9 +748,11 @@ public class VdoPlayerControlView extends FrameLayout {
         public String toString() {
             if (track == Track.DISABLE_CAPTIONS) {
                 return "Turn off Captions";
+            } else if (track == Track.SET_ADAPTIVE) {
+                return "Auto";
             } else if (track.type == Track.TYPE_VIDEO) {
                 final long bitrateInKbps = (track.bitrate + audioBitrate) / 1024;
-                final long roundedOffBitrateInKbps = Math.round(bitrateInKbps/10.0) * 10;
+                final long roundedOffBitrateInKbps = Math.round(bitrateInKbps / 10.0) * 10;
                 return "(" + totalDataExpenditureInMb(track.bitrate + audioBitrate, videoDuration) +
                         ", " + roundedOffBitrateInKbps + "kbps)";
             }
@@ -761,13 +761,13 @@ public class VdoPlayerControlView extends FrameLayout {
         }
 
         private String totalDataExpenditureInMb(int bitsPerSec, long videoDuration) {
-            final long totalBytes = bitsPerSec <= 0 ? 0 : (bitsPerSec * (videoDuration/1000)) / 8;
+            final long totalBytes = bitsPerSec <= 0 ? 0 : (bitsPerSec * (videoDuration / 1000)) / 8;
             if (totalBytes == 0) {
-            return "-";
+                return "-";
             } else {
                 final float totalMB = totalBytes / (float) (1024 * 1024);
 
-                if(totalMB < 1) {
+                if (totalMB < 1) {
                     return "1MB";
                 } else if (totalMB < 1000) {
                     return (int) totalMB + " MB";

@@ -28,18 +28,20 @@ import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayer;
-import com.vdocipher.aegis.player.VdoPlayerSupportFragment;
+import com.vdocipher.aegis.ui.view.VdoPlayerControlView;
+import com.vdocipher.aegis.ui.view.VdoPlayerUIFragment;
 
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.Objects;
 
-public class PlayerActivity extends AppCompatActivity implements PlayerHost.InitializationListener {
+public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost.InitializationListener {
 
     private static final String TAG = "PlayerActivity";
     public static final String EXTRA_VDO_PARAMS = "vdo_params";
 
-    private VdoPlayerSupportFragment playerFragment;
+    private VdoPlayerUIFragment vdoPlayerUIFragment;
     private VdoPlayerControlView playerControlView;
     private TextView eventLog;
 
@@ -64,7 +66,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreate called");
-        setContentView(R.layout.activity_player);
+        setContentView(R.layout.activity_vdo_player_ui);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(uiVisibilityListener);
 
@@ -80,9 +82,8 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
             vdoParams = getIntent().getParcelableExtra(EXTRA_VDO_PARAMS);
         }
 
-        playerFragment = (VdoPlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.vdo_player_fragment);
-        playerControlView = findViewById(R.id.player_control_view);
-
+        vdoPlayerUIFragment = (VdoPlayerUIFragment) getSupportFragmentManager().findFragmentById(R.id.vdo_player_fragment);
+        playerControlView = Objects.requireNonNull(vdoPlayerUIFragment).requireView().findViewById(R.id.player_control_view);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         ((TextView) findViewById(R.id.library_version))
@@ -193,7 +194,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
         if (vdoParams != null) {
             // initialize the playerFragment; a VdoPlayer instance will be received
             // in onInitializationSuccess() callback
-            playerFragment.initialize(PlayerActivity.this);
+            vdoPlayerUIFragment.initialize(VdoPlayerUIActivity.this);
             log("initializing player fragment");
         } else {
             // lets get otp and playbackInfo before creating the player
@@ -238,7 +239,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
     }
 
     private void showToast(final String message) {
-        runOnUiThread(() -> Toast.makeText(PlayerActivity.this, message, Toast.LENGTH_SHORT).show());
+        runOnUiThread(() -> Toast.makeText(VdoPlayerUIActivity.this, message, Toast.LENGTH_SHORT).show());
     }
 
     private void log(String msg) {
@@ -265,7 +266,6 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
         log("onInitializationSuccess");
         this.player = player;
         player.addPlaybackEventListener(playbackListener);
-        playerControlView.setPlayer(player);
         showControls(true);
         initializeMediaSession();
         playerControlView.setFullscreenActionListener(fullscreenToggleListener);
@@ -282,7 +282,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
         String msg = "onInitializationFailure: errorCode = " + errorDescription.errorCode + ": " + errorDescription.errorMsg;
         log(msg);
         Log.e(TAG, msg);
-        Toast.makeText(PlayerActivity.this, "initialization failure: " + errorDescription.errorMsg, Toast.LENGTH_LONG).show();
+        Toast.makeText(VdoPlayerUIActivity.this, "initialization failure: " + errorDescription.errorMsg, Toast.LENGTH_LONG).show();
     }
 
     private final VdoPlayer.PlaybackEventListener playbackListener = new VdoPlayer.PlaybackEventListener() {
@@ -350,7 +350,6 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
         public void onLoaded(VdoInitParams vdoInitParams) {
             Log.i(TAG, "onLoaded");
             log("onLoaded");
-            playerControlView.verifyAndUpdateCaptionsButton();
         }
 
         @Override

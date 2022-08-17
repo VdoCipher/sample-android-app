@@ -25,7 +25,7 @@ public class Utils {
     private static final String TAG = "Utils";
 
     static String digitalClockTime(int timeInMilliSeconds) {
-        int totalSeconds = timeInMilliSeconds/1000;
+        int totalSeconds = timeInMilliSeconds / 1000;
         int hours = totalSeconds / (60 * 60);
         int minutes = (totalSeconds - hours * 60 * 60) / 60;
         int seconds = (totalSeconds - hours * 60 * 60 - minutes * 60);
@@ -93,7 +93,7 @@ public class Utils {
     }
 
     public static String getSizeString(int bitsPerSec, long millisec) {
-        double sizeMB = ((double)bitsPerSec / (8 * 1024 * 1024)) * (millisec / 1000);
+        double sizeMB = ((double) bitsPerSec / (8 * 1024 * 1024)) * (millisec / 1000);
         return round(sizeMB, 2) + " MB";
     }
 
@@ -114,7 +114,7 @@ public class Utils {
         final String SAMPLE_OTP_PLAYBACK_INFO_URL = "https://dev.vdocipher.com/api/site/homepage_video";
 
         URL url = new URL(SAMPLE_OTP_PLAYBACK_INFO_URL);
-        final HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+        final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         int responseCode = connection.getResponseCode();
 

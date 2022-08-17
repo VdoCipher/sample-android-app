@@ -4,28 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.vdocipher.sampleapp.PlayerActivity">
+    tools:context="com.vdocipher.sampleapp.VdoPlayerUIActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <fragment
-            android:name="com.vdocipher.aegis.player.VdoPlayerSupportFragment"
             android:id="@+id/vdo_player_fragment"
+            android:name="com.vdocipher.aegis.ui.view.VdoPlayerUIFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:keepScreenOn="true" />
 
-        <com.vdocipher.sampleapp.VdoPlayerControlView
-            android:id="@+id/player_control_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@id/vdo_player_fragment"
-            android:layout_alignTop="@id/vdo_player_fragment"
-            android:layout_alignEnd="@id/vdo_player_fragment"
-            android:layout_alignBottom="@id/vdo_player_fragment" />
     </RelativeLayout>
 
     <TextView

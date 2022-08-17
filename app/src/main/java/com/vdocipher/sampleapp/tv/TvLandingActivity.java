@@ -28,7 +28,7 @@ public class TvLandingActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tv_landing);
 
-        launchPlayerButton = (Button)findViewById(R.id.tv_launch_player);
+        launchPlayerButton = findViewById(R.id.tv_launch_player);
     }
 
     @Override
@@ -78,11 +78,6 @@ public class TvLandingActivity extends Activity {
 
     private void showToast(final String message) {
         Log.i(TAG, message);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(TvLandingActivity.this, message, Toast.LENGTH_SHORT).show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(TvLandingActivity.this, message, Toast.LENGTH_SHORT).show());
     }
 }

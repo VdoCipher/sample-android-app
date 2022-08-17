@@ -65,9 +65,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="Downloads"
+                    android:text="@string/downloads"
                     android:textColor="#263238"
                     android:textSize="24sp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/refresh_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:text="@string/refresh"
+                    android:layout_alignParentEnd="true"
+                    android:textSize="12sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -77,12 +86,12 @@
                     android:weightSum="4">
 
                     <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/pause_all"
+                        android:id="@+id/stop_all"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="0.8"
                         android:background="@android:color/transparent"
-                        android:text="PAUSE ALL"
+                        android:text="@string/stop_all"
                         android:textSize="12sp" />
 
                     <androidx.appcompat.widget.AppCompatButton
@@ -91,7 +100,16 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:text="RESUME ALL"
+                        android:text="@string/resume_all"
+                        android:textSize="12sp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/download_all"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.2"
+                        android:background="@android:color/transparent"
+                        android:text="@string/download_all"
                         android:textSize="12sp" />
 
                     <androidx.appcompat.widget.AppCompatButton
@@ -100,16 +118,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:text="DELETE ALL"
-                        android:textSize="12sp" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/refresh_list"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@android:color/transparent"
-                        android:text="REFRESH"
+                        android:text="@string/delete_all"
                         android:textSize="12sp" />
                 </LinearLayout>
             </RelativeLayout>
