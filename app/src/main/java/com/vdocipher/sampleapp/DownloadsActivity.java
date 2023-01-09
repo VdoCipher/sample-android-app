@@ -246,7 +246,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         for (Pair<String, String> otpAndPlaybackInfo : otpAndPlaybackInfoList) {
 
             //retrieve the download option iteratively for each video
-            handler.post(() -> new OptionsDownloader().downloadOptionsWithOtp(otpAndPlaybackInfo.first, otpAndPlaybackInfo.second, null, new OptionsDownloader.Callback() {
+            handler.post(() -> new OptionsDownloader(this).downloadOptionsWithOtp(otpAndPlaybackInfo.first, otpAndPlaybackInfo.second, null, new OptionsDownloader.Callback() {
 
                 @Override
                 public void onOptionsReceived(DownloadOptions options) {
@@ -325,7 +325,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         HandlerThread handlerThread = new HandlerThread(TAG);
         handlerThread.start();
         new Handler(handlerThread.getLooper()).post(
-                () -> new OptionsDownloader().downloadOptionsWithOtp(
+                () -> new OptionsDownloader(this).downloadOptionsWithOtp(
                         otp, playbackInfo, null, new OptionsDownloader.Callback() {
                             @Override
                             public void onOptionsReceived(DownloadOptions options) {
@@ -358,12 +358,6 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
                         Log.i(TAG, getDownloadItemName(downloadOptions.availableTracks[trackIndex], durationMs));
                     }
                     Log.i(TAG, "---- selected tracks ----");
-
-                    // currently only (1 video + 1 audio) track supported
-                    if (selectedTracks.length != 2) {
-                        showToastAndLog("Invalid selection", Toast.LENGTH_LONG);
-                        return;
-                    }
 
                     downloadSelectedOptions(downloadOptions, selectedTracks);
 

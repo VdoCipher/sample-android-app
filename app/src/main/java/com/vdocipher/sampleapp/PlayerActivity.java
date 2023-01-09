@@ -28,7 +28,7 @@ import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayer;
-import com.vdocipher.aegis.player.VdoPlayerSupportFragment;
+import com.vdocipher.aegis.ui.view.VdoPlayerUIFragment;
 
 import org.json.JSONException;
 
@@ -39,7 +39,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
     private static final String TAG = "PlayerActivity";
     public static final String EXTRA_VDO_PARAMS = "vdo_params";
 
-    private VdoPlayerSupportFragment playerFragment;
+    private VdoPlayerUIFragment playerFragment;
     private VdoPlayerControlView playerControlView;
     private TextView eventLog;
 
@@ -80,7 +80,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
             vdoParams = getIntent().getParcelableExtra(EXTRA_VDO_PARAMS);
         }
 
-        playerFragment = (VdoPlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.vdo_player_fragment);
+        playerFragment = (VdoPlayerUIFragment) getSupportFragmentManager().findFragmentById(R.id.vdo_player_fragment);
         playerControlView = findViewById(R.id.player_control_view);
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);

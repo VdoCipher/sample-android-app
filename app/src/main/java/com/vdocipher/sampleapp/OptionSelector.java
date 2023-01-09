@@ -69,30 +69,29 @@ public class OptionSelector implements DialogInterface.OnClickListener, View.OnC
     @Override
     public void onClick(View v) {
         if (v instanceof CheckedTextView) {
-            if (optionStyle == OptionStyle.SHOW_INDIVIDUAL_TRACKS) {
-                CheckedTextView trackView = (CheckedTextView)v;
-                int trackIndex = (int)trackView.getTag();
-                if (trackView.isChecked()) {
+            CheckedTextView view = (CheckedTextView)v;
+            if (optionStyle == OptionStyle.SHOW_INDIVIDUAL_TRACKS || view.getTag() instanceof Integer) {
+                int trackIndex = (int)view.getTag();
+                if (view.isChecked()) {
                     selectedTracks.remove(Integer.valueOf(trackIndex));
-                    trackView.setChecked(false);
+                    view.setChecked(false);
                 } else {
                     if (!selectedTracks.contains(trackIndex)) selectedTracks.add(trackIndex);
-                    trackView.setChecked(true);
+                    view.setChecked(true);
                 }
             } else {
-                CheckedTextView optionView = (CheckedTextView)v;
-                Pair<Integer, Integer> audVidTrackIndexPair = (Pair<Integer, Integer>)optionView.getTag();
+                Pair<Integer, Integer> audVidTrackIndexPair = (Pair<Integer, Integer>)view.getTag();
                 int audioTrackIndex = audVidTrackIndexPair.first;
                 int videoTrackIndex = audVidTrackIndexPair.second;
-                if (optionView.isChecked()) {
+                if (view.isChecked()) {
                     selectedTracks.remove(Integer.valueOf(audioTrackIndex));
                     selectedTracks.remove(Integer.valueOf(videoTrackIndex));
-                    optionView.setChecked(false);
+                    view.setChecked(false);
                 } else {
                     selectedTracks.clear();
                     selectedTracks.add(audioTrackIndex);
                     selectedTracks.add(videoTrackIndex);
-                    optionView.setChecked(true);
+                    view.setChecked(true);
                 }
             }
         }
@@ -136,12 +135,19 @@ public class OptionSelector implements DialogInterface.OnClickListener, View.OnC
         addTypeTracksToView(inflater, root, selectableItemBackgroundResourceId, tracks, vidTrackIndices);
         root.addView(inflater.inflate(R.layout.list_divider, root, false));
         int[] audTrackIndices = getTypeIndices(tracks, Track.TYPE_AUDIO);
-        Log.i(TAG, audTrackIndices.length + " audio tracks at " + Arrays.toString(audTrackIndices));
-        addTypeTracksToView(inflater, root, selectableItemBackgroundResourceId, tracks, audTrackIndices);
+        if (audTrackIndices.length != 0) {
+            Log.i(TAG, audTrackIndices.length + " audio tracks at " + Arrays.toString(audTrackIndices));
+            addTypeTracksToView(inflater, root, selectableItemBackgroundResourceId, tracks, audTrackIndices);
+        }
     }
 
     private void buildCombinedTrackView(Context context, LayoutInflater inflater, ViewGroup root,
                                         int selectableItemBackgroundResourceId,Track[] tracks) {
+        int[] audTrackIndices = getTypeIndices(tracks, Track.TYPE_AUDIO);
+        if (audTrackIndices.length == 0) {
+            buildIndividualTracksView(context, inflater, root, selectableItemBackgroundResourceId, tracks);
+            return;
+        }
         // we'll show two options: highest quality (audio + video) and lowest quality (audio + video)
 
         int highestQualityVidTrackIndex = getHighestBitrateIndex(tracks, Track.TYPE_VIDEO);

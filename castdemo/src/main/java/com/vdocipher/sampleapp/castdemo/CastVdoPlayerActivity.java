@@ -29,7 +29,7 @@ import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.player.VdoInitParams;
-import com.vdocipher.aegis.player.VdoPlayerSupportFragment;
+import com.vdocipher.aegis.ui.view.VdoPlayerUIFragment;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -39,7 +39,7 @@ public class CastVdoPlayerActivity extends AppCompatActivity
 
     private final String TAG = "CastVdoPlayerActivity";
 
-    private VdoPlayerSupportFragment playerFragment;
+    private VdoPlayerUIFragment playerFragment;
     private VdoPlayerControlView playerControlView;
     private TextView eventLog;
     private CharSequence eventLogString = "";
@@ -71,7 +71,7 @@ public class CastVdoPlayerActivity extends AppCompatActivity
 
         initParams = getIntent().getParcelableExtra("initParams");
 
-        playerFragment = (VdoPlayerSupportFragment)getSupportFragmentManager().findFragmentById(R.id.online_vdo_player_fragment);
+        playerFragment = (VdoPlayerUIFragment)getSupportFragmentManager().findFragmentById(R.id.online_vdo_player_fragment);
         playerControlView = findViewById(R.id.player_control_view);
         eventLog = findViewById(R.id.event_log);
         eventLog.setMovementMethod(ScrollingMovementMethod.getInstance());
