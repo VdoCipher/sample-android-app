@@ -1,2 +1,1 @@
-include ':app', ':castdemo'
-
+include ':app', ':castdemo', ':tvapp'

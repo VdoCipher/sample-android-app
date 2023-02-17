@@ -1,0 +1,31 @@
+apply from: '../constants.gradle'
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'com.vdocipher.sampleapp.tvapp'
+    compileSdkVersion project.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId "com.vdocipher.sampleapp.tvapp"
+        minSdkVersion project.ext.minSdkVersion
+        targetSdkVersion project.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.leanback:leanback:1.0.0'
+    implementation 'com.github.bumptech.glide:glide:4.14.2'
+    implementation 'com.vdocipher.aegis:vdocipher-android:' + project.ext.vdocipherSdkVersion
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+}

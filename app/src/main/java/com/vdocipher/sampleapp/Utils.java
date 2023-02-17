@@ -24,11 +24,11 @@ import java.net.URL;
 public class Utils {
     private static final String TAG = "Utils";
 
-    static String digitalClockTime(int timeInMilliSeconds) {
-        int totalSeconds = timeInMilliSeconds / 1000;
-        int hours = totalSeconds / (60 * 60);
-        int minutes = (totalSeconds - hours * 60 * 60) / 60;
-        int seconds = (totalSeconds - hours * 60 * 60 - minutes * 60);
+    static String digitalClockTime(long timeInMilliSeconds) {
+        long totalSeconds = timeInMilliSeconds / 1000;
+        long hours = totalSeconds / (60 * 60);
+        long minutes = (totalSeconds - hours * 60 * 60) / 60;
+        long seconds = (totalSeconds - hours * 60 * 60 - minutes * 60);
 
         String timeThumb = "";
         if (hours > 0) {

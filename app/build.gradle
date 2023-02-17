@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
+apply from: '../constants.gradle'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion project.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "com.vdocipher.sampleapp"
-        minSdkVersion 21
-        targetSdkVersion 33
+        minSdkVersion project.ext.minSdkVersion
+        targetSdkVersion project.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -22,14 +23,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    namespace 'com.vdocipher.sampleapp'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.leanback:leanback:1.0.0'
     implementation 'com.loopj.android:android-async-http:1.4.9'
-    implementation 'com.vdocipher.aegis:vdocipher-android:1.19.0'
-    implementation 'com.google.android.gms:play-services-auth:20.4.0'
+    implementation 'com.vdocipher.aegis:vdocipher-android:' + project.ext.vdocipherSdkVersion
+    implementation 'com.google.android.gms:play-services-auth:20.4.1'
     implementation "androidx.multidex:multidex:2.0.1"
 }

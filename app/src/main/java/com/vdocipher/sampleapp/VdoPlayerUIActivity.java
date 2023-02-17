@@ -9,7 +9,6 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +30,7 @@ import java.util.Objects;
 
 public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost.InitializationListener {
 
-    private static final String TAG = "PlayerActivity";
+    private static final String TAG = "VdoPlayerUIActivity";
     public static final String EXTRA_VDO_PARAMS = "vdo_params";
 
     private VdoPlayerUIFragment vdoPlayerUIFragment;

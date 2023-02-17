@@ -1,12 +1,13 @@
+apply from: '../constants.gradle'
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion project.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "com.vdocipher.sampleapp.castdemo"
-        minSdkVersion 18
-        targetSdkVersion 33
+        minSdkVersion project.ext.minSdkVersion
+        targetSdkVersion project.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -26,16 +27,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    namespace 'com.vdocipher.sampleapp.castdemo'
 
 }
-
-def vdocipher_sdk_version = '1.19.0'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.vdocipher.aegis:vdocipher-android:' + vdocipher_sdk_version
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.vdocipher.aegis:vdocipher-android:' + project.ext.vdocipherSdkVersion
     implementation 'com.google.android.gms:play-services-cast-framework:21.2.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.5.2'

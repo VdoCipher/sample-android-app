@@ -93,16 +93,16 @@ public class VdoPlayerControlView extends FrameLayout {
     private HandlerThread helperThread;
     private Handler helperHandler;
 
-    private int ffwdMs;
-    private int rewindMs;
-    private int showTimeoutMs;
+    private final int ffwdMs;
+    private final int rewindMs;
+    private final int showTimeoutMs;
     private boolean scrubbing;
     private boolean isAttachedToWindow;
     private boolean fullscreen;
 
     private @Nullable
     VdoPlayer player;
-    private UiListener uiListener;
+    private final UiListener uiListener;
     private VdoInitParams lastErrorParams; // todo gather all relevant state and update UI using it
     private boolean needNewVdoParams;
     private FullscreenActionListener fullscreenActionListener;
@@ -116,7 +116,7 @@ public class VdoPlayerControlView extends FrameLayout {
 
     private static final List<Integer> ERROR_CODES_FOR_NEW_PARAMS = Arrays.asList(2013, 2018);
 
-    private Runnable hideAction = this::hide;
+    private final Runnable hideAction = this::hide;
 
     public VdoPlayerControlView(Context context) {
         this(context, null);
@@ -155,7 +155,7 @@ public class VdoPlayerControlView extends FrameLayout {
         captionsButton = findViewById(R.id.vdo_captions);
         captionsButton.setOnClickListener(uiListener);
         captionsButton.setVisibility(View.GONE);
-        captionSearchButton = (ImageButton) findViewById(R.id.vdo_search);
+        captionSearchButton = findViewById(R.id.vdo_search);
         captionSearchButton.setOnClickListener(uiListener);
         captionSearchButton.setVisibility(View.GONE);
         qualityButton = findViewById(R.id.vdo_quality);
@@ -661,7 +661,7 @@ public class VdoPlayerControlView extends FrameLayout {
 
         @Override
         public void onProgress(long millis) {
-            positionView.setText(Utils.digitalClockTime((int) millis));
+            positionView.setText(Utils.digitalClockTime(millis));
             if (!scrubbing)
                 seekBar.setProgress((int) millis);
         }
@@ -685,7 +685,7 @@ public class VdoPlayerControlView extends FrameLayout {
 
         @Override
         public void onLoaded(VdoInitParams vdoInitParams) {
-            durationView.setText(String.valueOf(Utils.digitalClockTime((int) player.getDuration())));
+            durationView.setText(Utils.digitalClockTime(player.getDuration()));
             seekBar.setMax((int) player.getDuration());
             updateSpeedControlButton();
         }
@@ -699,7 +699,7 @@ public class VdoPlayerControlView extends FrameLayout {
 
         @Override
         public void onMediaEnded(VdoInitParams vdoInitParams) {
-            // todo
+
         }
 
         @Override

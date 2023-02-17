@@ -1,36 +1,29 @@
-package com.vdocipher.sampleapp.tv;
+package com.vdocipher.sampleapp.tvapp;
 
 import android.app.Activity;
 import android.os.Bundle;
-import androidx.leanback.app.PlaybackFragment;
-import androidx.leanback.widget.AbstractDetailsDescriptionPresenter;
-import androidx.leanback.widget.Action;
+import android.util.Log;
+
+import androidx.leanback.app.PlaybackSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.ClassPresenterSelector;
 import androidx.leanback.widget.ControlButtonPresenterSelector;
 import androidx.leanback.widget.ListRow;
 import androidx.leanback.widget.ListRowPresenter;
-import androidx.leanback.widget.OnActionClickedListener;
 import androidx.leanback.widget.PlaybackControlsRow;
 import androidx.leanback.widget.PlaybackControlsRowPresenter;
-import android.util.Log;
-
-import com.vdocipher.aegis.media.MediaInfo;
 
 /**
  * Handles the UI for playback controls and state.
- *
+ * <p>
  * The UI is updated by calls from the host activity when it receives appropriate callbacks from
  * the VdoPlayer.
  */
 
-public class PlaybackOverlayFragment extends PlaybackFragment {
+public class PlaybackOverlayFragment extends PlaybackSupportFragment {
     private static final String TAG = PlaybackOverlayFragment.class.getSimpleName();
 
-    private MediaInfo mMediaInfo;
     private PlaybackControlsRow mPlaybackControlsRow;
-    private ArrayObjectAdapter mPrimaryActionsAdapter;
-    private int mVdoPlayerState;
 
     private PlaybackControlsRow.PlayPauseAction mPlayPauseAction;
     private PlaybackControlsRow.FastForwardAction mFastForwardAction;
@@ -45,32 +38,37 @@ public class PlaybackOverlayFragment extends PlaybackFragment {
         super.onCreate(savedInstanceState);
 
         setBackgroundType(PlaybackOverlayFragment.BG_LIGHT);
-        setFadingEnabled(true);
+        setControlsOverlayAutoHideEnabled(true);
 
         setUpRows();
     }
 
-    // called when state change callback is received from VdoPlayer
+    /**
+     * called when state change callback is received from VdoPlayer
+     *
+     * @param playWhenReady true if currently playing else false.
+     * @param state         current state of playback. One of the {@link com.vdocipher.aegis.player.VdoPlayer#STATE_IDLE},
+     *                      {@link com.vdocipher.aegis.player.VdoPlayer#STATE_BUFFERING},
+     *                      {@link com.vdocipher.aegis.player.VdoPlayer#STATE_READY}, {@link com.vdocipher.aegis.player.VdoPlayer#STATE_ENDED}
+     */
     public void playbackStateChanged(boolean playWhenReady, int state) {
-        mVdoPlayerState = state;
         if (playWhenReady) {
-            setFadingEnabled(true);
-            mPlayPauseAction.setIndex(PlaybackControlsRow.PlayPauseAction.PAUSE);
-            mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.PAUSE));
+            setControlsOverlayAutoHideEnabled(true);
+            mPlayPauseAction.setIndex(PlaybackControlsRow.PlayPauseAction.INDEX_PAUSE);
+            mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.INDEX_PAUSE));
         } else {
-            //setFadingEnabled(false);
-            mPlayPauseAction.setIndex(PlaybackControlsRow.PlayPauseAction.PLAY);
-            mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.PLAY));
+            mPlayPauseAction.setIndex(PlaybackControlsRow.PlayPauseAction.INDEX_PLAY);
+            mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.INDEX_PLAY));
         }
         notifyPlaybackRowChanged();
     }
 
     public void playbackPositionChanged(long positionMs) {
-        mPlaybackControlsRow.setCurrentTimeLong(positionMs);
+        mPlaybackControlsRow.setCurrentPosition(positionMs);
     }
 
     public void playbackDurationChanged(long durationMs) {
-        mPlaybackControlsRow.setTotalTimeLong(durationMs);
+        mPlaybackControlsRow.setDuration(durationMs);
     }
 
     private void setUpRows() {
@@ -87,15 +85,13 @@ public class PlaybackOverlayFragment extends PlaybackFragment {
         addPlaybackControlsRow();
 
         // set action click listener
-        playbackControlsRowPresenter.setOnActionClickedListener(new OnActionClickedListener() {
-            public void onActionClicked(Action action) {
-                if (action.getId() == mPlayPauseAction.getId()) {
-                    togglePlayback(mPlayPauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PLAY);
-                } else if (action.getId() == mFastForwardAction.getId()) {
-                    fastForward();
-                } else if (action.getId() == mRewindAction.getId()) {
-                    rewind();
-                }
+        playbackControlsRowPresenter.setOnActionClickedListener(action -> {
+            if (action.getId() == mPlayPauseAction.getId()) {
+                togglePlayback(mPlayPauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.INDEX_PLAY);
+            } else if (action.getId() == mFastForwardAction.getId()) {
+                fastForward();
+            } else if (action.getId() == mRewindAction.getId()) {
+                rewind();
             }
         });
         setAdapter(mRowsAdapter);
@@ -106,10 +102,10 @@ public class PlaybackOverlayFragment extends PlaybackFragment {
         mRowsAdapter.add(mPlaybackControlsRow);
 
         ControlButtonPresenterSelector presenterSelector = new ControlButtonPresenterSelector();
-        mPrimaryActionsAdapter = new ArrayObjectAdapter(presenterSelector);
+        ArrayObjectAdapter mPrimaryActionsAdapter = new ArrayObjectAdapter(presenterSelector);
         mPlaybackControlsRow.setPrimaryActionsAdapter(mPrimaryActionsAdapter);
 
-        Activity activity = getActivity();
+        Activity activity = requireActivity();
         mRewindAction = new PlaybackControlsRow.RewindAction(activity);
         mPlayPauseAction = new PlaybackControlsRow.PlayPauseAction(activity);
         mFastForwardAction = new PlaybackControlsRow.FastForwardAction(activity);
@@ -121,29 +117,16 @@ public class PlaybackOverlayFragment extends PlaybackFragment {
     }
 
     private void togglePlayback(boolean playWhenReady) {
-        ((TvPlayerActivity)getActivity()).setPlayWhenReady(playWhenReady);
+        ((TvPlayerActivity) requireActivity()).setPlayWhenReady(playWhenReady);
     }
 
     // fast forward will simply seek 5 seconds forward
     private void fastForward() {
-        ((TvPlayerActivity)getActivity()).fastForward();
+        ((TvPlayerActivity) requireActivity()).fastForward();
     }
 
     // rewind will simply seek 5 seconds backward
     private void rewind() {
-        ((TvPlayerActivity)getActivity()).rewind();
-    }
-
-    // todo to be used for displaying optional details above primary action row
-    private static class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPresenter {
-
-        @Override
-        protected void onBindDescription(ViewHolder viewHolder, Object item) {
-            MediaInfo mediaInfo = (MediaInfo) item;
-            if (mediaInfo != null) {
-                viewHolder.getTitle().setText(mediaInfo.title);
-                viewHolder.getBody().setText(mediaInfo.description);
-            }
-        }
+        ((TvPlayerActivity) requireActivity()).rewind();
     }
 }

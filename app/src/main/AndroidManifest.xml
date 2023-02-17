@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.vdocipher.sampleapp">
+    tools:ignore="MissingLeanbackLauncher,MissingLeanbackSupport">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <uses-sdk tools:overrideLibrary="androidx.leanback" />
-
-    <uses-feature
-        android:name="android.software.leanback"
-        android:required="false" />
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/logo_launcher"
+        android:banner="@mipmap/logo_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
+            android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,29 +37,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
             android:supportsPictureInPicture="true"
             tools:targetApi="n" />
-        <activity
-            android:name=".tv.TvLandingActivity"
-            android:banner="@mipmap/ic_launcher"
-            android:label="TvLanding"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme.Leanback">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".tv.TvPlayerActivity"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme.Leanback">
-        </activity>
         <activity android:name=".DownloadsActivity" />
-
-        <service
-            android:name=".DownloadNotificationService"
-            android:enabled="true"
-            android:exported="false" />
     </application>
 
 </manifest>

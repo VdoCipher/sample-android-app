@@ -3,16 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.vdocipher.sampleapp.tv.TvPlayerActivity">
+    tools:context="com.vdocipher.sampleapp.tvapp.TvPlayerActivity">
 
     <fragment
         android:id="@+id/tv_player_fragment"
-        android:name="com.vdocipher.aegis.player.VdoPlayerFragment"
+        android:name="com.vdocipher.aegis.player.VdoPlayerSupportFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
     <fragment
         android:id="@+id/tv_player_overlay_fragment"
-        android:name="com.vdocipher.sampleapp.tv.PlaybackOverlayFragment"
+        android:name="com.vdocipher.sampleapp.tvapp.PlaybackOverlayFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

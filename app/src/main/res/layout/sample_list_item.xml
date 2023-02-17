@@ -12,8 +12,9 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:id="@+id/poster"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:background="#50263238"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_play_arrow_white_48dp" />
@@ -22,8 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingLeft="8dp"
-            android:paddingRight="4dp">
+            android:paddingStart="8dp"
+            android:paddingEnd="4dp">
 
             <TextView
                 android:id="@+id/vdo_title"
@@ -38,6 +39,18 @@
                 android:textSize="16sp"
                 tools:text="Video Title" />
 
+            <TextView
+                android:id="@+id/vdo_duration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_marginTop="2dp"
+                android:textColor="#263238"
+                android:textSize="12sp"
+                tools:text="Video Duration" />
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,8 +64,8 @@
                     android:layout_centerHorizontal="true"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
                     android:textColor="#263238"
                     android:textSize="12sp"
                     android:textStyle="bold"

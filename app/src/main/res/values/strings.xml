@@ -15,4 +15,6 @@
     <string name="refresh">REFRESH</string>
     <string name="downloads">Downloads</string>
     <string name="download_all">Download All</string>
+    <string name="start_playback">START PLAYBACK</string>
+    <string name="start_playback_with_ui">START PLAYBACK WITH UI</string>
 </resources>

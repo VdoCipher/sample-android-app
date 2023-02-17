@@ -1,25 +1,29 @@
 package com.vdocipher.sampleapp;
 
+import static com.vdocipher.sampleapp.Utils.getSizeString;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.vdocipher.aegis.media.ErrorDescription;
 import com.vdocipher.aegis.media.Track;
@@ -36,26 +40,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.vdocipher.sampleapp.Utils.getSizeString;
-
 public class DownloadsActivity extends Activity implements VdoDownloadManager.EventListener {
     private static final String TAG = "DownloadsActivity";
 
     // some samples for download demo
-    private static final String SAMPLE_NAME_1 = "VdoCipher product demo";
-    private static final String MEDIA_ID_1 = "661f6861d521a24288d608923d2c73f9";
-    private static final String PLAYBACK_INFO_1 = "eyJ2aWRlb0lkIjoiNjYxZjY4NjFkNTIxYTI0Mjg4ZDYwODkyM2QyYzczZjkifQ==";
-    private static final String OTP_1 = "20160313versASE313WAGCdGbRSkojp0pMJpESFT9RVVrbGSnzwVOr2ANUxMrfZ5";
 
-    public static final String SAMPLE_NAME_2 = "Home page video";
-    public static final String MEDIA_ID_2 = "3f29b5434a5c615cda18b16a6232fd75";
-    public static final String PLAYBACK_INFO_2 = "eyJ2aWRlb0lkIjoiM2YyOWI1NDM0YTVjNjE1Y2RhMThiMTZhNjIzMmZkNzUifQ==";
-    public static final String OTP_2 = "20160313versASE313BlEe9YKEaDuju5J0XcX2Z03Hrvm5rzKScvuyojMSBZBxfZ";
+    public static final String SAMPLE_NAME_1 = "Home page video";
+    public static final String MEDIA_ID_1 = "3f29b5434a5c615cda18b16a6232fd75";
+    public static final String PLAYBACK_INFO_1 = "eyJ2aWRlb0lkIjoiM2YyOWI1NDM0YTVjNjE1Y2RhMThiMTZhNjIzMmZkNzUifQ==";
+    public static final String OTP_1 = "20160313versASE313BlEe9YKEaDuju5J0XcX2Z03Hrvm5rzKScvuyojMSBZBxfZ";
 
-    private static final String SAMPLE_NAME_3 = "Tears of steel";
-    private static final String MEDIA_ID_3 = "04b9dc547448ffdd2511d688e37f7427";
-    private static final String PLAYBACK_INFO_3 = "eyJ2aWRlb0lkIjoiMDRiOWRjNTQ3NDQ4ZmZkZDI1MTFkNjg4ZTM3Zjc0MjcifQ==";
-    private static final String OTP_3 = "20160313versASE323efVcPwWt2FLlfpexkRXdBXlaB613yhR3XUxXOLxQeI9o7b";
+    private static final String SAMPLE_NAME_2 = "Big Buck Bunny";
+    private static final String MEDIA_ID_2 = "661f6861d521a24288d608923d2c73f9";
+    private static final String PLAYBACK_INFO_2 = "eyJ2aWRlb0lkIjoiZWQxYzk0NDUxMjlkNDJhNmJkYTJkYWE3M2MxYzU1ZWUifQ==";
+    private static final String OTP_2 = "20160313versASE323cr92ZMBNuFjIxDH1cIGnfwTO3xNImj9ZY9TLaFQ78j9aLQ";
+
+    private static final String SAMPLE_NAME_3 = "Elephants Dream";
+    private static final String MEDIA_ID_3 = "264d511c542a4d23b0cc7317867ac483";
+    private static final String PLAYBACK_INFO_3 = "eyJ2aWRlb0lkIjoiMjY0ZDUxMWM1NDJhNGQyM2IwY2M3MzE3ODY3YWM0ODMifQ==";
+    private static final String OTP_3 = "20160313versASE323gks3zap5vOsyQXbEf6IgQ5j3jEFtAOn3uWQaCpLXKgnRif";
 
     private Button download1, download2, download3;
     private AppCompatButton deleteAll;
@@ -140,7 +143,6 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
         if (vdoDownloadManager != null) {
             vdoDownloadManager.removeEventListener(this);
         }
-        startNotificationService();
         super.onStop();
     }
 
@@ -176,12 +178,6 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     public void onDeleted(String mediaId) {
         showToastAndLog("Deleted " + mediaId, Toast.LENGTH_SHORT);
         removeListItem(mediaId);
-    }
-
-    // Private
-
-    private void startNotificationService() {
-        startService(new Intent(this, DownloadNotificationService.class));
     }
 
     private void maybeCreateManager() {
@@ -522,13 +518,17 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
             public TextView title;
             public TextView status;
             public TextView downloadPercent;
+            public TextView videoDuration;
+            public ImageView poster;
             public AppCompatButton stop, resume, delete;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 title = itemView.findViewById(R.id.vdo_title);
                 status = itemView.findViewById(R.id.download_status);
+                poster = itemView.findViewById(R.id.poster);
                 downloadPercent = itemView.findViewById(R.id.download_percentage);
+                videoDuration = itemView.findViewById(R.id.vdo_duration);
                 stop = itemView.findViewById(R.id.download_stop_btn);
                 resume = itemView.findViewById(R.id.download_resume_btn);
                 delete = itemView.findViewById(R.id.download_delete_btn);
@@ -575,6 +575,7 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
             DownloadStatus status = statusList.get(position);
             holder.title.setText(status.mediaInfo.title);
             holder.status.setText(DownloadsActivity.statusString(status).toUpperCase());
+            holder.videoDuration.setText(String.format("%s", Utils.digitalClockTime(status.mediaInfo.duration)));
             holder.downloadPercent.setText(String.format("%s%%", status.downloadPercent));
             if (status.status == VdoDownloadManager.STATUS_DOWNLOADING) {
                 holder.stop.setEnabled(true);
@@ -582,6 +583,18 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
             } else {
                 holder.stop.setEnabled(false);
                 holder.resume.setEnabled(status.status == VdoDownloadManager.STATUS_PAUSED);
+            }
+            String posterPath = status.poster;
+            if (posterPath != null) {
+                File posterFile = new File(posterPath);
+                if (posterFile.exists()) {
+                    Bitmap posBitmap = BitmapFactory.decodeFile(posterFile.getAbsolutePath());
+                    if (posBitmap != null) {
+                        holder.poster.setImageBitmap(posBitmap);
+                    } else {
+                        Log.e(TAG, "poster file could not be decoded to bitmap");
+                    }
+                }
             }
         }
 
