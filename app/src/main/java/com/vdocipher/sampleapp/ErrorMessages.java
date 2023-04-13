@@ -28,6 +28,7 @@ public final class ErrorMessages {
                 return messagePrefix + "Offline video not found. Please make sure the video was " +
                         "downloaded successfully and not deleted.";
             case 5110:
+            case 5114:
             case 5124:
             case 5130:
                 return messagePrefix + "Please check your internet connection and try restarting " +
@@ -76,6 +77,9 @@ public final class ErrorMessages {
             case 6187:
                 return messagePrefix + "Rental license for downloaded video has expired. Kindly " +
                         "download again.";
+            case 6197:
+            case 6198:
+                return messagePrefix + "DRM provisioning error. Kindly try restarting the phone and reinstalling app";
             default:
                 return "An error occurred: " + errorDescription.errorCode + "\nTap to retry";
         }
