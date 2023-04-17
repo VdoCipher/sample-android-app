@@ -72,7 +72,6 @@ public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost
         eventLog.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         currentOrientation = getResources().getConfiguration().orientation;
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         initializePlayer();
     }
