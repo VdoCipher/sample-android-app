@@ -93,7 +93,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
         showControls(false);
 
         currentOrientation = getResources().getConfiguration().orientation;
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+       // setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         initializePlayer();
     }
@@ -399,6 +399,8 @@ public class PlayerActivity extends AppCompatActivity implements PlayerHost.Init
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+
+
         final int newOrientation = newConfig.orientation;
         final int oldOrientation = currentOrientation;
         currentOrientation = newOrientation;

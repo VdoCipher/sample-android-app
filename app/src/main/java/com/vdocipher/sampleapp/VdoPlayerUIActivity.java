@@ -260,6 +260,8 @@ public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        Toast.makeText(this, "onConfigurationChanged Called", Toast.LENGTH_SHORT).show();
+
         final int newOrientation = newConfig.orientation;
         final int oldOrientation = currentOrientation;
         currentOrientation = newOrientation;
