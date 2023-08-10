@@ -17,7 +17,7 @@ repositories {
 
 ```gradle
 // use the latest available version
-def vdocipher_sdk_version = '1.19.4'
+def vdocipher_sdk_version = '1.22.4'
 implementation 'com.vdocipher.aegis:vdocipher-android:' + vdocipher_sdk_version
 ```
 
