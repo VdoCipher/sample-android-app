@@ -32,8 +32,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="center_vertical"
+        android:orientation="vertical"
         android:padding="20dp">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -46,28 +46,29 @@
             android:textColor="@android:color/black"
             android:textSize="18sp" />
 
+
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
             android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
             android:drawableTop="@drawable/ic_baseline_play_circle_outline_60"
-            android:onClick="onlinePlayback"
+            android:onClick="onlinePlaybackWithUI"
             android:padding="20dp"
-            android:text="@string/play_with_custom_ui"
+            android:text="@string/play_with_inbuilt_ui"
             android:textSize="12sp" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
             android:layout_gravity="center_horizontal"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
             android:drawableTop="@drawable/ic_baseline_play_circle_outline_60"
-            android:onClick="onlinePlaybackWithUI"
+            android:onClick="onlinePlayback"
             android:padding="20dp"
-            android:text="@string/play_with_inbuilt_ui"
+            android:text="@string/play_with_custom_ui"
             android:textSize="12sp" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -84,8 +85,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
             android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
             android:onClick="showDownloads"
             android:padding="20dp"
             android:text="@string/downloads"

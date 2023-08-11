@@ -21,30 +21,31 @@ public final class VideoList {
 
     public static List<Video> setupVideos() {
         list = new ArrayList<>();
+
         String[] title = {
-                "Elephant Dream",
-                "Big buck bunny",
+                "Sample",
+                "Sample",
         };
 
         String[] otp = {
-                "20160313versASE323NSOCfVwXoiEbuNJpdsgJbGjMecO9UhdWmftrGDETv7KlCy",
-                "20160313versASE323IME8y94TjOPbFXlgZuElNTaT7D2k7yyGHobjRDuBWFoeDK",
+                "20150519versASE31ba8fc50a0ac49b8e74b9c40f49e099755cd36dc8adccaa3",
+                "20160313versASE323HhDGsxZUlOgTYLF9Qlwl6ss0oPhaaOpk3QWOsPnqhlpuU2"
         };
 
         String[] playbackInfo = {
-                "eyJ2aWRlb0lkIjoiMjY0ZDUxMWM1NDJhNGQyM2IwY2M3MzE3ODY3YWM0ODMifQ==",
-                "eyJ2aWRlb0lkIjoiZWQxYzk0NDUxMjlkNDJhNmJkYTJkYWE3M2MxYzU1ZWUifQ==",
+                "eyJ2aWRlb0lkIjoiM2YyOWI1NDM0YTVjNjE1Y2RhMThiMTZhNjIzMmZkNzUifQ==",
+                "eyJ2aWRlb0lkIjoiZWFiMTU2ZWM3ODM3NGRjYzk1NTFhMDIwNTU1MmRkYTcifQ=="
         };
 
         String[] description = {
-                "The first Blender Open Movie from 2006",
-                "Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself."
+                "Sample Video",
+                "Sample Video"
         };
 
 
         String[] cardImageUrl = {
-                "https://d1z78r8i505acl.cloudfront.net/poster/BGbRHpGC5OAzy.720.jpeg",
-                "https://d1z78r8i505acl.cloudfront.net/poster/toQsFmrSDfY8z.720.jpeg"
+                "https://d1z78r8i505acl.cloudfront.net/poster/toQsFmrSDfY8z.720.jpeg",
+                "https://d1z78r8i505acl.cloudfront.net/poster/toQsFmrSDfY8z.720.jpeg",
         };
 
         for (int index = 0; index < title.length; ++index) {
