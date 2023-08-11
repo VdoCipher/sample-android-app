@@ -23,30 +23,20 @@ public final class VideoList {
         list = new ArrayList<>();
 
         String[] title = {
-                "Sample",
-                "Sample",
-        };
+                "Sample"};
 
         String[] otp = {
-                "20150519versASE31ba8fc50a0ac49b8e74b9c40f49e099755cd36dc8adccaa3",
-                "20150519versASE31ba8fc50a0ac49b8e74b9c40f49e099755cd36dc8adccaa3",
-        };
+                "20150519versASE31ba8fc50a0ac49b8e74b9c40f49e099755cd36dc8adccaa3"};
 
         String[] playbackInfo = {
-                "eyJ2aWRlb0lkIjoiM2YyOWI1NDM0YTVjNjE1Y2RhMThiMTZhNjIzMmZkNzUifQ==",
-                "eyJ2aWRlb0lkIjoiM2YyOWI1NDM0YTVjNjE1Y2RhMThiMTZhNjIzMmZkNzUifQ==",
-        };
+                "eyJ2aWRlb0lkIjoiM2YyOWI1NDM0YTVjNjE1Y2RhMThiMTZhNjIzMmZkNzUifQ=="};
 
         String[] description = {
-                "Sample Video",
-                "Sample Video"
-        };
+                "Sample Video"};
 
 
         String[] cardImageUrl = {
-                "https://d1z78r8i505acl.cloudfront.net/poster/toQsFmrSDfY8z.720.jpeg",
-                "https://d1z78r8i505acl.cloudfront.net/poster/toQsFmrSDfY8z.720.jpeg",
-        };
+                "https://d1z78r8i505acl.cloudfront.net/poster/toQsFmrSDfY8z.720.jpeg"};
 
         for (int index = 0; index < title.length; ++index) {
             list.add(
