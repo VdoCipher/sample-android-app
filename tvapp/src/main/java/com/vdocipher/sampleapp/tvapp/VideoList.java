@@ -29,12 +29,12 @@ public final class VideoList {
 
         String[] otp = {
                 "20150519versASE31ba8fc50a0ac49b8e74b9c40f49e099755cd36dc8adccaa3",
-                "20160313versASE323HhDGsxZUlOgTYLF9Qlwl6ss0oPhaaOpk3QWOsPnqhlpuU2"
+                "20150519versASE31ba8fc50a0ac49b8e74b9c40f49e099755cd36dc8adccaa3",
         };
 
         String[] playbackInfo = {
                 "eyJ2aWRlb0lkIjoiM2YyOWI1NDM0YTVjNjE1Y2RhMThiMTZhNjIzMmZkNzUifQ==",
-                "eyJ2aWRlb0lkIjoiZWFiMTU2ZWM3ODM3NGRjYzk1NTFhMDIwNTU1MmRkYTcifQ=="
+                "eyJ2aWRlb0lkIjoiM2YyOWI1NDM0YTVjNjE1Y2RhMThiMTZhNjIzMmZkNzUifQ==",
         };
 
         String[] description = {
