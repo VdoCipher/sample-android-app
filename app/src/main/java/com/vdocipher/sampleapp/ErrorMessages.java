@@ -14,6 +14,10 @@ public final class ErrorMessages {
         String messagePrefix = "Error: " + errorDescription.errorCode + ". ";
 
         switch (errorDescription.errorCode) {
+            case 1060:
+                return  messagePrefix + "Offline DRM error. " +
+                        "Kindly update your OS, restart the phone and app. If still not " +
+                        "corrected, factory reset can be tried if possible.";
             case 1201:
             case 1202:
                 return messagePrefix + "Please make sure USB debugging is disabled. In " +
