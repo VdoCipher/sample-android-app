@@ -16,7 +16,6 @@ public class MainActivity extends AppCompatActivity implements ProviderInstaller
 
     private static final String TAG = "MainActivity";
     private static final int ERROR_DIALOG_REQUEST_CODE = 1;
-
     private boolean retryProviderInstall;
 
     @Override
@@ -29,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements ProviderInstaller
         }
 
         Log.i(TAG, "version name = " + com.vdocipher.aegis.BuildConfig.VDO_VERSION_NAME);
-        ((TextView)findViewById(R.id.library_version))
+        ((TextView) findViewById(R.id.library_version))
                 .setText(String.format("VdoCipher sdk version: %s", com.vdocipher.aegis.BuildConfig.VDO_VERSION_NAME));
 
     }
@@ -116,6 +115,11 @@ public class MainActivity extends AppCompatActivity implements ProviderInstaller
 
     public void onlinePlayback(View v) {
         Intent intent = new Intent(this, PlayerActivity.class);
+        startActivity(intent);
+    }
+
+    public void exoPlayback(View v) {
+        Intent intent = new Intent(this, ExoPlayback.class);
         startActivity(intent);
     }
 

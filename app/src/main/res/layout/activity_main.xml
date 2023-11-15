@@ -71,6 +71,19 @@
             android:text="@string/play_with_custom_ui"
             android:textSize="12sp" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:drawableTop="@drawable/ic_baseline_play_circle_outline_60"
+            android:onClick="exoPlayback"
+            android:padding="20dp"
+            android:text="@string/play_with_exoplayer"
+            android:textSize="12sp" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

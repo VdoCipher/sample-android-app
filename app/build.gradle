@@ -32,6 +32,17 @@ dependencies {
     implementation 'androidx.leanback:leanback:1.0.0'
     implementation 'com.loopj.android:android-async-http:1.4.9'
     implementation 'com.vdocipher.aegis:vdocipher-android:' + project.ext.vdocipherSdkVersion
+
+    /**
+     * ExoPlayer dependencies
+     */
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.19.1'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.19.1'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.19.1'
+
+
     implementation 'com.google.android.gms:play-services-auth:20.4.1'
     implementation "androidx.multidex:multidex:2.0.1"
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }
