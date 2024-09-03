@@ -25,6 +25,7 @@ import com.google.android.gms.cast.framework.CastContext;
 import com.vdocipher.aegis.cast.CastSessionAvailabilityListener;
 import com.vdocipher.aegis.cast.CastVdoPlayer;
 import com.vdocipher.aegis.media.ErrorDescription;
+import com.vdocipher.aegis.media.PlayerOption;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoPlayer;
@@ -194,6 +195,11 @@ public class CastVdoPlayerActivity extends AppCompatActivity
         Toast.makeText(CastVdoPlayerActivity.this, "initialization failure: " + errorDescription.errorMsg, Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public void onDeInitializationSuccess() {
+
+    }
+
     // Private
 
     private VdoPlayer.PlaybackEventListener localPlaybackListener = new VdoPlayer.PlaybackEventListener() {
@@ -206,6 +212,11 @@ public class CastVdoPlayerActivity extends AppCompatActivity
         @Override
         public void onTracksChanged(Track[] tracks, Track[] tracks1) {
             log("onTracksChanged");
+        }
+
+        @Override
+        public void onMetaDataLoaded(PlayerOption playerOption) {
+
         }
 
         @Override

@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentActivity;
 
 import com.vdocipher.aegis.media.ErrorDescription;
+import com.vdocipher.aegis.media.PlayerOption;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoInitParams;
@@ -56,6 +57,11 @@ public class TvPlayerActivity extends FragmentActivity implements PlayerHost.Ini
     public void onInitializationFailure(PlayerHost playerHost, ErrorDescription errorDescription) {
         Log.e(TAG, "init failure");
         showToast("Initialization failure. Reason: " + errorDescription.errorCode + ", " + errorDescription.errorMsg);
+    }
+
+    @Override
+    public void onDeInitializationSuccess() {
+
     }
 
     @Override
@@ -109,6 +115,11 @@ public class TvPlayerActivity extends FragmentActivity implements PlayerHost.Ini
 
     @Override
     public void onTracksChanged(Track[] tracks, Track[] tracks1) {
+    }
+
+    @Override
+    public void onMetaDataLoaded(PlayerOption playerOption) {
+
     }
 
     private void loadParams() {

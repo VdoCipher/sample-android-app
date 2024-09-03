@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.vdocipher.aegis.cast.CastVdoPlayer;
 import com.vdocipher.aegis.media.ErrorDescription;
+import com.vdocipher.aegis.media.PlayerOption;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.player.VdoInitParams;
@@ -561,6 +562,11 @@ public class VdoPlayerControlView extends FrameLayout {
 
         @Override
         public void onTracksChanged(Track[] availableTracks, Track[] selectedTracks) {
+
+        }
+
+        @Override
+        public void onMetaDataLoaded(PlayerOption playerOption) {
 
         }
     }

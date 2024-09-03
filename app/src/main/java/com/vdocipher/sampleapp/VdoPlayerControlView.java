@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vdocipher.aegis.media.ErrorDescription;
+import com.vdocipher.aegis.media.PlayerOption;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayer;
@@ -711,6 +712,11 @@ public class VdoPlayerControlView extends FrameLayout {
 
         @Override
         public void onTracksChanged(Track[] availableTracks, Track[] selectedTracks) {
+
+        }
+
+        @Override
+        public void onMetaDataLoaded(PlayerOption playerOption) {
 
         }
     }

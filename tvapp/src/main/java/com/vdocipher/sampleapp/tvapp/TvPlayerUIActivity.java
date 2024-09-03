@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.vdocipher.aegis.media.ErrorDescription;
+import com.vdocipher.aegis.media.PlayerOption;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoInitParams;
@@ -82,6 +83,11 @@ public class TvPlayerUIActivity extends AppCompatActivity implements PlayerHost.
         Toast.makeText(TvPlayerUIActivity.this, "initialization failure: " + errorDescription.errorMsg, Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public void onDeInitializationSuccess() {
+
+    }
+
     private final VdoPlayer.PlaybackEventListener playbackListener = new VdoPlayer.PlaybackEventListener() {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
@@ -89,6 +95,11 @@ public class TvPlayerUIActivity extends AppCompatActivity implements PlayerHost.
 
         @Override
         public void onTracksChanged(Track[] tracks, Track[] tracks1) {
+
+        }
+
+        @Override
+        public void onMetaDataLoaded(PlayerOption playerOption) {
 
         }
 
