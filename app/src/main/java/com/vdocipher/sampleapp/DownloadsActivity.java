@@ -1,6 +1,6 @@
 package com.vdocipher.sampleapp;
 
-import static com.vdocipher.sampleapp.Utils.getSizeString;
+import static com.vdocipher.sampleapp.utils.Utils.getSizeString;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -34,6 +34,7 @@ import com.vdocipher.aegis.offline.DownloadStatus;
 import com.vdocipher.aegis.offline.OptionsDownloader;
 import com.vdocipher.aegis.offline.VdoDownloadManager;
 import com.vdocipher.aegis.player.VdoInitParams;
+import com.vdocipher.sampleapp.utils.Utils;
 
 import java.io.File;
 import java.util.ArrayList;

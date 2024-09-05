@@ -1,7 +1,6 @@
 package com.vdocipher.sampleapp;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -24,6 +23,7 @@ import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.ui.view.VdoParamsGenerator;
 import com.vdocipher.aegis.ui.view.VdoPlayerControlView;
 import com.vdocipher.aegis.ui.view.VdoPlayerUIFragment;
+import com.vdocipher.sampleapp.utils.Utils;
 
 import org.json.JSONException;
 

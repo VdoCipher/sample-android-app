@@ -1,4 +1,4 @@
-package com.vdocipher.sampleapp;
+package com.vdocipher.sampleapp.utils;
 
 import android.util.Log;
 import android.util.Pair;
@@ -24,7 +24,7 @@ import java.net.URL;
 public class Utils {
     private static final String TAG = "Utils";
 
-    static String digitalClockTime(long timeInMilliSeconds) {
+    public static String digitalClockTime(long timeInMilliSeconds) {
         long totalSeconds = timeInMilliSeconds / 1000;
         long hours = totalSeconds / (60 * 60);
         long minutes = (totalSeconds - hours * 60 * 60) / 60;
@@ -53,6 +53,14 @@ public class Utils {
             timeThumb += seconds;
         }
         return timeThumb;
+    }
+
+    public static String convertSecondsToHMS(int seconds) {
+        int hours = seconds / 3600;               // 1 hour = 3600 seconds
+        int minutes = (seconds % 3600) / 60;      // 1 minute = 60 seconds
+        int secs = seconds % 60;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, secs);
     }
 
     /**

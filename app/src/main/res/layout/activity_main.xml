@@ -54,7 +54,7 @@
             android:layout_margin="10dp"
             android:drawableTop="@drawable/ic_baseline_play_circle_outline_60"
             android:onClick="onlinePlaybackWithUI"
-            android:padding="20dp"
+            android:padding="10dp"
             android:text="@string/play_with_inbuilt_ui"
             android:textSize="12sp" />
 
@@ -67,8 +67,21 @@
             android:layout_marginEnd="10dp"
             android:drawableTop="@drawable/ic_baseline_play_circle_outline_60"
             android:onClick="onlinePlayback"
-            android:padding="20dp"
+            android:padding="10dp"
             android:text="@string/play_with_custom_ui"
+            android:textSize="12sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:drawableTop="@drawable/ic_playlist_play_60"
+            android:onClick="openPlaylist"
+            android:padding="10dp"
+            android:text="Playlist"
             android:textSize="12sp" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -88,7 +101,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="10dp"
             android:onClick="showDownloads"
-            android:padding="20dp"
+            android:padding="10dp"
             android:text="@string/downloads"
             android:textSize="16sp" />
     </LinearLayout>

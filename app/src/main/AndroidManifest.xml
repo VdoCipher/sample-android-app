@@ -39,6 +39,12 @@
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
             android:supportsPictureInPicture="true"
             tools:targetApi="n" />
+        <activity
+            android:name=".VdoPlaylistActivity"
+            android:launchMode="singleTask"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
+            android:supportsPictureInPicture="true"
+            tools:targetApi="n" />
         <activity android:name=".DownloadsActivity" />
     </application>
 

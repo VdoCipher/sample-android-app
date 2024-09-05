@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Vdocipher Sample App</string>
-
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="caption_search_dialog_title">Search in selected caption</string>
     <string name="vdocipher_sample_application">VdoCipher Sample Application</string>
@@ -17,4 +15,7 @@
     <string name="download_all">Download All</string>
     <string name="start_playback">START PLAYBACK</string>
     <string name="start_playback_with_ui">START PLAYBACK WITH UI</string>
+    <string name="play">Play</string>
+    <string name="playlist">Playlist</string>
+    <string name="media_queue">Media Queue</string>
 </resources>

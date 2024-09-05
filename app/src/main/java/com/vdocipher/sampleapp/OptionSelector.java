@@ -19,9 +19,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static com.vdocipher.sampleapp.Utils.getSizeBytes;
-import static com.vdocipher.sampleapp.Utils.getSizeString;
-import static com.vdocipher.sampleapp.Utils.round;
+import static com.vdocipher.sampleapp.utils.Utils.getSizeBytes;
+import static com.vdocipher.sampleapp.utils.Utils.getSizeString;
+import static com.vdocipher.sampleapp.utils.Utils.round;
 
 /**
  * Shows a dialog for selecting from available track download options.

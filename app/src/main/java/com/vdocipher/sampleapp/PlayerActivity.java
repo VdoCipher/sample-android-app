@@ -30,6 +30,7 @@ import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.ui.view.VdoPlayerUIFragment;
+import com.vdocipher.sampleapp.utils.Utils;
 
 import org.json.JSONException;
 

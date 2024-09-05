@@ -128,4 +128,8 @@ public class MainActivity extends AppCompatActivity implements ProviderInstaller
         Intent intent = new Intent(this, DownloadsActivity.class);
         startActivity(intent);
     }
+    public void openPlaylist(View v) {
+        Intent intent = new Intent(this, VdoPlaylistActivity.class);
+        startActivity(intent);
+    }
 }

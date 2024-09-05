@@ -32,6 +32,8 @@ import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.player.internal.subtitle.SubtitleCue;
 import com.vdocipher.aegis.player.internal.subtitle.SubtitleSearchListener;
+import com.vdocipher.sampleapp.utils.ErrorMessages;
+import com.vdocipher.sampleapp.utils.Utils;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;

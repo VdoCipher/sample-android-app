@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".VdoPlaylistActivity">
+
+    <fragment
+        android:id="@+id/vdo_player_ui_fragment"
+        android:name="com.vdocipher.aegis.ui.view.VdoPlayerUIFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:keepScreenOn="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:showControls="true" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_playlist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/media_queue"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="start"
+        android:elevation="8dp"
+        android:padding="10dp"
+        android:background="@android:color/white"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vdo_player_ui_fragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingBottom="20dp"
+        android:clipToPadding="false"
+        tools:listitem="@layout/media_item"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_playlist" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

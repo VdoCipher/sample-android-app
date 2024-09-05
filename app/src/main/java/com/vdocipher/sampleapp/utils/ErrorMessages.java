@@ -1,4 +1,4 @@
-package com.vdocipher.sampleapp;
+package com.vdocipher.sampleapp.utils;
 
 import com.vdocipher.aegis.media.ErrorDescription;
 
