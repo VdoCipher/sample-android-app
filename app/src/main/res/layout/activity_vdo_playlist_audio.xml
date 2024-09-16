@@ -6,44 +6,61 @@
     android:layout_height="match_parent"
     tools:context=".VdoPlaylistActivity">
 
-    <fragment
-        android:id="@+id/vdo_player_ui_fragment"
-        android:name="com.vdocipher.aegis.ui.view.VdoPlayerUIFragment"
+    <LinearLayout
+        android:id="@+id/audio_player"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:keepScreenOn="true"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:showControls="false" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <fragment
+            android:id="@+id/vdo_player_ui_fragment"
+            android:name="com.vdocipher.aegis.ui.view.VdoPlayerUIFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:keepScreenOn="true"
+            app:showControls="false" />
+
+        <include
+            layout="@layout/audio_control"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@id/vdo_player_fragment"
+            android:layout_alignTop="@id/vdo_player_fragment"
+            android:layout_alignEnd="@id/vdo_player_fragment"
+            android:layout_alignBottom="@id/vdo_player_fragment" />>
+
+
+    </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_playlist"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:elevation="8dp"
+        android:gravity="start"
+        android:padding="10dp"
         android:text="@string/media_queue"
+        android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:gravity="start"
-        android:elevation="8dp"
-        android:padding="10dp"
-        android:background="@android:color/white"
-        android:textColor="@android:color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vdo_player_ui_fragment"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audio_player" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingBottom="20dp"
         android:clipToPadding="false"
-        tools:listitem="@layout/media_item"
+        android:paddingBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_playlist" />
+        app:layout_constraintTop_toBottomOf="@id/tv_playlist"
+        tools:listitem="@layout/media_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

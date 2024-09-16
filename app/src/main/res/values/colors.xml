@@ -4,4 +4,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="seekbar_primary_color">#FF5722</color> <!-- Primary color -->
+    <color name="seekbar_secondary_color">#FFC107</color> <!-- Secondary color -->
+    <color name="seekbar_thumb_color">#FF4081</color> <!-- Thumb color -->
+    <color name="seekbar_background_color">#E0E0E0</color>
 </resources>

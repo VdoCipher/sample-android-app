@@ -140,8 +140,7 @@ public class MainActivity extends AppCompatActivity implements ProviderInstaller
     }
 
     public void openPlaylistAudio(View v) {
-        Intent intent = new Intent(this, VdoPlaylistActivity.class);
-        intent.putExtra("audio",true);
+        Intent intent = new Intent(this, VdoPlaylistActivityAudio.class);
         startActivity(intent);
     }
 }

@@ -1,64 +1,127 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="#EEEEEE"
-    android:padding="16dp"
+    android:layout_gravity="bottom"
+    android:background="#232222"
     android:gravity="center"
-    android:elevation="4dp"
-    android:layout_gravity="bottom">
+    android:orientation="vertical">
 
-    <!-- Shuffle Button -->
-    <ImageButton
-        android:id="@+id/btn_shuffle"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Shuffle"
-        android:src="@drawable/ic_shuffle" />
-
-    <!-- Previous Button -->
-    <ImageButton
-        android:id="@+id/btn_previous"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Previous"
-        android:src="@drawable/ic_previous" />
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="5dp"
+        android:layout_toLeftOf="@id/tv_current_time"
+        android:maxLines="2"
+        android:text="Title"
+        android:textColor="#fff"
+        android:textSize="18sp" />
 
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="12dp">
 
-    <!-- Play/Pause Button -->
-    <ImageButton
-        android:id="@+id/btn_play_pause"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_margin="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Play/Pause"
-        android:src="@drawable/ic_play" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <!-- Next Button -->
-    <ImageButton
-        android:id="@+id/btn_next"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Next"
-        android:src="@drawable/ic_next" />
 
-    <!-- Repeat Button -->
-    <ImageButton
-        android:id="@+id/btn_repeat"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Repeat"
-        android:src="@drawable/ic_repeat" />
+            <!-- Current Time -->
+            <TextView
+                android:id="@+id/tv_current_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:text="00:00"
+                android:textColor="#fff" />
 
+            <SeekBar
+                android:id="@+id/seek_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+            <!-- Total Duration -->
+            <TextView
+                android:id="@+id/tv_total_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="5dp"
+                android:text="00:00"
+                android:textColor="#fff" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <!-- Shuffle Button -->
+            <ImageButton
+                android:id="@+id/btn_shuffle"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Shuffle"
+                android:src="@drawable/baseline_shuffle_24" />
+
+            <!-- Previous Button -->
+            <ImageButton
+                android:id="@+id/btn_previous"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Previous"
+                android:src="@drawable/baseline_skip_previous_24" />
+
+
+            <!-- Play/Pause Button -->
+            <ImageButton
+                android:id="@+id/btn_play_pause"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Play/Pause"
+                android:src="@drawable/ic_play" />
+
+            <!-- Next Button -->
+            <ImageButton
+                android:id="@+id/btn_next"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Next"
+                android:src="@drawable/baseline_skip_next_24" />
+
+            <!-- Repeat Button -->
+            <ImageButton
+                android:id="@+id/btn_repeat"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Repeat"
+                android:src="@drawable/baseline_repeat_24" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

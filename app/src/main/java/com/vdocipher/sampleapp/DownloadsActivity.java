@@ -52,14 +52,14 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
     public static final String OTP_1 = "20160313versASE313BlEe9YKEaDuju5J0XcX2Z03Hrvm5rzKScvuyojMSBZBxfZ";
 
     private static final String SAMPLE_NAME_2 = "Big Buck Bunny";
-    private static final String MEDIA_ID_2 = "661f6861d521a24288d608923d2c73f9";
-    private static final String PLAYBACK_INFO_2 = "eyJ2aWRlb0lkIjoiZWQxYzk0NDUxMjlkNDJhNmJkYTJkYWE3M2MxYzU1ZWUifQ==";
-    private static final String OTP_2 = "20160313versASE323cr92ZMBNuFjIxDH1cIGnfwTO3xNImj9ZY9TLaFQ78j9aLQ";
+    private static final String MEDIA_ID_2 = "19d7877702ae4a46b0d70e20e8e3ac72";
+    private static final String PLAYBACK_INFO_2 = "eyJ2aWRlb0lkIjoiMTlkNzg3NzcwMmFlNGE0NmIwZDcwZTIwZThlM2FjNzIifQ==";
+    private static final String OTP_2 = "20160313versASE323AAe8XrTNPNUXACOlXAspERAkwE7sI7sgOKQmuV1j0YTfcP";
 
-    private static final String SAMPLE_NAME_3 = "Elephants Dream";
-    private static final String MEDIA_ID_3 = "264d511c542a4d23b0cc7317867ac483";
-    private static final String PLAYBACK_INFO_3 = "eyJ2aWRlb0lkIjoiMjY0ZDUxMWM1NDJhNGQyM2IwY2M3MzE3ODY3YWM0ODMifQ==";
-    private static final String OTP_3 = "20160313versASE323gks3zap5vOsyQXbEf6IgQ5j3jEFtAOn3uWQaCpLXKgnRif";
+    private static final String SAMPLE_NAME_3 = "Tears of steel";
+    private static final String MEDIA_ID_3 = "2926ea13cfea410f81770a7f08f88b7b";
+    private static final String PLAYBACK_INFO_3 = "eyJ2aWRlb0lkIjoiMjkyNmVhMTNjZmVhNDEwZjgxNzcwYTdmMDhmODhiN2IifQ==";
+    private static final String OTP_3 = "20160313versASE323fjv3pqZTXtOSsi89u5sFnDdYND7cVzYq68POvNY23aOECg";
 
     private Button download1, download2, download3;
     private AppCompatButton deleteAll;

@@ -160,4 +160,22 @@ public class Utils {
                     "eyJ2aWRlb0lkIjoiZWFiMTU2ZWM3ODM3NGRjYzk1NTFhMDIwNTU1MmRkYTcifQ==");
     }
 
+
+    public static String convertMillisToTime(long millis) {
+        // Calculate total seconds from milliseconds
+        long totalSeconds = millis / 1000;
+
+        // Calculate hours, minutes, and seconds
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+
+        if(hours>0)
+        // Format the time as hh:mm:ss
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        else
+            return String.format("%02d:%02d", minutes, seconds);
+
+    }
+
 }

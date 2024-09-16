@@ -46,6 +46,12 @@
             android:supportsPictureInPicture="true"
             tools:targetApi="n" />
         <activity android:name=".DownloadsActivity" />
+        <activity
+            android:name=".VdoPlaylistActivityAudio"
+            android:launchMode="singleTask"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
+            android:supportsPictureInPicture="true"
+            tools:targetApi="n" />
     </application>
 
 </manifest>
