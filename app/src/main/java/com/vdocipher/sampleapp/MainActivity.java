@@ -119,6 +119,12 @@ public class MainActivity extends AppCompatActivity implements ProviderInstaller
         startActivity(intent);
     }
 
+    public void onlinePlaybackWithoutWaterMark(View v) {
+        Intent intent = new Intent(this, VdoPlayerUIActivity.class);
+        intent.putExtra("watermark",false);
+        startActivity(intent);
+    }
+
     public void onlinePlaybackWithUI(View v) {
         Intent intent = new Intent(this, VdoPlayerUIActivity.class);
         startActivity(intent);
@@ -128,8 +134,14 @@ public class MainActivity extends AppCompatActivity implements ProviderInstaller
         Intent intent = new Intent(this, DownloadsActivity.class);
         startActivity(intent);
     }
-    public void openPlaylist(View v) {
+    public void openPlaylistVideo(View v) {
         Intent intent = new Intent(this, VdoPlaylistActivity.class);
+        startActivity(intent);
+    }
+
+    public void openPlaylistAudio(View v) {
+        Intent intent = new Intent(this, VdoPlaylistActivity.class);
+        intent.putExtra("audio",true);
         startActivity(intent);
     }
 }

@@ -150,4 +150,14 @@ public class Utils {
             throw new IOException("Network error, code " + responseCode);
         }
     }
+
+    public static Pair<String, String> getSampleMediaItem(boolean isWaterMark) {
+        if(isWaterMark)
+        return new Pair<>("20160313versASE323R0BecqDjQ3xWgIpBLLDwuI7KyBa3EuHgPKuPAHT7NFs0T5",
+                "eyJ2aWRlb0lkIjoiZWFiMTU2ZWM3ODM3NGRjYzk1NTFhMDIwNTU1MmRkYTcifQ==");
+        else
+            return new Pair<>("20160313versASE323rLSDqmDbfBNIwNed89PopgPpN3opkC5ggeZV0PnthUNPQV",
+                    "eyJ2aWRlb0lkIjoiZWFiMTU2ZWM3ODM3NGRjYzk1NTFhMDIwNTU1MmRkYTcifQ==");
+    }
+
 }

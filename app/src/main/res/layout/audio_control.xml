@@ -1,0 +1,64 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="#EEEEEE"
+    android:padding="16dp"
+    android:gravity="center"
+    android:elevation="4dp"
+    android:layout_gravity="bottom">
+
+    <!-- Shuffle Button -->
+    <ImageButton
+        android:id="@+id/btn_shuffle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Shuffle"
+        android:src="@drawable/ic_shuffle" />
+
+    <!-- Previous Button -->
+    <ImageButton
+        android:id="@+id/btn_previous"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Previous"
+        android:src="@drawable/ic_previous" />
+
+
+
+    <!-- Play/Pause Button -->
+    <ImageButton
+        android:id="@+id/btn_play_pause"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_margin="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Play/Pause"
+        android:src="@drawable/ic_play" />
+
+    <!-- Next Button -->
+    <ImageButton
+        android:id="@+id/btn_next"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Next"
+        android:src="@drawable/ic_next" />
+
+    <!-- Repeat Button -->
+    <ImageButton
+        android:id="@+id/btn_repeat"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Repeat"
+        android:src="@drawable/ic_repeat" />
+
+</LinearLayout>

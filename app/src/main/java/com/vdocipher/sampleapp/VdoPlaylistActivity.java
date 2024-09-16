@@ -35,8 +35,9 @@ public class VdoPlaylistActivity extends AppCompatActivity implements VideoAdapt
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_vdo_playlist);
 
+        boolean isAudioPLayList = getIntent().getBooleanExtra("audio", false);
+        setContentView(isAudioPLayList ? R.layout.activity_vdo_playlist_audio : R.layout.activity_vdo_playlist);
         // Initialize the VdoPlayerUIFragment and set fullscreen listener
         newFragment = (VdoPlayerUIFragment) getSupportFragmentManager().findFragmentById(R.id.vdo_player_ui_fragment);
         newFragment.setFullscreenActionListener(fullscreenToggleListener);
@@ -54,11 +55,11 @@ public class VdoPlaylistActivity extends AppCompatActivity implements VideoAdapt
         recyclerView.setAdapter(videoAdapter);
 
         // Load media items
-        loadPlaylist();
+        loadPlaylist(isAudioPLayList);
     }
 
-    private void loadPlaylist() {
-        mediaItems.addAll(new PlaylistHolder().getMediaItems());
+    private void loadPlaylist(boolean isAudio) {
+        mediaItems.addAll(new PlaylistHolder(isAudio).getMediaItems());
         videoAdapter.submitList(new ArrayList<>(mediaItems));
         newFragment.initialize(initializationListener);
     }

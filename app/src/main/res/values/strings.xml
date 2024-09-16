@@ -6,6 +6,8 @@
     <string name="online_playback">Online Playback</string>
     <string name="play_with_custom_ui">Play with custom ui</string>
     <string name="play_with_inbuilt_ui">Play with inbuilt ui</string>
+    <string name="play_with_water_mark">Play with water mark</string>
+    <string name="play_with_out_water_mark">Play with without water mark</string>
     <string name="offline_playback">Offline Playback</string>
     <string name="stop_all">STOP ALL</string>
     <string name="resume_all">RESUME ALL</string>

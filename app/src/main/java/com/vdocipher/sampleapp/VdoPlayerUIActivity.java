@@ -1,7 +1,9 @@
 package com.vdocipher.sampleapp;
 
+import android.app.PictureInPictureParams;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -28,6 +30,7 @@ import com.vdocipher.sampleapp.utils.Utils;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost.InitializationListener {
@@ -44,6 +47,7 @@ public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost
     private VdoInitParams vdoParams;
 
     private VdoPlayer player;
+    private boolean isWaterMark = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +67,8 @@ public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost
         if (vdoParams == null) {
             vdoParams = getIntent().getParcelableExtra(EXTRA_VDO_PARAMS);
         }
+
+        isWaterMark = getIntent().getBooleanExtra("watermark",true);
 
         vdoPlayerUIFragment = (VdoPlayerUIFragment) getSupportFragmentManager().findFragmentById(R.id.vdo_player_fragment);
         playerControlView = Objects.requireNonNull(vdoPlayerUIFragment).requireView().findViewById(R.id.vdo_player_control_view);
@@ -142,11 +148,17 @@ public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost
 
     @WorkerThread
     private VdoInitParams obtainNewVdoParams() throws IOException, JSONException {
-        Pair<String, String> pair = Utils.getSampleOtpAndPlaybackInfo();
+        Pair<String, String> pair = Utils.getSampleMediaItem(isWaterMark);//Utils.getSampleOtpAndPlaybackInfo();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("skipDuration", 20);
+        map.put("enableChromecast", true);
+        map.put("enableSaveOffline",false);
         VdoInitParams vdoParams = new VdoInitParams.Builder()
                 .setOtp(pair.first)
                 .setPlaybackInfo(pair.second)
                 .setPreferredCaptionsLanguage("en")
+                .updateConfig(map)
+                .enableAutoResume()
                 .setForceHighestSupportedBitrate(true)
                 .build();
         Log.i(TAG, "obtained new otp and playbackInfo");
@@ -307,4 +319,11 @@ public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost
         }
     }
 
+    @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        // Enter Picture-in-Picture mode if supported
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
+        }    }
 }
