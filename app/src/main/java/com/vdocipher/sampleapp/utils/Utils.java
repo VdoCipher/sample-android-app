@@ -153,11 +153,21 @@ public class Utils {
 
     public static Pair<String, String> getSampleMediaItem(boolean isWaterMark) {
         if(isWaterMark)
-        return new Pair<>("20160313versASE323R0BecqDjQ3xWgIpBLLDwuI7KyBa3EuHgPKuPAHT7NFs0T5",
-                "eyJ2aWRlb0lkIjoiZWFiMTU2ZWM3ODM3NGRjYzk1NTFhMDIwNTU1MmRkYTcifQ==");
+        return new Pair<>("20160313versASE323sCGD30tbxWnBAF0EBfUyCYMjhKao2aQblBFQJYlyaHKbbA",
+                "eyJ2aWRlb0lkIjoiOWQ4NTk4NTBmM2ViNGE2YmE5MWQ5YmUzM2FhZDViZDAifQ==");
         else
-            return new Pair<>("20160313versASE323rLSDqmDbfBNIwNed89PopgPpN3opkC5ggeZV0PnthUNPQV",
-                    "eyJ2aWRlb0lkIjoiZWFiMTU2ZWM3ODM3NGRjYzk1NTFhMDIwNTU1MmRkYTcifQ==");
+            return new Pair<>("20160313versASE323ulvhCiDi28ureoipDJgCwfVeWOIe3bDUCs2uf2Jf2wgzT1",
+                    "eyJ2aWRlb0lkIjoiOWQ4NTk4NTBmM2ViNGE2YmE5MWQ5YmUzM2FhZDViZDAifQ==");
+    }
+
+
+    public static Pair<String, String> getSampleMediaItem2(boolean isWaterMark) {
+        if(isWaterMark)
+            return new Pair<>("20160313versASE323uffUGYVMLku1K3cJF2h1jFP11A4lZTeqtTY8L2fl599e1g",
+                    "eyJ2aWRlb0lkIjoiMjkyNmVhMTNjZmVhNDEwZjgxNzcwYTdmMDhmODhiN2IifQ==");
+        else
+            return new Pair<>("20160313versASE323rSsfVdz8zUpX25tmr42hfMgM5t78Zqe2ioSFiCeVXeGAoK",
+                    "eyJ2aWRlb0lkIjoiMjkyNmVhMTNjZmVhNDEwZjgxNzcwYTdmMDhmODhiN2IifQ==");
     }
 
 

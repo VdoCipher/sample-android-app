@@ -219,7 +219,8 @@ public class DownloadsActivity extends Activity implements VdoDownloadManager.Ev
             for (DownloadStatus status : statusList) {
                 builder.append(statusString(status)).append(" : ")
                         .append(status.mediaInfo.mediaId).append(", ")
-                        .append(status.mediaInfo.title).append("\n");
+                        .append(status.mediaInfo.title).append("\n")
+                        .append(status.poster);
             }
             Log.i(TAG, builder.toString());
         });

@@ -10,6 +10,8 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,7 +70,7 @@ public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost
             vdoParams = getIntent().getParcelableExtra(EXTRA_VDO_PARAMS);
         }
 
-        isWaterMark = getIntent().getBooleanExtra("watermark",true);
+        isWaterMark = getIntent().getBooleanExtra("watermark", true);
 
         vdoPlayerUIFragment = (VdoPlayerUIFragment) getSupportFragmentManager().findFragmentById(R.id.vdo_player_fragment);
         playerControlView = Objects.requireNonNull(vdoPlayerUIFragment).requireView().findViewById(R.id.vdo_player_control_view);
@@ -80,6 +82,35 @@ public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost
         eventLog.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         currentOrientation = getResources().getConfiguration().orientation;
+
+
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.rg);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+
+                try {
+                    if (player == null)
+                        return;
+
+                    if (id == R.id.rbEnglish) {
+                        player.addPlaybackEventListener(playbackListener);
+                        playerControlView.setVdoParamsGenerator(vdoParamsGenerator);
+
+                        // load a media to the player
+                        player.load(obtainNewVdoParamsVideo(true, (int) player.getCurrentTime()));
+                    } else {
+                        player.addPlaybackEventListener(playbackListener);
+                        playerControlView.setVdoParamsGenerator(vdoParamsGenerator);
+                        // load a media to the player
+                        player.load(obtainNewVdoParamsVideo(true, (int) player.getCurrentTime()));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
 
         initializePlayer();
     }
@@ -152,12 +183,31 @@ public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost
         HashMap<String, Object> map = new HashMap<>();
         map.put("skipDuration", 20);
         map.put("enableChromecast", true);
-        map.put("enableSaveOffline",false);
+        map.put("enableSaveOffline", false);
         VdoInitParams vdoParams = new VdoInitParams.Builder()
                 .setOtp(pair.first)
                 .setPlaybackInfo(pair.second)
                 .setPreferredCaptionsLanguage("en")
                 .updateConfig(map)
+                .enableAutoResume()
+                .setForceHighestSupportedBitrate(true)
+                .build();
+        Log.i(TAG, "obtained new otp and playbackInfo");
+        return vdoParams;
+    }
+
+    private VdoInitParams obtainNewVdoParamsVideo(boolean isEnglish, int startTime) {
+        Pair<String, String> pair = isEnglish ? Utils.getSampleMediaItem(isWaterMark) : Utils.getSampleMediaItem2(isWaterMark);//Utils.getSampleOtpAndPlaybackInfo();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("skipDuration", 20);
+        map.put("enableChromecast", true);
+        map.put("enableSaveOffline", false);
+        VdoInitParams vdoParams = new VdoInitParams.Builder()
+                .setOtp(pair.first)
+                .setPlaybackInfo(pair.second)
+                .setPreferredCaptionsLanguage("en")
+                .updateConfig(map)
+                .setResumeTime(startTime)
                 .enableAutoResume()
                 .setForceHighestSupportedBitrate(true)
                 .build();
@@ -325,5 +375,6 @@ public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost
         // Enter Picture-in-Picture mode if supported
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
-        }    }
+        }
+    }
 }

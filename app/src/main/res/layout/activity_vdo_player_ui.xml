@@ -21,6 +21,37 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/MultiLanguage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:visibility="gone"
+        android:padding="10dp"
+        android:text="Audio Available"
+        android:textSize="16sp" />
+
+    <RadioGroup
+        android:id="@+id/rg"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/rbEnglish"
+            android:layout_width="wrap_content"
+            android:checked="true"
+            android:layout_height="wrap_content"
+            android:text="English" />
+
+        <RadioButton
+            android:id="@+id/rbGerman"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="German" />
+
+    </RadioGroup>
+
+    <TextView
         android:id="@+id/title_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,6 +69,7 @@
         android:textColor="@android:color/darker_gray"
         android:textSize="14sp"
         tools:hint="sdk version: a.b.c" />
+
 
     <LinearLayout
         android:id="@+id/log_container"
