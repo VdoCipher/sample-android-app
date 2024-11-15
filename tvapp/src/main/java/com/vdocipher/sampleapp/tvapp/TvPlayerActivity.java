@@ -15,6 +15,7 @@ import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.player.VdoPlayerSupportFragment;
+import com.vdocipher.aegis.player.VdoTimeLine;
 
 /**
  * This class serves as a basic example of integrating playback in android TV.
@@ -119,6 +120,11 @@ public class TvPlayerActivity extends FragmentActivity implements PlayerHost.Ini
 
     @Override
     public void onMetaDataLoaded(PlayerOption playerOption) {
+
+    }
+
+    @Override
+    public void onTimelineChanged(VdoTimeLine vdoTimeLine, int i) {
 
     }
 

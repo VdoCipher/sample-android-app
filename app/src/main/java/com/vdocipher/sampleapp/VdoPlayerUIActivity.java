@@ -21,6 +21,7 @@ import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoInitParams;
 import com.vdocipher.aegis.player.VdoPlayer;
+import com.vdocipher.aegis.player.VdoTimeLine;
 import com.vdocipher.aegis.ui.view.VdoParamsGenerator;
 import com.vdocipher.aegis.ui.view.VdoPlayerControlView;
 import com.vdocipher.aegis.ui.view.VdoPlayerUIFragment;
@@ -202,6 +203,11 @@ public class VdoPlayerUIActivity extends AppCompatActivity implements PlayerHost
 
         @Override
         public void onMetaDataLoaded(PlayerOption playerOption) {
+
+        }
+
+        @Override
+        public void onTimelineChanged(VdoTimeLine vdoTimeLine, int i) {
 
         }
 
