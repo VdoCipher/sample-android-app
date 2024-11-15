@@ -30,6 +30,7 @@ import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.PlayerHost;
 import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.player.VdoInitParams;
+import com.vdocipher.aegis.player.VdoTimeLine;
 import com.vdocipher.aegis.ui.view.VdoPlayerUIFragment;
 
 import java.math.RoundingMode;
@@ -88,7 +89,7 @@ public class CastVdoPlayerActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         castPlayer = new CastVdoPlayer(castContext);
-        castPlayer.setSessionAvailabilityListener(this);
+        castPlayer.setSessionAvailabilityListenerWeakRef(this);
         setCurrentPlayer(castPlayer.isCastSessionAvailable() ? castPlayer : localPlayer);
     }
 
@@ -96,7 +97,7 @@ public class CastVdoPlayerActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         if (castPlayer != null) {
-            castPlayer.setSessionAvailabilityListener(null);
+            castPlayer.setSessionAvailabilityListenerWeakRef(null);
             castPlayer.release();
         }
         castPlayer = null;
@@ -216,6 +217,11 @@ public class CastVdoPlayerActivity extends AppCompatActivity
 
         @Override
         public void onMetaDataLoaded(PlayerOption playerOption) {
+
+        }
+
+        @Override
+        public void onTimelineChanged(VdoTimeLine vdoTimeLine, int i) {
 
         }
 

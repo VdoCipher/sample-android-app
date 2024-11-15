@@ -23,6 +23,7 @@ import com.vdocipher.aegis.media.PlayerOption;
 import com.vdocipher.aegis.media.Track;
 import com.vdocipher.aegis.player.VdoPlayer;
 import com.vdocipher.aegis.player.VdoInitParams;
+import com.vdocipher.aegis.player.VdoTimeLine;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -567,6 +568,11 @@ public class VdoPlayerControlView extends FrameLayout {
 
         @Override
         public void onMetaDataLoaded(PlayerOption playerOption) {
+
+        }
+
+        @Override
+        public void onTimelineChanged(VdoTimeLine vdoTimeLine, int i) {
 
         }
     }
